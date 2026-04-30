@@ -30,7 +30,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        USE_EMBEDDING_MODEL: ${RAG_EMBEDDING_MODEL:-sentence-transformers/all-MiniLM-L6-v2}
+        USE_RERANKING_MODEL: ${RAG_RERANKING_MODEL:-}
     container_name: arkive
+    env_file:
+      - .env
     volumes:
       - arkive:/app/backend/data
     depends_on:

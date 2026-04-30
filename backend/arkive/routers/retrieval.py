@@ -151,7 +151,7 @@ def get_ef(
                 model_kwargs=SENTENCE_TRANSFORMERS_MODEL_KWARGS,
             )
         except Exception as e:
-            log.debug(f'Error loading SentenceTransformer: {e}')
+            log.exception(f'Error loading SentenceTransformer model "{embedding_model}": {e}')
 
     return ef
 
@@ -1599,6 +1599,15 @@ def save_docs_to_vector_db(
                 return True
 
         log.info(f'generating embeddings for {collection_name}')
+        if request.app.state.config.RAG_EMBEDDING_ENGINE == '' and request.app.state.ef is None:
+            log.warning(
+                f'Embedding model "{request.app.state.config.RAG_EMBEDDING_MODEL}" is not loaded; retrying load'
+            )
+            request.app.state.ef = get_ef(
+                request.app.state.config.RAG_EMBEDDING_ENGINE,
+                request.app.state.config.RAG_EMBEDDING_MODEL,
+            )
+
         embedding_function = get_embedding_function(
             request.app.state.config.RAG_EMBEDDING_ENGINE,
             request.app.state.config.RAG_EMBEDDING_MODEL,

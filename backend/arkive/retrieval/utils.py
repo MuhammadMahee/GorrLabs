@@ -786,6 +786,12 @@ def get_embedding_function(
     if embedding_engine == '':
         # Sentence transformers: CPU-bound sync operation
         async def async_embedding_function(query, prefix=None, user=None):
+            if embedding_function is None:
+                raise RuntimeError(
+                    'Local embedding model is not loaded. '
+                    f'Check RAG_EMBEDDING_MODEL="{embedding_model}", model cache, and Hugging Face/download access.'
+                )
+
             return await asyncio.to_thread(
                 (
                     lambda query, prefix=None: embedding_function.encode(
