@@ -2396,8 +2396,128 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         request.state.policy = policy_result
         request.state.user_context = user_context
     if not policy_result.permitted:
+        # Route D — pending review: query held, not blocked permanently.
+        if policy_result.decision == 'pending':
+            review_id = policy_result.pending_review_id or 'unknown'
+            return JSONResponse(
+                status_code=202,
+                content={
+                    'detail': (
+                        'Your query contains sensitive information and has been submitted '
+                        'for administrator review. You will be able to re-submit once it '
+                        'has been approved.'
+                    ),
+                    'review_id': review_id,
+                    'status': 'pending_review',
+                },
+            )
         raise PolicyDeniedException(policy_result)
+
+    # If PII was found but the query was permitted, forward the anonymized
+    # version (<PERSON>, <EMAIL_ADDRESS> tokens) — not the raw query.
+    if policy_result.detected_entities and policy_result.redacted_query != user_message:
+        user_message = policy_result.redacted_query
+        if form_data.get('messages'):
+            last_msg = form_data['messages'][-1]
+            if isinstance(last_msg.get('content'), str):
+                last_msg['content'] = user_message
+        log.info(
+            f'[policy] query anonymized — {len(policy_result.detected_entities)} entity/entities replaced'
+        )
+
+    # Route A — external model enforcement.
+    # If sensitivity is high and the selected model is not served through
+    # Ollama (i.e. it's an external API), override to the local fallback.
+    try:
+        from arkive.env import LOCAL_FALLBACK_MODEL, LOCAL_ONLY_ABOVE_SENSITIVITY
+        _selected_model = form_data.get('model', '')
+        _ollama_models = getattr(request.app.state, 'OLLAMA_MODELS', {})
+        if (
+            policy_result.sensitivity_level >= LOCAL_ONLY_ABOVE_SENSITIVITY
+            and _selected_model
+            and _selected_model not in _ollama_models
+        ):
+            form_data['model'] = LOCAL_FALLBACK_MODEL
+            log.warning(
+                f'[route_a] sensitivity={policy_result.sensitivity_level} '
+                f'external model={_selected_model!r} overridden → {LOCAL_FALLBACK_MODEL!r}'
+            )
+    except Exception as _ra_err:
+        log.warning(f'[route_a] model override check failed: {_ra_err}')
     # ── END POLICY GATE ────────────────────────────────────────────
+
+    # ── QUERY CLASSIFICATION ────────────────────────────────────────
+    try:
+        from arkive.utils.query_classifier import classify_query, should_use_agentic_path
+        _classification = await classify_query(user_message or "")
+        _use_agentic = should_use_agentic_path(_classification)
+        request.state.query_classification = _classification
+        request.state.use_agentic_path = _use_agentic
+        log.info(
+            f"[query_classifier] type={_classification.query_type.value} "
+            f"confidence={_classification.confidence:.2f} "
+            f"agentic={_use_agentic} "
+            f"needs_web={_classification.needs_web} "
+            f"reasoning={_classification.reasoning!r}"
+        )
+    except Exception as _e:
+        log.warning(f"[query_classifier] classification failed: {_e} — defaulting to standard RAG")
+        request.state.query_classification = None
+        request.state.use_agentic_path = False
+    # ── END QUERY CLASSIFICATION ────────────────────────────────────
+
+    # ── AGENTIC RAG PATH ────────────────────────────────────────────
+    # If classifier routed to agentic path, run the supervisor.
+    # On success: inject synthesized answer as a system message using
+    # add_or_update_system_message(append=True) — the same pattern used
+    # for skills (~line 2529) and terminal context (~line 2745).
+    # On failure or fell_back=True: standard RAG runs unchanged below.
+    _agentic_succeeded = False
+    if getattr(request.state, 'use_agentic_path', False):
+        try:
+            from arkive.utils.agent_supervisor import run_agentic_rag
+
+            _agent_collection_ids = [
+                f.get('id') for f in form_data.get('files', [])
+                if f.get('id')
+            ] or None
+
+            _agent_response = await run_agentic_rag(
+                query=user_message,
+                classification=request.state.query_classification,
+                user_context=getattr(request.state, 'user_context', None),
+                request=request,
+                collection_ids=_agent_collection_ids,
+            )
+
+            if not _agent_response.fell_back and _agent_response.answer:
+                _agent_context = (
+                    "The following answer was synthesized by the Arkive "
+                    "retrieval system using document sources: "
+                    f"{', '.join(_agent_response.sources) or 'knowledge base'}."
+                    f"\n\n{_agent_response.answer}"
+                )
+                form_data['messages'] = add_or_update_system_message(
+                    _agent_context,
+                    form_data['messages'],
+                    append=True,
+                )
+                request.state.agent_response = _agent_response
+                _agentic_succeeded = True
+                log.info(
+                    f"[agentic_rag] success tools={_agent_response.tools_used} "
+                    f"sources={_agent_response.sources}"
+                )
+            else:
+                log.info("[agentic_rag] fell back to standard RAG")
+                request.state.use_agentic_path = False
+
+        except Exception as _agent_exc:
+            log.exception(
+                f"[agentic_rag] unhandled error — falling back to standard RAG: {_agent_exc}"
+            )
+            request.state.use_agentic_path = False
+    # ── END AGENTIC RAG PATH ────────────────────────────────────────
 
     # Process the form_data through the pipeline
     try:
@@ -2796,11 +2916,13 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     file_context_enabled = (model.get('info', {}).get('meta', {}).get('capabilities') or {}).get('file_context', True)
 
     if file_context_enabled:
-        try:
-            form_data, flags = await chat_completion_files_handler(request, form_data, extra_params, user)
-            sources.extend(flags.get('sources', []))
-        except Exception as e:
-            log.exception(e)
+        # Skip RAG chunk retrieval if the agentic path already answered
+        if not _agentic_succeeded:
+            try:
+                form_data, flags = await chat_completion_files_handler(request, form_data, extra_params, user)
+                sources.extend(flags.get('sources', []))
+            except Exception as e:
+                log.exception(e)
 
     # Save the pre-RAG message state so the native tool call loop can
     # restore to the true original (before file-source injection) rather
@@ -2810,8 +2932,9 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     metadata['user_prompt'] = get_last_user_message(form_data['messages'])
     metadata['sources'] = sources[:] if sources else []
 
-    # If context is not empty, insert it into the messages
-    if sources and prompt:
+    # If context is not empty, insert it into the messages.
+    # Skip when agentic path succeeded — answer is already injected above.
+    if sources and prompt and not _agentic_succeeded:
         form_data['messages'] = apply_source_context_to_messages(request, form_data['messages'], sources, prompt)
 
         # For non-admin users, inject a system-level instruction so the model

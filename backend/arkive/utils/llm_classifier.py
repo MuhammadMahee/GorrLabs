@@ -1,13 +1,12 @@
-import os
 import json
 import logging
 import httpx
 from typing import Optional
 
+from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
+
 log = logging.getLogger(__name__)
 
-OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
 EXTRACT_TIMEOUT = 30.0  # seconds — runs at publish time, not query time
 
 EXTRACT_PROMPT = """You are a data privacy analyst for an enterprise platform.

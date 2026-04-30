@@ -39,6 +39,23 @@ except ImportError:
 
 DOCKER = os.environ.get('DOCKER', 'False').lower() == 'true'
 
+####################################
+# Ollama (pipeline model)
+# Used by: enricher, classifier, supervisor, llm_classifier
+####################################
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
+
+####################################
+# Route A — local model enforcement
+# When a query's sensitivity_level >= LOCAL_ONLY_ABOVE_SENSITIVITY
+# AND the selected model is detected as external (not Ollama),
+# the model is overridden to LOCAL_FALLBACK_MODEL.
+# Set LOCAL_ONLY_ABOVE_SENSITIVITY=99 to disable.
+####################################
+LOCAL_FALLBACK_MODEL = os.getenv("LOCAL_FALLBACK_MODEL", OLLAMA_MODEL)
+LOCAL_ONLY_ABOVE_SENSITIVITY = int(os.getenv("LOCAL_ONLY_ABOVE_SENSITIVITY", "3"))
+
 # device type embedding models - "cpu" (default), "cuda" (nvidia gpu required) or "mps" (apple silicon) - choosing this right can lead to better performance
 USE_CUDA = os.environ.get('USE_CUDA_DOCKER', 'false')
 

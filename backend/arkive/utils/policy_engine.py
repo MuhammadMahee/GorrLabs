@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass
 from enum import Enum
 from typing import Dict, List, Optional
 
-from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer, RecognizerRegistry
+from presidio_analyzer import AnalyzerEngine, Pattern, PatternRecognizer, RecognizerRegistry, RecognizerResult
 from presidio_analyzer.nlp_engine import NlpEngineProvider
 from presidio_analyzer.predefined_recognizers import (
     DateRecognizer,
@@ -18,6 +18,9 @@ from presidio_analyzer.predefined_recognizers import (
     UsBankRecognizer,
     UsLicenseRecognizer,
 )
+
+from presidio_anonymizer import AnonymizerEngine
+from presidio_anonymizer.entities import OperatorConfig
 
 from arkive.models.policy_decisions import PolicyDecisionForm, PolicyDecisions
 from arkive.utils.llm_classifier import llm_classify
@@ -162,6 +165,7 @@ def _build_analyzer() -> AnalyzerEngine:
 # Module-level instantiation causes Presidio registry
 # state issues on uvicorn hot reload.
 _analyzer: AnalyzerEngine | None = None
+_anonymizer: AnonymizerEngine | None = None
 
 
 def _get_analyzer() -> AnalyzerEngine:
@@ -169,6 +173,13 @@ def _get_analyzer() -> AnalyzerEngine:
     if _analyzer is None:
         _analyzer = _build_analyzer()
     return _analyzer
+
+
+def _get_anonymizer() -> AnonymizerEngine:
+    global _anonymizer
+    if _anonymizer is None:
+        _anonymizer = AnonymizerEngine()
+    return _anonymizer
 
 
 _SUPPORTED_ENTITIES = [
@@ -190,6 +201,34 @@ _SUPPORTED_ENTITIES = [
 ]
 
 _SCORE_THRESHOLD = 0.7
+
+# Replace operator per entity type: <PERSON>, <EMAIL_ADDRESS>, etc.
+# Unknown types fall through to DEFAULT → <REDACTED>.
+_ANONYMIZER_OPERATORS: Dict[str, OperatorConfig] = {
+    entity: OperatorConfig("replace", {"new_value": f"<{entity}>"})
+    for entity in _SUPPORTED_ENTITIES
+}
+_ANONYMIZER_OPERATORS["DEFAULT"] = OperatorConfig("replace", {"new_value": "<REDACTED>"})
+
+# Entity types that are replaced in queries.
+# Deliberately excludes DATE_TIME, LOCATION, NRP — these fire on benign
+# tokens ("annual", "daily", city names in normal context) and would
+# corrupt query semantics without adding meaningful privacy protection.
+# They still influence sensitivity_level; they just aren't substituted.
+_QUERY_ANONYMIZE_ENTITIES = {
+    'PERSON',
+    'EMAIL_ADDRESS',
+    'PHONE_NUMBER',
+    'CREDIT_CARD',
+    'IBAN_CODE',
+    'US_SSN',
+    'US_BANK_NUMBER',
+    'IP_ADDRESS',
+    'URL',
+    'MEDICAL_LICENSE',
+    'US_DRIVER_LICENSE',
+    'US_PASSPORT',
+}
 
 _LEVEL_3_TYPES = {
     'US_SSN',
@@ -590,13 +629,14 @@ class DetectedEntity:
 @dataclass
 class PolicyDecisionResult:
     permitted: bool
-    decision: str  # 'proceed', 'block', 'flag'
+    decision: str  # 'proceed', 'block', 'flag', 'pending'
     reason: str
     detected_entities: list[DetectedEntity]
     redacted_query: str
     audit_required: bool
     sensitivity_level: int
     audit_id: str | None = None
+    pending_review_id: str | None = None  # set when decision == 'pending'
 
 
 ####################
@@ -802,6 +842,46 @@ def apply_query_time_masking(
     return _TOKEN_RE.sub(_replace, redacted_text)
 
 
+def anonymize_query(text: str, entities: list[DetectedEntity]) -> str:
+    """
+    Anonymizes PII in a query using presidio-anonymizer.
+
+    Produces <ENTITY_TYPE> tokens (e.g. <PERSON>, <EMAIL_ADDRESS>) so the
+    query can still be semantically meaningful after anonymization. The
+    original text is never stored or forwarded downstream once PII is found.
+
+    Only replaces entity types in _QUERY_ANONYMIZE_ENTITIES — DATE_TIME,
+    LOCATION, and NRP are excluded to prevent false positives on benign
+    tokens ("annual", city names, etc.) from corrupting query semantics.
+
+    Falls back to bracket-redaction via redact_text() on any error.
+    """
+    if not entities:
+        return text
+    try:
+        analyzer_results = [
+            RecognizerResult(
+                entity_type=e.entity_type,
+                start=e.start,
+                end=e.end,
+                score=e.score,
+            )
+            for e in entities
+            if e.entity_type in _QUERY_ANONYMIZE_ENTITIES
+        ]
+        if not analyzer_results:
+            return text
+        result = _get_anonymizer().anonymize(
+            text=text,
+            analyzer_results=analyzer_results,
+            operators=_ANONYMIZER_OPERATORS,
+        )
+        return result.text
+    except Exception as _e:
+        log.warning(f'[anonymize_query] anonymizer failed: {_e} — using bracket redaction')
+        return redact_text(text, entities)
+
+
 def redact_text(text: str, entities: list[DetectedEntity]) -> str:
     if not entities:
         return text
@@ -876,7 +956,7 @@ async def evaluate_request(
     # Final sensitivity is the maximum across all layers.
     # If any layer flags it, it is flagged.
     sensitivity_level = max(presidio_level, llm_level)
-    redacted_query = redact_text(query, entities)
+    redacted_query = anonymize_query(query, entities)
     query_hash = hashlib.sha256(query.encode('utf-8')).hexdigest()
 
     # Decision logic. Severity order: block > flag > proceed.
@@ -925,6 +1005,48 @@ async def evaluate_request(
     if llm_level > presidio_level and llm_reason:
         reason = f"{reason} [llm: {llm_reason}]"
 
+    # Route D — Human review queue.
+    # A 'flag' decision becomes 'pending' unless:
+    #   (a) the query hash was already approved within the last 24 h, or
+    #   (b) there is already an open pending review for this hash (dedup).
+    # Approved queries proceed normally; re-flagging is silently suppressed.
+    pending_review_id: str | None = None
+    if decision == 'flag':
+        try:
+            from arkive.models.pending_reviews import PendingReviews
+            if PendingReviews.is_approved(query_hash):
+                decision = 'proceed'
+                reason = f'{reason} [previously approved]'
+                log.info(
+                    f'[policy] user={user_context.user_id} '
+                    f'hash={query_hash[:12]}... approved within 24h — proceeding'
+                )
+            elif not PendingReviews.has_pending(query_hash):
+                pr = PendingReviews.insert(
+                    user_id=user_context.user_id,
+                    query_hash=query_hash,
+                    query_preview=redacted_query[:200],
+                    sensitivity_level=sensitivity_level,
+                    reason=reason,
+                )
+                if pr:
+                    pending_review_id = str(pr.id)
+                    decision = 'pending'
+                    log.info(
+                        f'[policy] user={user_context.user_id} '
+                        f'query held for review review_id={pending_review_id}'
+                    )
+            else:
+                decision = 'pending'
+                log.info(
+                    f'[policy] user={user_context.user_id} '
+                    f'duplicate pending review for hash={query_hash[:12]}... — holding'
+                )
+        except Exception as _pr_err:
+            log.exception(f'[policy] pending review queue failed: {_pr_err} — blocking as safe fallback')
+            decision = 'block'
+            reason = f'{reason} [review queue unavailable]'
+
     permitted = decision == 'proceed'
     audit_required = (
         decision != 'proceed'
@@ -969,4 +1091,5 @@ async def evaluate_request(
         audit_required=audit_required,
         sensitivity_level=sensitivity_level,
         audit_id=audit_id,
+        pending_review_id=pending_review_id,
     )

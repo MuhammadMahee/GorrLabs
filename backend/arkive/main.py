@@ -98,6 +98,7 @@ from arkive.routers import (
     scim,
     terminals,
 )
+from arkive.routers import policy as policy_router
 
 from arkive.routers.retrieval import (
     get_embedding_function,
@@ -714,6 +715,26 @@ async def lifespan(app: FastAPI):
             log.info(f'Initialized {len(app.state.TERMINAL_SERVERS)} terminal server(s)')
         except Exception as e:
             log.warning(f'Failed to initialize tool/terminal servers at startup: {e}')
+
+    # Pre-load qwen2.5:7b into Ollama memory so the enricher and classifier
+    # never hit a cold-load 500 on the first ingestion or chat query.
+    # keep_alive=-1 keeps it resident until Ollama is restarted.
+    try:
+        import httpx as _httpx
+        from arkive.env import OLLAMA_BASE_URL as _ollama_url, OLLAMA_MODEL as _ollama_model
+        async with _httpx.AsyncClient(timeout=60.0) as _client:
+            await _client.post(
+                f"{_ollama_url}/api/chat",
+                json={
+                    "model": _ollama_model,
+                    "messages": [{"role": "user", "content": "hi"}],
+                    "stream": False,
+                    "keep_alive": -1,
+                },
+            )
+        log.info(f"[startup] Ollama model '{_ollama_model}' pre-loaded and kept resident")
+    except Exception as _e:
+        log.warning(f"[startup] Ollama warmup failed (model will load on first use): {_e}")
 
     # Mark application as ready to accept traffic from a startup perspective.
     app.state.startup_complete = True
@@ -1538,6 +1559,7 @@ if ENABLE_ADMIN_ANALYTICS:
     app.include_router(analytics.router, prefix='/api/v1/analytics', tags=['analytics'])
 app.include_router(utils.router, prefix='/api/v1/utils', tags=['utils'])
 app.include_router(terminals.router, prefix='/api/v1/terminals', tags=['terminals'])
+app.include_router(policy_router.router, prefix='/api/v1/policy', tags=['policy'])
 
 # SCIM 2.0 API for identity management
 if ENABLE_SCIM:
