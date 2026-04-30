@@ -44,6 +44,10 @@ jobs:
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             ARKIVE_PORT=${{ secrets.ARKIVE_PORT }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            OLLAMA_BASE_URL=http://localhost:11434
+            OLLAMA_MODEL=qwen2.5:7b
+            LOCAL_FALLBACK_MODEL=qwen2.5:7b
+            LOCAL_ONLY_ABOVE_SENSITIVITY=3
             EOF
 
             echo "==> Rebuilding containers"
@@ -56,9 +60,16 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting 30s for app to start..."
-          sleep 30
-          curl -sf --max-time 15 \
-            http://${{ secrets.VPS_HOST }}:${{ secrets.ARKIVE_PORT }}/health \
-            | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('status') else 1)"
-          echo "Health check passed"
+          echo "Waiting for app to start (up to 90s)..."
+          for i in $(seq 1 9); do
+            sleep 10
+            echo "Attempt $i/9..."
+            if curl -sf --max-time 10 \
+              http://${{ secrets.VPS_HOST }}:${{ secrets.ARKIVE_PORT }}/health \
+              | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('status') else 1)" 2>/dev/null; then
+              echo "Health check passed"
+              exit 0
+            fi
+          done
+          echo "Health check failed after 90s"
+          exit 1
