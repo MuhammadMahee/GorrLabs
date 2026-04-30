@@ -69,6 +69,8 @@ jobs:
             RAG_TOP_K_RERANKER=5
             RAG_TEXT_SPLITTER=semantic
             ENABLE_CONTEXTUAL_ENRICHMENT=true
+            ENRICHMENT_TIMEOUT=120
+            ENRICHMENT_CONCURRENCY=1
             EOF
 
             echo "==> Rebuilding containers"

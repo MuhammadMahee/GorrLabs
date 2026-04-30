@@ -6,8 +6,9 @@ from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
 
 log = logging.getLogger(__name__)
 
-ENRICHMENT_TIMEOUT = 30.0
-ENRICHMENT_CONCURRENCY = 5  # max parallel Ollama calls
+import os
+ENRICHMENT_TIMEOUT = float(os.getenv("ENRICHMENT_TIMEOUT", "120.0"))
+ENRICHMENT_CONCURRENCY = int(os.getenv("ENRICHMENT_CONCURRENCY", "1"))
 
 ENRICHMENT_PROMPT = """You are an expert document indexing system optimized for semantic search and retrieval.
 
