@@ -44,10 +44,30 @@ jobs:
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             ARKIVE_PORT=${{ secrets.ARKIVE_PORT }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+            DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }}
             OLLAMA_BASE_URL=http://localhost:11434
             OLLAMA_MODEL=qwen2.5:7b
             LOCAL_FALLBACK_MODEL=qwen2.5:7b
             LOCAL_ONLY_ABOVE_SENSITIVITY=3
+            ENABLE_OLLAMA_API=True
+            ENABLE_OPENAI_API=False
+            OPENAI_API_BASE_URL=
+            OPENAI_API_KEY=
+            ENABLE_EVALUATION_ARENA_MODELS=False
+            CORS_ALLOW_ORIGIN=*
+            FORWARDED_ALLOW_IPS=*
+            SCARF_NO_ANALYTICS=true
+            DO_NOT_TRACK=true
+            ANONYMIZED_TELEMETRY=false
+            ENABLE_RAG_HYBRID_SEARCH=true
+            RAG_HYBRID_BM25_WEIGHT=0.5
+            RAG_RELEVANCE_THRESHOLD=0.3
+            RAG_EMBEDDING_MODEL=BAAI/bge-large-en-v1.5
+            RAG_TOP_K=20
+            RAG_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
+            RAG_TOP_K_RERANKER=5
+            RAG_TEXT_SPLITTER=semantic
+            ENABLE_CONTEXTUAL_ENRICHMENT=true
             EOF
 
             echo "==> Rebuilding containers"
