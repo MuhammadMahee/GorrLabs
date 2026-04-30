@@ -68,9 +68,7 @@ jobs:
             RAG_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
             RAG_TOP_K_RERANKER=5
             RAG_TEXT_SPLITTER=semantic
-            ENABLE_CONTEXTUAL_ENRICHMENT=true
-            ENRICHMENT_TIMEOUT=120
-            ENRICHMENT_CONCURRENCY=1
+            ENABLE_CONTEXTUAL_ENRICHMENT=false
             EOF
 
             echo "==> Rebuilding containers"
