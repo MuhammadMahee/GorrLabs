@@ -15,6 +15,7 @@
 
 	export let show = false;
 	export let className = 'max-w-[180px]';
+	$: void className;
 
 	export let onDownload = (type) => {};
 	export let onDelete = () => {};

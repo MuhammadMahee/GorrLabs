@@ -34,7 +34,7 @@
 		}
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		const handleMessage = (event: MessageEvent<string>) => {
 			console.log(event);
 			if (!allowedOrigins.includes(event.origin)) return;

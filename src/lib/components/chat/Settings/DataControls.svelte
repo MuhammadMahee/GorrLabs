@@ -34,6 +34,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	export let saveSettings: Function;
+	$: void saveSettings;
 
 	// Chats
 	let importFiles;
@@ -51,7 +52,9 @@
 
 		let reader = new FileReader();
 		reader.onload = (event) => {
-			let chats = JSON.parse(event.target.result);
+				const result = event.target?.result;
+				if (typeof result !== 'string') return;
+				let chats = JSON.parse(result);
 			console.log(chats);
 			if (getImportOrigin(chats) == 'openai') {
 				try {

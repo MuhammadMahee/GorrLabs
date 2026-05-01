@@ -127,6 +127,9 @@ type BaseModel = {
 	preset?: boolean;
 	arena?: boolean;
 	direct?: boolean;
+	has_user_valves?: boolean;
+	tags?: { name: string; [key: string]: any }[];
+	connection_type?: string;
 };
 
 export interface ArenaModel extends BaseModel {
@@ -323,6 +326,8 @@ type Config = {
 		enable_memories?: boolean;
 		enable_user_status?: boolean;
 		enable_user_webhooks?: boolean;
+		enable_community_sharing?: boolean;
+		enable_easter_eggs?: boolean;
 		folder_max_file_count?: number;
 	};
 	oauth: {

@@ -15,6 +15,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	export let saveHandler: Function;
+	$: void saveHandler;
 
 	const exportAllUserChats = async () => {
 		let blob = new Blob([JSON.stringify(await getAllUserChats(localStorage.token))], {

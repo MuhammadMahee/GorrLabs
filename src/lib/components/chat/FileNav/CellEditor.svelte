@@ -24,7 +24,7 @@
 		return await language?.load();
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		const isDark = document.documentElement.classList.contains('dark');
 
 		const extensions = [
@@ -74,10 +74,12 @@
 			parent: container
 		});
 
-		const language = await getLang();
-		if (language && editor) {
-			editor.dispatch({ effects: editorLanguage.reconfigure(language) });
-		}
+		void (async () => {
+			const language = await getLang();
+			if (language && editor) {
+				editor.dispatch({ effects: editorLanguage.reconfigure(language) });
+			}
+		})();
 
 		// Watch dark mode
 		const observer = new MutationObserver(() => {
@@ -101,7 +103,7 @@
 	});
 </script>
 
-<div bind:this={container} class="nb-cm-editor" />
+<div bind:this={container} class="nb-cm-editor" ></div>
 
 <style>
 	.nb-cm-editor {

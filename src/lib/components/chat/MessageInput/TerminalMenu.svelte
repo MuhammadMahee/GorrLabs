@@ -124,6 +124,7 @@
 							{$i18n.t('Direct')}
 						</span>
 						<Tooltip content={$i18n.t('Add Terminal')} placement="top">
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								type="button"
 								class="p-0.5 rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition"
@@ -195,6 +196,7 @@
 						</span>
 						{#if $user?.role === 'admin'}
 							<Tooltip content={$i18n.t('Add Terminal')} placement="top">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									type="button"
 									class="p-0.5 rounded-md text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition"

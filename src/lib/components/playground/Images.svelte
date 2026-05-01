@@ -189,6 +189,7 @@
 										<img src={image} alt="" class="size-10 rounded-xl object-cover" />
 									</div>
 									<div class=" absolute -top-1 -right-1">
+										<!-- svelte-ignore a11y_consider_explicit_label -->
 										<button
 											class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
 											type="button"
@@ -230,7 +231,7 @@
 								}
 							}}
 							rows="2"
-						/>
+						></textarea>
 					</div>
 
 					<!-- Actions -->

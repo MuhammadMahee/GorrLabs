@@ -1,20 +1,18 @@
-<script>
-	import { ARKIVE_BASE_URL } from '$lib/constants';
+<script lang="ts">
 	import { shortCodesToEmojis } from '$lib/stores';
 
-	export let shortCode;
+	export let shortCode: string;
 	export let className = 'size-4';
+
+	const emojiFromCodepoints = (codepoints: string) =>
+		codepoints
+			.split('-')
+			.map((codepoint) => String.fromCodePoint(Number.parseInt(codepoint, 16)))
+			.join('');
 </script>
 
 {#if $shortCodesToEmojis[shortCode]}
-	<img
-		src="{ARKIVE_BASE_URL}/assets/emojis/{$shortCodesToEmojis[shortCode].toLowerCase()}.svg"
-		alt={shortCode}
-		class={className}
-		loading="lazy"
-	/>
+	<span aria-label={shortCode} class={className}>{emojiFromCodepoints($shortCodesToEmojis[shortCode])}</span>
 {:else}
-	<div>
-		{shortCode}
-	</div>
+	<span class={className}>{shortCode}</span>
 {/if}

@@ -52,7 +52,7 @@
 	// Add custom table rule to handle headers properly
 	turndownService.addRule('tables', {
 		filter: 'table',
-		replacement: function (content, node) {
+		replacement: function (content, node: HTMLElement) {
 			// Extract rows
 			const rows = Array.from(node.querySelectorAll('tr'));
 			if (rows.length === 0) return content;
@@ -63,7 +63,7 @@
 				const cells = Array.from(row.querySelectorAll('th, td'));
 				const cellContents = cells.map((cell) => {
 					// Get the text content and clean it up
-					let cellContent = turndownService.turndown(cell.innerHTML).trim();
+					let cellContent = turndownService.turndown((cell as HTMLElement).innerHTML).trim();
 					// Remove extra paragraph tags that might be added
 					cellContent = cellContent.replace(/^\n+|\n+$/g, '');
 					return cellContent;
@@ -113,7 +113,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 	const eventDispatch = createEventDispatcher();
 
-	import { Fragment, DOMParser } from 'prosemirror-model';
+	import { Fragment, DOMParser, Slice } from 'prosemirror-model';
 	import { EditorState, Plugin, PluginKey, TextSelection, Selection } from 'prosemirror-state';
 	import { Decoration, DecorationSet } from 'prosemirror-view';
 	import { Editor, Extension, markInputRule, mergeAttributes } from '@tiptap/core';
@@ -282,7 +282,7 @@
 
 	let content = null;
 	let htmlValue = '';
-	let jsonValue = '';
+	let jsonValue: any = '';
 	let mdValue = '';
 
 	let provider: SocketIOCollaborationProvider | null = null;
@@ -424,7 +424,7 @@
 				);
 
 				tr = tr.setSelection(
-					state.selection.constructor.near(tr.doc.resolve(start + text.length + 1))
+					TextSelection.near(tr.doc.resolve(start + text.length + 1))
 				);
 			}
 		}
@@ -645,7 +645,7 @@
 					props: {
 						decorations: (state) => {
 							const { selection } = state;
-							const { focused } = this.editor;
+							const focused = this.editor.isFocused;
 
 							if (focused || selection.empty) {
 								return null;
@@ -725,7 +725,7 @@
 			element: element,
 			extensions: [
 				StarterKit.configure({
-					link: link,
+					link: link ? {} : false,
 					code: false, // Disabled in favor of FixedCode (see workaround above)
 					// When rich text is off, disable Strike from StarterKit so we can
 					// re-add it below without its Mod-Shift-s shortcut (which conflicts
@@ -794,7 +794,7 @@
 				...(richText && showFormattingToolbar
 					? [
 							BubbleMenu.configure({
-								element: bubbleMenuElement,
+								element: bubbleMenuElement as HTMLElement,
 								appendTo: () => document.body,
 								options: {
 									strategy: 'fixed',
@@ -811,11 +811,11 @@
 								}
 							}),
 							FloatingMenu.configure({
-								element: floatingMenuElement,
+								element: floatingMenuElement as HTMLElement,
 								appendTo: () => document.body,
 								options: {
 									strategy: 'fixed',
-									placement: floatingMenuPlacement,
+									placement: floatingMenuPlacement as any,
 									offset: 4
 								},
 								shouldShow: ({ editor, view, state, oldState }) => {
@@ -842,7 +842,7 @@
 					: []),
 				...(collaboration && provider ? [provider.getEditorExtension()] : [])
 			],
-			content: collaboration ? undefined : content,
+			content: collaboration ? undefined : (content as any),
 			autofocus: messageInput ? true : false,
 			onTransaction: () => {
 				// force re-render so `editor.isActive` works as expected
@@ -949,7 +949,7 @@
 						});
 
 						const fragment = Fragment.fromArray(nodes);
-						dispatch(state.tr.replaceSelectionWith(fragment, false).scrollIntoView());
+							dispatch(state.tr.replaceSelection(new Slice(fragment, 0, 0)).scrollIntoView());
 
 						return true; // handled
 					}
@@ -1173,7 +1173,7 @@
 						// Only take the selected text & HTML, not the full doc
 						const plain = state.doc.textBetween(from, to, '\n');
 						const slice = state.doc.cut(from, to);
-						const html = editor.schema ? editor.getHTML(slice) : editor.getHTML(); // depending on your editor API
+						const html = editor.schema ? (editor as any).getHTML(slice) : editor.getHTML(); // depending on your editor API
 
 						event.clipboardData.setData('text/plain', plain);
 						event.clipboardData.setData('text/html', html);
@@ -1185,7 +1185,7 @@
 			},
 			onBeforeCreate: ({ editor }) => {
 				if (files) {
-					editor.storage.files = files;
+					(editor.storage as any).files = files;
 				}
 			},
 			onSelectionUpdate: onSelectionUpdate,
@@ -1193,12 +1193,12 @@
 				// Force-hide floating menus when editor loses focus.
 				// shouldShow alone isn't enough because it only runs on transactions.
 				if (bubbleMenuElement) {
-					bubbleMenuElement.style.visibility = 'hidden';
-					bubbleMenuElement.style.opacity = '0';
+					(bubbleMenuElement as HTMLElement).style.visibility = 'hidden';
+					(bubbleMenuElement as HTMLElement).style.opacity = '0';
 				}
 				if (floatingMenuElement) {
-					floatingMenuElement.style.visibility = 'hidden';
-					floatingMenuElement.style.opacity = '0';
+					(floatingMenuElement as HTMLElement).style.visibility = 'hidden';
+					(floatingMenuElement as HTMLElement).style.opacity = '0';
 				}
 			},
 			enableInputRules: richText,
@@ -1299,4 +1299,4 @@
 	bind:this={element}
 	dir="auto"
 	class="relative w-full min-w-full {className} {!editable ? 'cursor-not-allowed' : ''}"
-/>
+></div>

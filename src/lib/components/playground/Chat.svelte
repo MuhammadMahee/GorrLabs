@@ -349,7 +349,7 @@
 									resizeSystemTextarea();
 								}}
 								rows="4"
-							/>
+							></textarea>
 						</div>
 					</div>
 				</Collapsible>
@@ -436,7 +436,7 @@
 								t.style.height = Math.min(t.scrollHeight, 150) + 'px';
 							}}
 							rows="2"
-						/>
+						></textarea>
 					</div>
 
 					<div

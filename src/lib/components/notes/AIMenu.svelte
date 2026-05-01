@@ -11,6 +11,7 @@
 
 	export let show = false;
 	export let className = 'max-w-[170px]';
+	$: void className;
 
 	export let onEdit = () => {};
 	export let onChat = () => {};

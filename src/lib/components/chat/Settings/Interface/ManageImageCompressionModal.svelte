@@ -15,7 +15,7 @@
 
 	export let show = false;
 	export let size = null;
-	export let onSave = () => {};
+	export let onSave: (size: any) => void = () => {};
 
 	const submitHandler = async () => {
 		onSave(size);

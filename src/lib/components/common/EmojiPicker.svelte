@@ -5,8 +5,6 @@
 
 	import { getContext } from 'svelte';
 
-	import { ARKIVE_BASE_URL } from '$lib/constants';
-
 	import Dropdown from '$lib/components/common/Dropdown.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
@@ -18,13 +16,20 @@
 	export let onClose = () => {};
 	export let onSubmit = (name) => {};
 	export let side = 'top';
+	$: void side;
 	export let align = 'start';
 	export let user = null;
+	$: void user;
 	export let selected = null;
 
 	let show = false;
 	const emojiGroupMap = emojiGroups as Record<string, string[]>;
 	const emojiShortCodeMap = emojiShortCodes as Record<string, string | string[]>;
+	const emojiFromCodepoints = (codepoints: string) =>
+		codepoints
+			.split('-')
+			.map((codepoint) => String.fromCodePoint(Number.parseInt(codepoint, 16)))
+			.join('');
 
 	let emojis: Record<string, string | string[]> = emojiShortCodeMap;
 	let search = '';
@@ -169,12 +174,9 @@
 														: ''}"
 													on:click={() => selectEmoji(emojiItem)}
 												>
-													<img
-														src="{ARKIVE_BASE_URL}/assets/emojis/{emojiItem.name.toLowerCase()}.svg"
-														alt={emojiItem.name}
-														class="size-5"
-														loading="lazy"
-													/>
+													<span aria-label={emojiItem.name} class="block size-5 text-lg leading-5">
+														{emojiFromCodepoints(emojiItem.name)}
+													</span>
 												</button>
 											</Tooltip>
 										{/each}

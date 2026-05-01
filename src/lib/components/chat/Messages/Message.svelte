@@ -18,7 +18,7 @@
 	export let selectedModels = [];
 	export let idx = 0;
 
-	export let history;
+	export let history: Record<string, any>;
 	export let messageId;
 
 	export let user;
@@ -58,8 +58,8 @@
 				siblings={history.messages[messageId].parentId !== null
 					? (history.messages[history.messages[messageId].parentId]?.childrenIds ?? [])
 					: (Object.values(history.messages)
-							.filter((message) => message.parentId === null)
-							.map((message) => message.id) ?? [])}
+							.filter((message: any) => message.parentId === null)
+							.map((message: any) => message.id) ?? [])}
 				{gotoMessage}
 				{showPreviousMessage}
 				{showNextMessage}

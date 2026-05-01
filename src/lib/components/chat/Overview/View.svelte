@@ -26,6 +26,7 @@
 
 	export let history;
 	export let onClose;
+	$: void onClose;
 	export let onNodeClick;
 
 	let selectedMessageId = null;

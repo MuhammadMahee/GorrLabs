@@ -104,7 +104,7 @@
 		}
 
 		// Modifier click → toggle/range select
-		if (e.metaKey || e.ctrlKey || (e as KeyboardEvent).shiftKey) {
+		if (e.metaKey || e.ctrlKey || e.shiftKey) {
 			e.preventDefault();
 			onSelect(entry, e);
 			return;

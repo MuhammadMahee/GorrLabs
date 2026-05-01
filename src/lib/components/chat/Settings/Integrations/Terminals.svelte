@@ -9,12 +9,12 @@
 	import Connection from './Terminals/Connection.svelte';
 	import AddTerminalServerModal from '$lib/components/AddTerminalServerModal.svelte';
 
-	export let servers = [];
-	export let onChange: (servers: typeof servers) => void = () => {};
+	export let servers: any[] = [];
+	export let onChange: (servers: any[]) => void = () => {};
 
 	let showAddModal = false;
 
-	const addServer = (server: (typeof servers)[0]) => {
+	const addServer = (server: any) => {
 		servers = [...servers, server];
 		onChange(servers);
 	};

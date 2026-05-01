@@ -12,7 +12,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	type $$Props = NodeProps;
-	export let data: $$Props['data'];
+	export let data: $$Props['data'] & Record<string, any>;
 </script>
 
 <div
@@ -20,7 +20,7 @@
 >
 	<Tooltip
 		content={data?.message?.error ? data.message.error.content : data.message.content}
-		class="w-full"
+		className="w-full"
 		allowHTML={false}
 	>
 		{#if data.message.role === 'user'}

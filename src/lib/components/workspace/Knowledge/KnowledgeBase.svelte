@@ -1118,7 +1118,7 @@
 											disabled={!knowledge?.write_access}
 											aria-label={$i18n.t('File content')}
 											placeholder={$i18n.t('Add content here')}
-										/>
+										></textarea>
 									{/key}
 								</div>
 							</div>

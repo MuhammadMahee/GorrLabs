@@ -448,6 +448,7 @@
 										</select>
 									</div>
 
+									<!-- svelte-ignore a11y_consider_explicit_label -->
 									<button
 										class="px-2.5 bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
 										on:click={() => {

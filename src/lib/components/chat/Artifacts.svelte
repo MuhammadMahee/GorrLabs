@@ -24,6 +24,8 @@
 	import Download from '../icons/Download.svelte';
 
 	export let overlay = false;
+	export let history = null;
+	$: void history;
 
 	let contents: Array<{ type: string; content: string }> = [];
 	let selectedContentIdx = 0;
@@ -133,6 +135,7 @@
 				<div class="flex-1 flex items-center justify-between pr-1">
 					<div class="flex items-center space-x-2">
 						<div class="flex items-center gap-0.5 self-center min-w-fit" dir="ltr">
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition disabled:cursor-not-allowed"
 								on:click={() => navigateContent('prev')}
@@ -161,6 +164,7 @@
 								})}
 							</div>
 
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition disabled:cursor-not-allowed"
 								on:click={() => navigateContent('next')}

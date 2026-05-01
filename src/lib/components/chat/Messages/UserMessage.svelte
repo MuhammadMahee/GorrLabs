@@ -250,6 +250,7 @@
 											/>
 										</div>
 										<div class=" absolute -top-1 -right-1">
+											<!-- svelte-ignore a11y_consider_explicit_label -->
 											<button
 												class=" bg-white text-black border border-white rounded-full {($settings?.highContrastMode ??
 												false)
@@ -309,8 +310,9 @@
 								const savedScrollTop = messagesContainer?.scrollTop;
 								const savedInnerScroll = editScrollContainer?.scrollTop;
 
-								(e.target as HTMLElement).style.height = '';
-								(e.target as HTMLElement).style.height = `${e.target.scrollHeight}px`;
+									const target = e.target as HTMLTextAreaElement;
+									target.style.height = '';
+									target.style.height = `${target.scrollHeight}px`;
 
 								if (messagesContainer) messagesContainer.scrollTop = savedScrollTop;
 								if (editScrollContainer) editScrollContainer.scrollTop = savedInnerScroll;
@@ -327,7 +329,7 @@
 									document.getElementById('confirm-edit-message-button')?.click();
 								}
 							}}
-						/>
+						></textarea>
 					</div>
 
 					<div class=" mt-2 mb-1 flex justify-between text-sm font-medium">
@@ -398,6 +400,7 @@
 					{#if !($settings?.chatBubble ?? true)}
 						{#if siblings.length > 1}
 							<div class="flex self-center" dir="ltr">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
@@ -431,15 +434,15 @@
 											min="1"
 											max={siblings.length}
 											on:focus={(e) => {
-												e.target.select();
+												(e.target as HTMLInputElement).select();
 											}}
 											on:blur={(e) => {
-												gotoMessage(message, (e.target as HTMLInputElement).value - 1);
+												gotoMessage(message, Number((e.target as HTMLInputElement).value) - 1);
 												messageIndexEdit = false;
 											}}
 											on:keydown={(e) => {
 												if (e.key === 'Enter') {
-													gotoMessage(message, (e.target as HTMLInputElement).value - 1);
+													gotoMessage(message, Number((e.target as HTMLInputElement).value) - 1);
 													messageIndexEdit = false;
 												}
 											}}
@@ -456,8 +459,8 @@
 											await tick();
 											const input = document.getElementById(`message-index-input-${message.id}`);
 											if (input) {
-												input.focus();
-												input.select();
+												(input as HTMLInputElement).focus();
+												(input as HTMLInputElement).select();
 											}
 										}}
 									>
@@ -465,6 +468,7 @@
 									</div>
 								{/if}
 
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
@@ -491,6 +495,7 @@
 					{/if}
 					{#if !readOnly}
 						<Tooltip content={$i18n.t('Edit')} placement="bottom">
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class="{($settings?.highContrastMode ?? false)
 									? ''
@@ -519,6 +524,7 @@
 
 					{#if message?.content}
 						<Tooltip content={$i18n.t('Copy')} placement="bottom">
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class="{($settings?.highContrastMode ?? false)
 									? ''
@@ -548,6 +554,7 @@
 					{#if $_user?.role === 'admin' || ($_user?.permissions?.chat?.delete_message ?? false)}
 						{#if !readOnly && (!isFirstMessage || siblings.length > 1)}
 							<Tooltip content={$i18n.t('Delete')} placement="bottom">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="{($settings?.highContrastMode ?? false)
 										? ''
@@ -578,6 +585,7 @@
 					{#if $settings?.chatBubble ?? true}
 						{#if siblings.length > 1}
 							<div class="flex self-center" dir="ltr">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {
@@ -611,15 +619,15 @@
 											min="1"
 											max={siblings.length}
 											on:focus={(e) => {
-												e.target.select();
+												(e.target as HTMLInputElement).select();
 											}}
 											on:blur={(e) => {
-												gotoMessage(message, (e.target as HTMLInputElement).value - 1);
+												gotoMessage(message, Number((e.target as HTMLInputElement).value) - 1);
 												messageIndexEdit = false;
 											}}
 											on:keydown={(e) => {
 												if (e.key === 'Enter') {
-													gotoMessage(message, (e.target as HTMLInputElement).value - 1);
+													gotoMessage(message, Number((e.target as HTMLInputElement).value) - 1);
 													messageIndexEdit = false;
 												}
 											}}
@@ -636,8 +644,8 @@
 											await tick();
 											const input = document.getElementById(`message-index-input-${message.id}`);
 											if (input) {
-												input.focus();
-												input.select();
+												(input as HTMLInputElement).focus();
+												(input as HTMLInputElement).select();
 											}
 										}}
 									>
@@ -645,6 +653,7 @@
 									</div>
 								{/if}
 
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="self-center p-1 hover:bg-black/5 dark:hover:bg-white/5 dark:hover:text-white hover:text-black rounded-md transition"
 									on:click={() => {

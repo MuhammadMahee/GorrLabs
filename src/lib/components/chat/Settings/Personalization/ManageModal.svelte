@@ -203,6 +203,8 @@
 
 						<div class="text-left text-sm w-full max-h-[28rem] overflow-y-auto">
 							{#each sortedMemories as memory (memory.id)}
+								<!-- svelte-ignore a11y_no_static_element_interactions -->
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
 								<div
 									class="w-full flex justify-between items-center rounded-xl text-sm py-2 px-3 hover:bg-gray-50 dark:hover:bg-gray-850 transition cursor-pointer"
 									on:click={() => {

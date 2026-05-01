@@ -93,6 +93,7 @@
 			</div>
 
 			<div>
+				<!-- svelte-ignore a11y_consider_explicit_label -->
 				<button
 					class=" p-5 z-999"
 					on:click={() => {

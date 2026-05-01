@@ -82,6 +82,7 @@
 	};
 
 	export let token: import('marked').Token;
+	$: void token;
 	export let alert: AlertData;
 	export let id = '';
 	export let tokenIdx = 0;

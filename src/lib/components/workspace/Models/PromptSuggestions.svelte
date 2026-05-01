@@ -157,10 +157,11 @@
 								placeholder={$i18n.t('Prompt')}
 								rows="2"
 								bind:value={prompt.content}
-							/>
+							></textarea>
 						</Tooltip>
 					</div>
 
+					<!-- svelte-ignore a11y_consider_explicit_label -->
 					<button
 						class="p-1 self-start"
 						type="button"

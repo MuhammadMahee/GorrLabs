@@ -2,7 +2,7 @@
 	import type { Writable } from 'svelte/store';
 	import type { i18n as i18nType } from 'i18next';
 	// Persists across mount/unmount cycles (module-level, not per-instance)
-	let savedPath = '/';
+	const fileNavState = { savedPath: '/' };
 </script>
 
 <script lang="ts">
@@ -50,6 +50,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	export let onAttach: ((blob: Blob, name: string, contentType: string) => void) | null = null;
+	$: void onAttach;
 	export let overlay = false;
 
 	// ── Terminal panel state ────────────────────────────────────────────
@@ -88,7 +89,7 @@
 	};
 
 	// ── Directory state ──────────────────────────────────────────────────
-	let currentPath = savedPath;
+	let currentPath = fileNavState.savedPath;
 	let entries: FileEntry[] = [];
 	let loading = false;
 	let error: string | null = null;
@@ -238,7 +239,7 @@
 				const rawCwd = await getCwd(terminal.url, terminal.key);
 				const cwd = rawCwd ? normalizePath(rawCwd) : null;
 				const dir = cwd ? (cwd.endsWith('/') ? cwd : cwd + '/') : '/';
-				savedPath = dir;
+				fileNavState.savedPath = dir;
 				loadDir(dir);
 			})();
 		}
@@ -311,7 +312,7 @@
 		clearFilePreview();
 		clearSelection();
 		currentPath = path;
-		savedPath = path;
+		fileNavState.savedPath = path;
 		pushNavHistory(path);
 
 		const result = await listFiles(terminal.url, terminal.key, path);
@@ -687,13 +688,15 @@
 	};
 
 	// ── Lifecycle ────────────────────────────────────────────────────────
-	onMount(async () => {
+	onMount(() => {
 		const terminal = getTerminal();
 		if (!terminal) return;
 
 		let handledDisplayFile = false;
+		let unsubFileNav: (() => void) | null = null;
+		let unsubFileNavDir: (() => void) | null = null;
 
-		const unsubFileNav = showFileNavPath.subscribe(async (filePath) => {
+		unsubFileNav = showFileNavPath.subscribe(async (filePath) => {
 			if (!filePath || !selectedTerminal) return;
 			handledDisplayFile = true;
 			showFileNavPath.set(null);
@@ -716,7 +719,7 @@
 			}
 		});
 
-		const unsubFileNavDir = showFileNavDir.subscribe(async (filePath) => {
+		unsubFileNavDir = showFileNavDir.subscribe(async (filePath) => {
 			if (!filePath || !selectedTerminal) return;
 			showFileNavDir.set(null);
 			filePath = normalizePath(filePath);
@@ -736,15 +739,17 @@
 			}
 		});
 
-		if (!handledDisplayFile) {
-			loading = true;
-			if (savedPath === '/') {
-				const rawCwd = await getCwd(terminal.url, terminal.key);
-				const cwd = rawCwd ? normalizePath(rawCwd) : null;
-				if (cwd) savedPath = cwd.endsWith('/') ? cwd : cwd + '/';
+		void (async () => {
+			if (!handledDisplayFile) {
+				loading = true;
+				if (fileNavState.savedPath === '/') {
+					const rawCwd = await getCwd(terminal.url, terminal.key);
+					const cwd = rawCwd ? normalizePath(rawCwd) : null;
+					if (cwd) fileNavState.savedPath = cwd.endsWith('/') ? cwd : cwd + '/';
+				}
+				loadDir(fileNavState.savedPath);
 			}
-			loadDir(savedPath);
-		}
+		})();
 
 		const onKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'Shift') shiftKey = true;
@@ -766,8 +771,8 @@
 		document.addEventListener('visibilitychange', onVisibilityChange);
 
 		return () => {
-			unsubFileNav();
-			unsubFileNavDir();
+			unsubFileNav?.();
+			unsubFileNavDir?.();
 			window.removeEventListener('keydown', onKeyDown);
 			window.removeEventListener('keyup', onKeyUp);
 			window.removeEventListener('blur', onBlur);
@@ -1143,6 +1148,8 @@
 		{/if}
 
 		<!-- Content -->
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
 		<div
 			class="flex-1 overflow-y-auto min-h-0 min-w-0"
 			on:click={(e) => {
@@ -1316,8 +1323,8 @@
 					<div class="relative cursor-row-resize group" on:mousedown={onHandleMouseDown}>
 						<div
 							class="h-px bg-transparent group-hover:bg-black/10 dark:group-hover:bg-white/10 transition"
-						/>
-						<div class="absolute inset-x-0 -top-1.5 -bottom-1.5" />
+						></div>
+						<div class="absolute inset-x-0 -top-1.5 -bottom-1.5" ></div>
 					</div>
 				{/if}
 
@@ -1347,7 +1354,7 @@
 								: terminalConnecting
 									? 'bg-yellow-500 animate-pulse'
 									: 'bg-gray-400'}"
-						/>
+						></div>
 					{/if}
 
 					<svg

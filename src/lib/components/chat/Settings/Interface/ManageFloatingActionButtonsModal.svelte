@@ -14,7 +14,7 @@
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 
 	export let show = false;
-	export let onSave = () => {};
+	export let onSave: (floatingActionButtons: any) => void = () => {};
 
 	export let floatingActionButtons = null;
 

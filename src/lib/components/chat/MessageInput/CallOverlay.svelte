@@ -84,7 +84,7 @@
 	};
 
 	const startVideoStream = async () => {
-		const video = document.getElementById('camera-feed');
+		const video = document.getElementById('camera-feed') as HTMLVideoElement | null;
 		if (video) {
 			if (selectedVideoInputDeviceId === 'screen') {
 				cameraStream = await navigator.mediaDevices.getDisplayMedia({
@@ -119,14 +119,17 @@
 	};
 
 	const takeScreenshot = () => {
-		const video = document.getElementById('camera-feed');
-		const canvas = document.getElementById('camera-canvas');
+		const video = document.getElementById('camera-feed') as HTMLVideoElement | null;
+		const canvas = document.getElementById('camera-canvas') as HTMLCanvasElement | null;
 
-		if (!canvas) {
+		if (!video || !canvas) {
 			return;
 		}
 
 		const context = canvas.getContext('2d');
+		if (!context) {
+			return;
+		}
 
 		// Make the canvas match the video dimensions
 		canvas.width = video.videoWidth;
@@ -453,7 +456,7 @@
 			currentUtterance = null;
 		}
 
-		const audioElement = document.getElementById('audioElement');
+		const audioElement = document.getElementById('audioElement') as HTMLAudioElement | null;
 		if (audioElement) {
 			audioElement.muted = true;
 			audioElement.pause();
@@ -624,7 +627,7 @@
 		chatStreaming = false;
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		const setWakeLock = async () => {
 			try {
 				wakeLock = await navigator.wakeLock.request('screen');
@@ -642,26 +645,29 @@
 			}
 		};
 
-		if ('wakeLock' in navigator) {
-			await setWakeLock();
+		void (async () => {
+			if ('wakeLock' in navigator) {
+				await setWakeLock();
 
-			document.addEventListener('visibilitychange', async () => {
-				// Re-request the wake lock if the document becomes visible
-				if (wakeLock !== null && document.visibilityState === 'visible') {
-					await setWakeLock();
-				}
-			});
-		}
+				document.addEventListener('visibilitychange', async () => {
+					// Re-request the wake lock if the document becomes visible
+					if (wakeLock !== null && document.visibilityState === 'visible') {
+						await setWakeLock();
+					}
+				});
+			}
 
-		model = $models.find((m) => m.id === modelId);
+			model = $models.find((m) => m.id === modelId);
 
-		startRecording();
+			startRecording();
 
-		eventTarget.addEventListener('chat:start', chatStartHandler);
-		eventTarget.addEventListener('chat', chatEventHandler);
-		eventTarget.addEventListener('chat:finish', chatFinishHandler);
+			eventTarget.addEventListener('chat:start', chatStartHandler);
+			eventTarget.addEventListener('chat', chatEventHandler);
+			eventTarget.addEventListener('chat:finish', chatFinishHandler);
+		})();
 
-		return async () => {
+		return () => {
+			void (async () => {
 			await stopAllAudio();
 
 			stopAudioStream();
@@ -677,6 +683,7 @@
 
 			await stopRecordingCallback(false);
 			await stopCamera();
+			})();
 		};
 	});
 
@@ -769,7 +776,7 @@
 									? 'size-14'
 									: 'size-12'}  transition-all rounded-full bg-cover bg-center bg-no-repeat"
 						style={`background-image: url('${ARKIVE_API_BASE_URL}/models/model/profile/image?id=${model?.id}&lang=${$i18n.language}&voice=true');`}
-					/>
+					></div>
 				{/if}
 				<!-- navbar -->
 			</button>
@@ -845,7 +852,7 @@
 										? 'size-44'
 										: 'size-40'} transition-all rounded-full bg-cover bg-center bg-no-repeat"
 							style={`background-image: url('${ARKIVE_API_BASE_URL}/models/model/profile/image?id=${model?.id}&lang=${$i18n.language}&voice=true');`}
-						/>
+						></div>
 					{/if}
 				</button>
 			{:else}
@@ -856,11 +863,12 @@
 						autoplay
 						class="rounded-2xl h-full min-w-full object-cover object-center"
 						playsinline
-					/>
+					></video>
 
-					<canvas id="camera-canvas" style="display:none;" />
+					<canvas id="camera-canvas" style="display:none;" ></canvas>
 
 					<div class=" absolute top-4 md:top-8 left-4">
+						<!-- svelte-ignore a11y_consider_explicit_label -->
 						<button
 							type="button"
 							class="p-1.5 text-white cursor-pointer backdrop-blur-xl bg-black/10 rounded-full"
@@ -896,6 +904,7 @@
 							await startVideoStream();
 						}}
 					>
+						<!-- svelte-ignore a11y_consider_explicit_label -->
 						<button class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900" type="button">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -913,6 +922,7 @@
 					</VideoInputMenu>
 				{:else}
 					<Tooltip content={$i18n.t('Camera')}>
+						<!-- svelte-ignore a11y_consider_explicit_label -->
 						<button
 							class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900"
 							type="button"
@@ -967,6 +977,7 @@
 			</div>
 
 			<div>
+				<!-- svelte-ignore a11y_consider_explicit_label -->
 				<button
 					class=" p-3 rounded-full bg-gray-50 dark:bg-gray-900"
 					on:click={async () => {

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { marked } from 'marked';
 	import { replaceTokens, processResponseContent } from '$lib/utils';
@@ -27,13 +27,13 @@
 
 	export let sourceIds = [];
 
-	export let onSave = () => {};
-	export let onUpdate = () => {};
+	export let onSave: (...args: any[]) => any = () => {};
+	export let onUpdate: (...args: any[]) => any = () => {};
 
-	export let onPreview = () => {};
+	export let onPreview: (...args: any[]) => any = () => {};
 
-	export let onSourceClick = () => {};
-	export let onTaskClick = () => {};
+	export let onSourceClick: (...args: any[]) => any = () => {};
+	export let onTaskClick: (...args: any[]) => any = () => {};
 
 	let tokens = [];
 	let pendingUpdate = null;
@@ -47,10 +47,10 @@
 
 	marked.use(markedKatexExtension(options));
 	marked.use(markedExtension(options));
-	marked.use(citationExtension(options));
-	marked.use(footnoteExtension(options));
+	marked.use((citationExtension as any)(options));
+	marked.use((footnoteExtension as any)(options));
 	marked.use(colonFenceExtension(options));
-	marked.use(disableSingleTilde);
+	marked.use(disableSingleTilde as any);
 	marked.use({
 		extensions: [
 			mentionExtension({ triggerChar: '@' }),

@@ -19,6 +19,7 @@
 	export let edit = false;
 	export let skill = null;
 	export let clone = false;
+	$: void clone;
 	export let disabled = false;
 
 	const i18n = getContext<Writable<i18nType>>('i18n');
@@ -245,7 +246,7 @@
 									placeholder={$i18n.t('Enter skill instructions in markdown...')}
 									aria-label={$i18n.t('Skill Instructions')}
 									required
-								/>
+								></textarea>
 							{/if}
 						</div>
 					</div>

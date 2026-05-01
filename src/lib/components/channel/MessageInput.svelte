@@ -47,6 +47,7 @@
 	export let chatInputElement;
 
 	export let id = null;
+	$: void id;
 	export let channel = null;
 
 	export let typingUsers = [];
@@ -62,6 +63,7 @@
 	export let disabled = false;
 	export let acceptFiles = true;
 	export let showFormattingToolbar = true;
+	$: void showFormattingToolbar;
 
 	export let userSuggestions = false;
 	export let channelSuggestions = false;
@@ -75,7 +77,7 @@
 
 	let recording = false;
 	let content = '';
-	let files = [];
+	let files: Record<string, any>[] = [];
 
 	let filesInputElement;
 	let inputFiles;
@@ -380,7 +382,11 @@
 			}
 
 			if (file['type'].startsWith('image/')) {
-				const compressImageHandler = async (imageUrl, settings = {}, config = {}) => {
+				const compressImageHandler = async (
+					imageUrl: string,
+					settings: any = {},
+					config: any = {}
+				): Promise<string> => {
 					// Quick shortcut so we don’t do unnecessary work.
 					const settingsCompression =
 						(settings?.imageCompression && settings?.imageCompressionInChannels) ?? false;
@@ -412,7 +418,7 @@
 
 					// Do the compression if required
 					if (width || height) {
-						return await compressImage(imageUrl, width, height);
+							return (await compressImage(imageUrl, width, height)) as string;
 					}
 					return imageUrl;
 				};
@@ -420,7 +426,10 @@
 				let reader = new FileReader();
 
 				reader.onload = async (event) => {
-					let imageUrl = event.target.result;
+					let imageUrl = event.target?.result;
+					if (typeof imageUrl !== 'string') {
+						return;
+					}
 
 					// Compress the image if settings or config require it
 					imageUrl = await compressImageHandler(imageUrl, $settings, $config);
@@ -440,7 +449,7 @@
 
 	const uploadFileHandler = async (file, process = true) => {
 		const tempItemId = uuidv4();
-		const fileItem = {
+		const fileItem: Record<string, any> = {
 			type: 'file',
 			file: '',
 			id: null,
@@ -704,6 +713,7 @@
 							<div
 								class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
 							>
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
 									on:click={() => {
@@ -831,6 +841,7 @@
 													/>
 												</div>
 												<div class=" absolute -top-1 -right-1">
+													<!-- svelte-ignore a11y_consider_explicit_label -->
 													<button
 														class=" bg-white text-black border border-white rounded-full group-hover:visible invisible transition"
 														type="button"
@@ -904,7 +915,7 @@
 												content = md;
 												command = getCommand();
 											}}
-											on:keydown={async (e) => {
+											on:keydown={async (e: any) => {
 												e = e.detail.event;
 												const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
 
@@ -942,7 +953,7 @@
 													replyToMessage = null;
 												}
 											}}
-											on:paste={async (e) => {
+											on:paste={async (e: any) => {
 												e = e.detail.event;
 												console.log(e);
 
@@ -1049,6 +1060,7 @@
 										{#if inputLoading && onStop}
 											<div class=" flex items-center">
 												<Tooltip content={$i18n.t('Stop')}>
+													<!-- svelte-ignore a11y_consider_explicit_label -->
 													<button
 														class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
 														on:click={() => {
@@ -1073,6 +1085,7 @@
 										{:else}
 											<div class=" flex items-center">
 												<Tooltip content={$i18n.t('Send message')}>
+													<!-- svelte-ignore a11y_consider_explicit_label -->
 													<button
 														id="send-message-button"
 														class="{content !== '' || files.length !== 0

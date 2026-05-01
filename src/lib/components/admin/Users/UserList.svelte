@@ -354,7 +354,7 @@
 						</div>
 					</th>
 
-					<th scope="col" class="px-2.5 py-2 text-right" />
+					<th scope="col" class="px-2.5 py-2 text-right" ></th>
 				</tr>
 			</thead>
 			<tbody class="">

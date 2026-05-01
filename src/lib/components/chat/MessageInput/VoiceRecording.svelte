@@ -447,7 +447,7 @@
                     
                     inline-block h-full"
 						style="height: {Math.min(100, Math.max(14, rms * 100))}%;"
-					/>
+					></div>
 				</div>
 			{/each}
 		</div>
@@ -559,6 +559,7 @@
 					>
 				</div>
 			{:else}
+				<!-- svelte-ignore a11y_consider_explicit_label -->
 				<button
 					id="confirm-recording-button"
 					type="button"

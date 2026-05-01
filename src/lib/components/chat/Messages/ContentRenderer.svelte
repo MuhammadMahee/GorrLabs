@@ -202,7 +202,7 @@
 		bind:this={floatingButtonsElement}
 		{id}
 		{messageId}
-		actions={$settings?.floatingActionButtons ?? []}
+		actions={Array.isArray($settings?.floatingActionButtons) ? $settings.floatingActionButtons : []}
 		model={(selectedModels ?? []).includes(model?.id)
 			? model?.id
 			: (selectedModels ?? []).length > 0

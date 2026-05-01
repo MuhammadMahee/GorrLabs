@@ -673,6 +673,7 @@
 										</button>
 									</Tooltip>
 								{:else}
+									<!-- svelte-ignore a11y_consider_explicit_label -->
 									<button
 										class="self-center w-fit text-sm px-2 py-2 dark:text-gray-300 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5 rounded-xl"
 										type="button"

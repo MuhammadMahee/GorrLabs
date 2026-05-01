@@ -124,7 +124,7 @@
 	export let taskIds = null;
 
 	export let prompt = '';
-	export let files = [];
+	export let files: Record<string, any>[] = [];
 
 	export let selectedToolIds = [];
 	export let selectedFilterIds = [];
@@ -580,7 +580,7 @@
 		}
 
 		const tempItemId = uuidv4();
-		const fileItem = {
+		const fileItem: Record<string, any> = {
 			type: 'file',
 			file: '',
 			id: null,
@@ -721,7 +721,11 @@
 					return;
 				}
 
-				const compressImageHandler = async (imageUrl, settings = {}, config = {}) => {
+				const compressImageHandler = async (
+					imageUrl: string,
+					settings: any = {},
+					config: any = {}
+				): Promise<string> => {
 					// Quick shortcut so we don’t do unnecessary work.
 					const settingsCompression = settings?.imageCompression ?? false;
 					const configWidth = config?.file?.image_compression?.width ?? null;
@@ -752,7 +756,7 @@
 
 					// Do the compression if required
 					if (width || height) {
-						return await compressImage(imageUrl, width, height);
+							return (await compressImage(imageUrl, width, height)) as string;
 					}
 					return imageUrl;
 				};
@@ -760,7 +764,10 @@
 				let reader = new FileReader();
 
 				reader.onload = async (event) => {
-					let imageUrl = event.target.result;
+					let imageUrl = event.target?.result;
+					if (typeof imageUrl !== 'string') {
+						return;
+					}
 
 					// Compress the image if settings or config require it
 					imageUrl = await compressImageHandler(imageUrl, $settings, $config);
@@ -1130,6 +1137,7 @@
 						<div
 							class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
 						>
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class=" bg-white border border-gray-100 dark:border-none dark:bg-white/20 p-1.5 rounded-full pointer-events-auto"
 								on:click={() => {
@@ -1213,11 +1221,12 @@
 							dispatch('submit', prompt);
 						}}
 					>
+						<!-- svelte-ignore a11y_consider_explicit_label -->
 						<button
 							id="generate-message-pair-button"
 							class="hidden"
 							on:click={() => createMessagePair(prompt)}
-						/>
+						></button>
 
 						<!-- Queued messages display -->
 						{#if messageQueue.length > 0}
@@ -1445,11 +1454,11 @@
 													}}
 													{suggestions}
 													oncompositionstart={() => (isComposing = true)}
-													oncompositionend={(e) => {
+													oncompositionend={(e: any) => {
 														compositionEndedAt = e.timeStamp;
 														isComposing = false;
 													}}
-													on:keydown={async (e) => {
+													on:keydown={async (e: any) => {
 														e = e.detail.event;
 
 														const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
@@ -1473,7 +1482,7 @@
 																	...document.getElementsByClassName('edit-user-message-button')
 																]?.at(-1);
 
-																editButton?.click();
+																(editButton as HTMLElement | undefined)?.click();
 															}
 														}
 
@@ -1519,7 +1528,7 @@
 															codeInterpreterEnabled = false;
 														}
 													}}
-													on:paste={async (e) => {
+													on:paste={async (e: any) => {
 														e = e.detail.event;
 														console.log(e);
 
@@ -1575,7 +1584,9 @@
 										}}
 										uploadGoogleDriveHandler={async () => {
 											try {
-												const fileData = await createPicker();
+													const fileData = (await createPicker()) as
+														| { blob: Blob; name: string }
+														| null;
 												if (fileData) {
 													const file = new File([fileData.blob], fileData.name, {
 														type: fileData.blob.type
@@ -1627,7 +1638,7 @@
 									{#if showWebSearchButton || showImageGenerationButton || showCodeInterpreterButton || showToolsButton || (toggleFilters && toggleFilters.length > 0)}
 										<div
 											class="flex self-center w-[1px] h-4 mx-1 bg-gray-200/50 dark:bg-gray-800/50"
-										/>
+										></div>
 
 										<IntegrationsMenu
 											selectedModels={atSelectedModel ? [atSelectedModel.id] : selectedModels}
@@ -1833,6 +1844,7 @@
 									{#if (taskIds && taskIds.length > 0) || (history.currentId && history.messages[history.currentId]?.done != true) || generating}
 										<div class=" flex items-center">
 											<Tooltip content={$i18n.t('Stop')}>
+												<!-- svelte-ignore a11y_consider_explicit_label -->
 												<button
 													class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
 													on:click={() => {
@@ -1968,9 +1980,9 @@
 																	// If the user has not initialized the TTS worker, initialize it
 																	if (!$TTSWorker) {
 																		await TTSWorker.set(
-																			new KokoroWorker({
-																				dtype: $settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
-																			})
+																				new KokoroWorker(
+																					$settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
+																				)
 																		);
 
 																		await $TTSWorker.init();
@@ -2037,7 +2049,7 @@
 								{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}
 							</div>
 						{:else}
-							<div class="mb-1" />
+							<div class="mb-1" ></div>
 						{/if}
 					</form>
 				</div>

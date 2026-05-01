@@ -619,6 +619,7 @@
 
 						<div>
 							<Tooltip content="Update All Models" placement="top">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="flex gap-2 items-center bg-transparent rounded-lg transition"
 									on:click={() => {
@@ -723,6 +724,7 @@
 							<div>Updating "{updateModelId}" {updateProgress ? `(${updateProgress}%)` : ''}</div>
 
 							<Tooltip content={$i18n.t('Cancel')}>
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="text-gray-800 dark:text-gray-100"
 									on:click={() => {
@@ -771,6 +773,7 @@
 											</div>
 
 											<Tooltip content={$i18n.t('Cancel')}>
+												<!-- svelte-ignore a11y_consider_explicit_label -->
 												<button
 													class="text-gray-800 dark:text-gray-100"
 													on:click={() => {
@@ -830,6 +833,7 @@
 							</select>
 						</div>
 						<Tooltip content={$i18n.t('Delete Model')} placement="top">
+							<!-- svelte-ignore a11y_consider_explicit_label -->
 							<button
 								class="px-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition"
 								on:click={() => {
@@ -873,11 +877,12 @@
 								rows="6"
 								placeholder={`e.g. {"model": "my-modelfile", "from": "ollama:7b"})`}
 								disabled={createModelLoading}
-							/>
+							></textarea>
 						</div>
 
 						<div class="flex self-start">
 							<Tooltip content={$i18n.t('Create Model')} placement="top">
+								<!-- svelte-ignore a11y_consider_explicit_label -->
 								<button
 									class="px-2.5 py-2.5 bg-gray-50 hover:bg-gray-200 text-gray-800 dark:bg-gray-850 dark:hover:bg-gray-800 dark:text-gray-100 rounded-lg transition disabled:cursor-not-allowed"
 									on:click={() => {
@@ -1084,7 +1089,7 @@
 										bind:value={modelFileContent}
 										class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-100 dark:bg-gray-850 outline-hidden resize-none"
 										rows="6"
-									/>
+									></textarea>
 								</div>
 							</div>
 						{/if}

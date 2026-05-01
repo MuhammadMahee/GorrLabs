@@ -18,6 +18,7 @@
 
 	export let chatListLoading = false;
 	export let allChatsLoaded = false;
+	export let show = true;
 
 	export let loadHandler: Function = null;
 

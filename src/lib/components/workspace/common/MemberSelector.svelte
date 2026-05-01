@@ -23,6 +23,7 @@
 	export let includeGroups = true;
 	export let includeUsers = true;
 	export let pagination = false;
+	$: void pagination;
 	export let includeSessionUser = false;
 
 	export let groupIds = [];

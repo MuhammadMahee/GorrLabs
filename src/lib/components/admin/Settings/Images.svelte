@@ -548,12 +548,11 @@
 
 							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
 								{$i18n.t('Include `--api` flag when running stable-diffusion')}
-								<a
+								<span
 									class=" text-gray-300 font-medium"
-									target="_blank"
 								>
 									{$i18n.t('(e.g. `sh stable-diffusion.sh --api`)')}
-								</a>
+								</span>
 							</div>
 						</div>
 
@@ -579,14 +578,13 @@
 
 							<div class="mt-1 text-xs text-gray-400 dark:text-gray-500">
 								{$i18n.t('Include `--api-auth` flag when running stable-diffusion')}
-								<a
+								<span
 									class=" text-gray-300 font-medium"
-									target="_blank"
 								>
 									{$i18n
 										.t('(e.g. `sh stable-diffusion.sh --api --api-auth username_password`)')
 										.replace('_', ':')}
-								</a>
+								</span>
 							</div>
 						</div>
 

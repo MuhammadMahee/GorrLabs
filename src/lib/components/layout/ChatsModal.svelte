@@ -33,6 +33,7 @@
 
 	export let title = 'Chats';
 	export let emptyPlaceholder = '';
+	$: void emptyPlaceholder;
 	export let shareUrl = false;
 	export let showUserInfo = false;
 	export let showSearch = true;
@@ -93,6 +94,7 @@
 	<div>
 		<div class=" flex justify-between dark:text-gray-300 px-5 pt-4 pb-1">
 			<div class=" text-lg font-medium self-center">{title}</div>
+			<!-- svelte-ignore a11y_consider_explicit_label -->
 			<button
 				class="self-center"
 				on:click={() => {
@@ -298,6 +300,7 @@
 											<div class="flex justify-end pl-2.5 text-gray-600 dark:text-gray-300">
 												{#if unarchiveHandler}
 													<Tooltip content={$i18n.t('Unarchive Chat')}>
+														<!-- svelte-ignore a11y_consider_explicit_label -->
 														<button
 															class="self-center w-fit px-1 text-sm rounded-xl"
 															on:click={async (e) => {

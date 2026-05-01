@@ -35,6 +35,7 @@
 	export let edit = false;
 	export let prompt = null;
 	export let clone = false;
+	$: void clone;
 	export let disabled = false;
 
 	const i18n = getContext<Writable<i18nType>>('i18n');

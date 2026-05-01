@@ -17,7 +17,9 @@
 	export let selectedIndex = 0;
 
 	export let label = '';
+	$: void label;
 	export let triggerChar = '@';
+	$: void triggerChar;
 
 	export let modelSuggestions = false;
 	export let userSuggestions = false;

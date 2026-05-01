@@ -22,6 +22,7 @@
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	export let user;
+	$: void user;
 	export let model;
 
 	export let editHandler: Function;

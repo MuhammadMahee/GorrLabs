@@ -281,6 +281,7 @@
 			<div class="flex items-start justify-between">
 				<div>
 					<div class=" font-medium text-lg dark:text-gray-100">
+						<!-- svelte-ignore a11y-invalid-attribute -->
 						<a
 							href="#"
 							class="hover:underline line-clamp-1"
@@ -530,7 +531,7 @@
 							class="w-full border-0 rounded-lg mb-2"
 							controls
 							playsinline
-						/>
+						></audio>
 					{:else if isPDF}
 						<PDFViewer
 							url={`${ARKIVE_API_BASE_URL}/files/${item.id}/content`}
@@ -612,6 +613,7 @@
 								</div>
 								{#if pptxSlides.length > 1}
 									<div class="flex items-center justify-center gap-3 pb-3 text-sm text-gray-500">
+										<!-- svelte-ignore a11y_consider_explicit_label -->
 										<button
 											class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30"
 											disabled={pptxCurrentSlide === 0}
@@ -631,6 +633,7 @@
 											</svg>
 										</button>
 										<span>{pptxCurrentSlide + 1} / {pptxSlides.length}</span>
+										<!-- svelte-ignore a11y_consider_explicit_label -->
 										<button
 											class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-30"
 											disabled={pptxCurrentSlide === pptxSlides.length - 1}

@@ -6,6 +6,14 @@ declare global {
 	const APP_VERSION: string;
 	const APP_BUILD_HASH: string;
 
+	interface Navigator {
+		msMaxTouchPoints?: number;
+	}
+
+	interface MediaTrackConstraintSet {
+		cursor?: ConstrainDOMString;
+	}
+
 	namespace App {
 		// interface Error {}
 		// interface Locals {}

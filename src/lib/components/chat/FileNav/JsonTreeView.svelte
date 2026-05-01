@@ -77,9 +77,6 @@
 		line-height: 1.6;
 		padding: 0.75rem 1rem;
 	}
-	.json-node {
-		/* keep structure visible */
-	}
 	.json-toggle {
 		cursor: pointer;
 		user-select: none;
@@ -102,9 +99,6 @@
 		padding-left: 1.25em;
 		border-left: 1px solid rgba(128, 128, 128, 0.15);
 		margin-left: 0.35em;
-	}
-	.json-entry {
-		/* one entry per line */
 	}
 	.json-key {
 		color: #0550ae;

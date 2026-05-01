@@ -14,6 +14,8 @@
 	export let readOnly = false;
 	export let outerClassName = 'flex flex-1 bg-transparent';
 	export let inputClassName = 'w-full text-sm py-0.5 bg-transparent';
+	let className = '';
+	export { className as class };
 	export let showButtonClassName = 'pl-1.5  transition bg-transparent';
 	export let screenReader = true;
 	export let autocomplete: HTMLInputAttributes['autocomplete'] = 'off';
@@ -27,7 +29,7 @@
 	{/if}
 	<input
 		{id}
-		class={`${inputClassName} ${show ? '' : 'password'} ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : ' outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-600'}`}
+		class={`${inputClassName} ${className} ${show ? '' : 'password'} ${($settings?.highContrastMode ?? false) ? 'placeholder:text-gray-700 dark:placeholder:text-gray-100' : ' outline-hidden placeholder:text-gray-300 dark:placeholder:text-gray-600'}`}
 		{placeholder}
 		type={type === 'password' && !show ? 'password' : 'text'}
 		bind:value

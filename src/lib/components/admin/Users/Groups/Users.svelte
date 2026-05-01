@@ -27,6 +27,7 @@
 
 	export let groupId: string;
 	export let userCount = 0;
+	$: void userCount;
 
 	let users = null;
 	let total = null;

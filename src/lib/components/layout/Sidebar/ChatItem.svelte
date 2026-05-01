@@ -241,7 +241,7 @@
 		itemElement.style.opacity = '1'; // Reset visual cue after drag
 		dragged = false;
 
-		onDragEnd(event);
+		onDragEnd();
 	};
 
 	const onClickOutside = (event) => {
@@ -305,8 +305,8 @@
 		setTimeout(() => {
 			const input = document.getElementById(`chat-title-input-${id}`);
 			if (input) {
-				input.focus();
-				input.select();
+				(input as HTMLInputElement).focus();
+				(input as HTMLInputElement).select();
 			}
 		}, 0);
 	};
@@ -588,6 +588,7 @@
 
 				{#if id === $chatId}
 					<!-- Shortcut support using "delete-chat-button" id -->
+					<!-- svelte-ignore a11y_consider_explicit_label -->
 					<button
 						id="delete-chat-button"
 						class="hidden"

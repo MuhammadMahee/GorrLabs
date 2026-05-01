@@ -31,17 +31,18 @@
 	export let chatId = '';
 	export let user = $_user;
 
-	export let prompt;
+	export let prompt = null;
+	$: void prompt;
 	export let history: Record<string, any> = {};
-	export let selectedModels;
-	export let atSelectedModel;
+	export let selectedModels = [];
+	export let atSelectedModel = null;
 
-	let messages = [];
+	let messages: any[] = [];
 
-	export let sendMessage: Function;
-	export let mergeResponses: Function;
+	export let sendMessage: Function = () => {};
+	export let mergeResponses: Function = () => {};
 
-	export let chatActionHandler: Function;
+	export let chatActionHandler: Function = () => {};
 	export let showMessage: Function = () => {};
 	export let addMessages: Function = () => {};
 
@@ -149,13 +150,13 @@
 		}
 	};
 
-	const gotoMessage = async (message, idx) => {
+	const gotoMessage = async (message: any, idx: number) => {
 		// Determine the correct sibling list (either parent's children or root messages)
 		let siblings;
 		if (message.parentId !== null) {
 			siblings = history.messages[message.parentId].childrenIds;
 		} else {
-			siblings = Object.values(history.messages)
+			siblings = Object.values(history.messages as Record<string, any>)
 				.filter((msg) => msg.parentId === null)
 				.map((msg) => msg.id);
 		}
@@ -190,7 +191,7 @@
 		}
 	};
 
-	const showPreviousMessage = async (message) => {
+	const showPreviousMessage = async (message: any) => {
 		if (message.parentId !== null) {
 			let messageId =
 				history.messages[message.parentId].childrenIds[
@@ -208,7 +209,7 @@
 				history.currentId = messageId;
 			}
 		} else {
-			let childrenIds = Object.values(history.messages)
+			let childrenIds = Object.values(history.messages as Record<string, any>)
 				.filter((message) => message.parentId === null)
 				.map((message) => message.id);
 			let messageId = childrenIds[Math.max(childrenIds.indexOf(message.id) - 1, 0)];
@@ -237,7 +238,7 @@
 		}
 	};
 
-	const showNextMessage = async (message) => {
+	const showNextMessage = async (message: any) => {
 		if (message.parentId !== null) {
 			let messageId =
 				history.messages[message.parentId].childrenIds[
@@ -258,7 +259,7 @@
 				history.currentId = messageId;
 			}
 		} else {
-			let childrenIds = Object.values(history.messages)
+			let childrenIds = Object.values(history.messages as Record<string, any>)
 				.filter((message) => message.parentId === null)
 				.map((message) => message.id);
 			let messageId =
@@ -487,9 +488,9 @@
 						{/each}
 					</ul>
 				</section>
-				<div class="pb-18" />
+				<div class="pb-18" ></div>
 				{#if bottomPadding}
-					<div class="  pb-6" />
+					<div class="  pb-6" ></div>
 				{/if}
 			{/key}
 		</div>

@@ -52,6 +52,7 @@
 			</Tooltip>
 
 			<Tooltip placement="top" content={$i18n.t('Delete')}>
+				<!-- svelte-ignore a11y_consider_explicit_label -->
 				<button
 					class=" text-transparent group-hover:text-gray-500 dark:hover:text-gray-300 transition"
 					on:click={() => {
