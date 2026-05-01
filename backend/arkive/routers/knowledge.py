@@ -706,26 +706,31 @@ async def get_knowledge_files_by_id(
     result = Knowledges.search_files_by_id(id, user.id, filter=filter, skip=skip, limit=limit, db=db)
 
     # Non-admin users who don't own the KB see redacted file content.
-    # Replace data.content with the published redacted version so the
+    # Replace data.content with the pre-computed redacted version so the
     # workspace file viewer and chat modal never expose raw PII.
     _is_privileged = user.role == 'admin' or knowledge.user_id == user.id
     if not _is_privileged:
-        from arkive.routers.files import _get_redacted_content_for_non_admin
         from arkive.models.files import Files as _Files
         import copy
         patched_items = []
         for item in result.items:
-            try:
-                _file = _Files.get_file_by_id(item.id, db=db)
-                if _file:
-                    _redacted = _get_redacted_content_for_non_admin(_file, user, db)
-                    if _redacted is not None:
-                        _patched = copy.copy(item)
-                        _patched.data = {**(item.data or {}), 'content': _redacted}
-                        patched_items.append(_patched)
-                        continue
-            except Exception:
-                pass
+            _file = _Files.get_file_by_id(item.id, db=db)
+            if _file:
+                parent_kbs = Knowledges.get_knowledges_by_file_id(_file.id, db=db)
+                kb_not_owned = [kb for kb in parent_kbs if kb.user_id != user.id]
+                if kb_not_owned:
+                    # File belongs to a KB the user doesn't own — serve redacted version only.
+                    # redacted_content is pre-computed at upload time; fall back to empty string
+                    # rather than ever exposing raw content.
+                    _redacted = (_file.data or {}).get('redacted_content', '')
+                    _patched = copy.copy(item)
+                    _patched.data = {**(item.data or {}), 'content': _redacted}
+                    patched_items.append(_patched)
+                    log.debug(
+                        f'[kb_files] served redacted_content for file_id={item.id} '
+                        f'to non-owner user_id={user.id}'
+                    )
+                    continue
             patched_items.append(item)
         result = result.model_copy(update={'items': patched_items})
 

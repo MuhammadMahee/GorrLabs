@@ -1839,6 +1839,30 @@ def process_file(
                 db=db,
             )
 
+            # ── PRE-COMPUTE REDACTED CONTENT ───────────────────────────
+            # Run Presidio immediately at upload so non-admin users always
+            # get a redacted view with no race against KB publish time.
+            try:
+                from arkive.utils.policy_engine import (
+                    scan_chunk_entities,
+                    enhance_entities_with_context,
+                    redact_chunk,
+                )
+                _p_entities = scan_chunk_entities(text_content)
+                _p_entities = enhance_entities_with_context(text_content, _p_entities)
+                _redacted_content = redact_chunk(text_content, _p_entities) if _p_entities else text_content
+                Files.update_file_data_by_id(
+                    file.id,
+                    {'redacted_content': _redacted_content},
+                    db=db,
+                )
+                log.debug(f'[ingestion] pre-computed redacted_content for file_id={file.id}')
+            except Exception as _re_err:
+                log.warning(
+                    f'[ingestion] redaction pre-compute failed for file_id={file.id}: {_re_err}'
+                )
+            # ── END PRE-COMPUTE REDACTED CONTENT ───────────────────────
+
             # ── INGESTION SCAN (Phase 2.5 Control 1) ──────────────────
             # Scan extracted text before chunking or embedding.
             # Classifies the document and stores sensitivity level so
@@ -2096,126 +2120,15 @@ def process_knowledge_publish(
         f'shared collection ready ({len(docs)} redacted chunks)'
     )
 
-    # ── REDACT FULL FILE CONTENT FOR FILE VIEWER ──────────────────────────
-    # The Chroma -shared collection protects RAG chat queries. The file
-    # viewer endpoint (GET /files/{id}/data/content) reads file.data.content
-    # directly from the DB. We run the same redaction pipeline on the full
-    # extracted text for every file in this KB and store the result in
-    # file.data.redacted_content so the file viewer can serve it to
-    # non-admin users instead of the raw document.
-    #
-    # Failure here does NOT abort the publish — the Chroma collection is
-    # already built and chat queries are protected. The file viewer will
-    # return 403 until admin re-publishes successfully.
-    _files_redacted = 0
-    _files_failed   = 0
-    try:
-        import asyncio as _asyncio
-        from arkive.utils.policy_engine import (
-            scan_chunk_entities,
-            enhance_entities_with_context,
-            redact_chunk,
-        )
-        from arkive.utils.llm_classifier import llm_extract_entities
-
-        _fallback_re = re.compile(r'\d{6,}')
-        kb_files = Knowledges.get_files_by_id(knowledge_id)
-
-        if not kb_files:
-            log.warning(
-                f'[publish] no files found for knowledge_id={knowledge_id} '
-                f'— file viewer redaction skipped'
-            )
-        else:
-            for _kb_file in kb_files:
-                _raw_content = (_kb_file.data or {}).get('content', '')
-                if not _raw_content:
-                    log.debug(
-                        f'[publish] file_id={_kb_file.id} has no content — skipping'
-                    )
-                    continue
-
-                try:
-                    # Presidio pass — structured PII: SSN, IBAN, phone, credit card
-                    _presidio_entities = scan_chunk_entities(_raw_content)
-                    _presidio_entities = enhance_entities_with_context(_raw_content, _presidio_entities)
-
-                    # LLM pass — semantic PII: salary, medical conditions, CNIC, credentials
-                    # Returns entity dicts in the same format — merging avoids double-rewrite
-                    _llm_entities = _asyncio.run(llm_extract_entities(_raw_content))
-
-                    # Merge: deduplicate overlapping spans (Presidio wins on overlap)
-                    _all_entities = list(_presidio_entities)
-                    for _le in _llm_entities:
-                        _overlaps_existing = any(
-                            not (_le['end'] <= _pe['start'] or _le['start'] >= _pe['end'])
-                            for _pe in _all_entities
-                        )
-                        if not _overlaps_existing:
-                            _all_entities.append(_le)
-
-                    # Sort by start position as required by redact_chunk
-                    _all_entities.sort(key=lambda d: d['start'])
-
-                    _redacted = redact_chunk(_raw_content, _all_entities) if _all_entities else _raw_content
-
-                    log.info(
-                        f'[publish] file_id={_kb_file.id} '
-                        f'redacted {len(_presidio_entities)} presidio + {len(_llm_entities)} llm entities'
-                    )
-
-                except Exception as _chunk_err:
-                    # Sledgehammer fallback — pipeline failed for this file.
-                    # Blanket-replace 6+ digit runs. Viewer quality degrades
-                    # but raw PII will not be exposed.
-                    log.exception(
-                        f'[publish][SLEDGEHAMMER] redaction pipeline failed for '
-                        f'file_id={_kb_file.id}: {_chunk_err} '
-                        f'— falling back to blanket digit masking'
-                    )
-                    _redacted = _fallback_re.sub('[REDACTED]', _raw_content)
-
-                try:
-                    with get_db() as _session:
-                        Files.update_file_data_by_id(
-                            _kb_file.id,
-                            {'redacted_content': _redacted},
-                            db=_session,
-                        )
-                    _files_redacted += 1
-                    log.debug(
-                        f'[publish] stored redacted_content for file_id={_kb_file.id}'
-                    )
-                except Exception as _db_err:
-                    _files_failed += 1
-                    log.exception(
-                        f'[publish] failed to persist redacted_content for '
-                        f'file_id={_kb_file.id}: {_db_err}'
-                    )
-
-    except Exception as _outer_err:
-        # Import failure or unexpected error — log and continue.
-        log.exception(
-            f'[publish] file viewer redaction stage failed for '
-            f'knowledge_id={knowledge_id}: {_outer_err} '
-            f'— Chroma collection is intact; re-publish to retry file viewer redaction'
-        )
-
     log.info(
-        f'[publish] knowledge_id={knowledge_id} complete — '
-        f'chroma_chunks={len(docs)} '
-        f'files_redacted={_files_redacted} '
-        f'files_failed={_files_failed}'
+        f'[publish] knowledge_id={knowledge_id} complete — chroma_chunks={len(docs)}'
     )
-    # ── END REDACT FULL FILE CONTENT ──────────────────────────────────────
 
     return {
         'status': True,
         'knowledge_id': knowledge_id,
         'shared_collection': shared_collection,
         'chunk_count': len(docs),
-        'files_redacted': _files_redacted,
-        'files_failed': _files_failed,
     }
 
 
