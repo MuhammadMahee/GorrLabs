@@ -3,8 +3,14 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+from pathlib import Path
 
-app = Flask(__name__, template_folder="../public", static_folder="../public/static")
+# Get the absolute path to the public directory
+BASE_DIR = Path(__file__).parent.parent
+TEMPLATE_DIR = BASE_DIR / "public"
+STATIC_DIR = BASE_DIR / "public" / "static"
+
+app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_DIR), static_url_path="/static")
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
@@ -104,3 +110,7 @@ def send_message():
             "success": True,
             "message": "Message received! We'll be in touch soon."
         })
+
+
+if __name__ == "__main__":
+    app.run(debug=False)
