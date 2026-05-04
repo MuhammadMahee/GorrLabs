@@ -38,7 +38,7 @@
 	export let uploadGoogleDriveHandler: Function;
 	export let uploadOneDriveHandler: Function;
 
-	export let onUpload: Function;
+	export const onUpload: Function = () => {};
 	export let onClose: Function;
 
 	let show = false;
