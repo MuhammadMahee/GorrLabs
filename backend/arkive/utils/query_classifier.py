@@ -1,11 +1,10 @@
 import os
 import json
 import logging
-import httpx
 from dataclasses import dataclass
 from enum import Enum
 
-from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
+from arkive.utils.bedrock_client import bedrock_llm_call
 
 log = logging.getLogger(__name__)
 
@@ -91,52 +90,7 @@ async def classify_query(query: str) -> QueryClassification:
     try:
         prompt = CLASSIFICATION_PROMPT.replace("{query}", query[:500])
 
-        payload = {
-            "model": OLLAMA_MODEL,
-            "messages": [{"role": "user", "content": prompt}],
-            "stream": False,
-            "temperature": 0.0,
-            "max_tokens": 200,
-            "keep_alive": -1,
-        }
-
-        content = None
-
-        async with httpx.AsyncClient(timeout=CLASSIFIER_TIMEOUT) as client:
-            try:
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/v1/chat/completions",
-                    json=payload,
-                )
-                response.raise_for_status()
-                data = response.json()
-                content = (
-                    data.get("choices", [{}])[0]
-                    .get("message", {})
-                    .get("content", "")
-                    .strip()
-                )
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code != 404:
-                    raise
-                native_payload = {
-                    "model": OLLAMA_MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
-                    "stream": False,
-                    "options": {"temperature": 0.0},
-                    "keep_alive": -1,
-                }
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/api/chat",
-                    json=native_payload,
-                )
-                response.raise_for_status()
-                data = response.json()
-                content = (
-                    (data.get("message") or {})
-                    .get("content", "")
-                    .strip()
-                )
+        content = await bedrock_llm_call(prompt, max_tokens=200, timeout=CLASSIFIER_TIMEOUT)
 
         if not content:
             return _default
@@ -168,9 +122,6 @@ async def classify_query(query: str) -> QueryClassification:
             needs_full_doc=bool(parsed.get("needs_full_doc", False)),
         )
 
-    except httpx.TimeoutException:
-        log.warning("[query_classifier] timeout — defaulting to simple")
-        return _default
     except json.JSONDecodeError as e:
         log.warning(f"[query_classifier] JSON parse error: {e} — defaulting to simple")
         return _default

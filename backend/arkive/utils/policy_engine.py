@@ -635,6 +635,7 @@ class PolicyDecisionResult:
     redacted_query: str
     audit_required: bool
     sensitivity_level: int
+    routing: str = 'local_only'  # 'local_only' | 'hybrid_allowed' | 'block' | 'human_review'
     audit_id: str | None = None
     pending_review_id: str | None = None  # set when decision == 'pending'
 
@@ -1054,6 +1055,28 @@ async def evaluate_request(
         or (user_context.is_admin and sensitivity_level >= 2)
     )
 
+    # Derive routing from finalized decision and sensitivity level.
+    # This is the authoritative routing signal read by middleware
+    # to control whether the request can reach external models.
+    #
+    # Rules (evaluated in priority order):
+    # 1. block decision     → 'block'
+    # 2. pending decision   → 'human_review'
+    # 3. admin bypass       → always 'local_only'
+    #    (admin clearance never justifies sending to external model)
+    # 4. sensitivity == 0   → 'hybrid_allowed' (clean query, external OK)
+    # 5. sensitivity > 0    → 'local_only' (something detected, stay internal)
+    if decision == 'block':
+        routing = 'block'
+    elif decision == 'pending':
+        routing = 'human_review'
+    elif user_context.is_admin:
+        routing = 'local_only'
+    elif sensitivity_level == 0:
+        routing = 'hybrid_allowed'
+    else:
+        routing = 'local_only'
+
     # Append-only audit row. Never store the raw query, only its hash.
     audit_id: str | None = None
     try:
@@ -1066,6 +1089,7 @@ async def evaluate_request(
                 sensitivity_level=sensitivity_level,
                 decision=decision,
                 reason=reason,
+                routing=routing,
             )
         )
         audit_id = str(inserted.id) if inserted else None
@@ -1076,6 +1100,7 @@ async def evaluate_request(
 
     log.info(
         f'[policy] user={user_context.user_id} decision={decision} '
+        f'routing={routing} '
         f'presidio={presidio_level} llm={llm_level} '
         f'final={sensitivity_level} '
         f'entities={[e.entity_type for e in entities]} '
@@ -1090,6 +1115,7 @@ async def evaluate_request(
         redacted_query=redacted_query,
         audit_required=audit_required,
         sensitivity_level=sensitivity_level,
+        routing=routing,
         audit_id=audit_id,
         pending_review_id=pending_review_id,
     )

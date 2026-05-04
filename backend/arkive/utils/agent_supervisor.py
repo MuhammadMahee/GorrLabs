@@ -4,9 +4,7 @@ import logging
 import os
 from dataclasses import dataclass, field
 
-import httpx
-
-from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
+from arkive.utils.bedrock_client import bedrock_llm_call
 
 log = logging.getLogger(__name__)
 
@@ -39,51 +37,9 @@ _FALLBACK_RESPONSE = AgentResponse(
 # ── Internal LLM helper ───────────────────────────────────────────────────────
 
 async def _llm_call(prompt: str, max_tokens: int, timeout: float) -> str:
-    """
-    Single Ollama call with dual-endpoint fallback.
-    Returns raw content string. Returns "" on any failure. Never raises.
-    """
-    payload = {
-        "model": OLLAMA_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
-        "temperature": 0.0,
-        "max_tokens": max_tokens,
-    }
-    native_payload = {
-        "model": OLLAMA_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
-        "options": {"temperature": 0.0},
-    }
+    """Returns raw content string. Returns "" on any failure. Never raises."""
     try:
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            try:
-                r = await client.post(
-                    f"{OLLAMA_BASE_URL}/v1/chat/completions",
-                    json=payload,
-                )
-                r.raise_for_status()
-                return (
-                    r.json()
-                     .get("choices", [{}])[0]
-                     .get("message", {})
-                     .get("content", "")
-                     .strip()
-                )
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code != 404:
-                    raise
-                r = await client.post(
-                    f"{OLLAMA_BASE_URL}/api/chat",
-                    json=native_payload,
-                )
-                r.raise_for_status()
-                return (
-                    (r.json().get("message") or {})
-                    .get("content", "")
-                    .strip()
-                )
+        return await bedrock_llm_call(prompt, max_tokens=max_tokens, timeout=timeout)
     except Exception as exc:
         log.warning(f"[supervisor._llm_call] failed: {exc}")
         return ""

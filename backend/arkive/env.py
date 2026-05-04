@@ -40,6 +40,17 @@ except ImportError:
 DOCKER = os.environ.get('DOCKER', 'False').lower() == 'true'
 
 ####################################
+# Amazon Bedrock
+####################################
+AWS_BEDROCK_API_KEY = os.getenv('AWS_BEDROCK_API_KEY', '')   # base64(accessKeyId:secretKey) — optional
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', '')       # plain IAM access key (AKIA...)
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '')  # plain IAM secret key
+AWS_BEDROCK_REGION = os.getenv('AWS_BEDROCK_REGION', 'ap-southeast-2')
+AWS_BEDROCK_MODEL = os.getenv('AWS_BEDROCK_MODEL', 'qwen.qwen3-32b-v1:0')
+AWS_BEDROCK_ENDPOINT_URL = os.getenv('AWS_BEDROCK_ENDPOINT_URL', '')
+ENABLE_BEDROCK_API = os.getenv('ENABLE_BEDROCK_API', 'True').lower() == 'true'
+
+####################################
 # Ollama (pipeline model)
 # Used by: enricher, classifier, supervisor, llm_classifier
 ####################################
@@ -47,13 +58,16 @@ OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:7b")
 
 ####################################
-# Route A — local model enforcement
-# When a query's sensitivity_level >= LOCAL_ONLY_ABOVE_SENSITIVITY
-# AND the selected model is detected as external (not Ollama),
-# the model is overridden to LOCAL_FALLBACK_MODEL.
-# Set LOCAL_ONLY_ABOVE_SENSITIVITY=99 to disable.
+# Routing enforcement — local_only fallback model
+#
+# Option A (current): set to the Bedrock model ID so sensitive queries
+#   still go to Bedrock. Routing is audited but not truly isolated.
+#
+# Option B (GPU Ollama): set to an Ollama model ID (e.g. qwen2.5:7b)
+#   and uncomment the GPU isolation block in utils/middleware.py.
+#   Sensitive queries will be served by the local GPU model only.
 ####################################
-LOCAL_FALLBACK_MODEL = os.getenv("LOCAL_FALLBACK_MODEL", OLLAMA_MODEL)
+LOCAL_FALLBACK_MODEL = os.getenv("LOCAL_FALLBACK_MODEL", AWS_BEDROCK_MODEL)
 LOCAL_ONLY_ABOVE_SENSITIVITY = int(os.getenv("LOCAL_ONLY_ABOVE_SENSITIVITY", "3"))
 
 # device type embedding models - "cpu" (default), "cuda" (nvidia gpu required) or "mps" (apple silicon) - choosing this right can lead to better performance

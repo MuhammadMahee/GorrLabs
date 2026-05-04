@@ -1,8 +1,7 @@
 import asyncio
 import logging
-import httpx
 
-from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
+from arkive.utils.bedrock_client import bedrock_llm_call
 
 log = logging.getLogger(__name__)
 
@@ -98,81 +97,17 @@ async def _enrich_single_chunk(
                 chunk_content=chunk_content[:2000],
             )
 
-            openai_payload = {
-                "model": OLLAMA_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "stream": False,
-                "temperature": 0.0,
-                "keep_alive": -1,
-            }
-
-            native_payload = {
-                "model": OLLAMA_MODEL,
-                "messages": [{"role": "user", "content": prompt}],
-                "stream": False,
-                "options": {"temperature": 0.0},
-                "keep_alive": -1,
-            }
-
-            context_summary = None
-
-            async with httpx.AsyncClient(timeout=ENRICHMENT_TIMEOUT) as client:
-                _max_attempts = 4
-                for attempt in range(_max_attempts):
-                    try:
-                        response = await client.post(
-                            f"{OLLAMA_BASE_URL}/v1/chat/completions",
-                            json=openai_payload,
-                        )
-                        response.raise_for_status()
-                        data = response.json()
-                        context_summary = (
-                            data.get("choices", [{}])[0]
-                            .get("message", {})
-                            .get("content", "")
-                            .strip()
-                        )
-                        break
-                    except httpx.HTTPStatusError as e:
-                        if e.response.status_code == 500:
-                            if attempt < _max_attempts - 1:
-                                wait = 2 ** attempt  # 1s, 2s, 4s
-                                log.warning(
-                                    f"[enricher] 500 on attempt {attempt + 1} "
-                                    f"— retrying in {wait}s"
-                                )
-                                await asyncio.sleep(wait)
-                                continue
-                            raise
-                        if e.response.status_code != 404:
-                            raise
-                        # Fall back to native Ollama /api/chat endpoint
-                        response = await client.post(
-                            f"{OLLAMA_BASE_URL}/api/chat",
-                            json=native_payload,
-                        )
-                        response.raise_for_status()
-                        data = response.json()
-                        context_summary = (
-                            (data.get("message") or {})
-                            .get("content", "")
-                            .strip()
-                        )
-                        break
+            context_summary = await bedrock_llm_call(
+                prompt, max_tokens=256, timeout=ENRICHMENT_TIMEOUT
+            )
 
             if not context_summary:
                 return chunk_content
 
             enriched = f"{context_summary}\n\n{chunk_content}"
-            log.debug(
-                f"[enricher] enriched chunk "
-                f"({len(chunk_content)} → {len(enriched)} chars)"
-            )
+            log.debug(f"[enricher] enriched chunk ({len(chunk_content)} → {len(enriched)} chars)")
             return enriched
 
-        except httpx.TimeoutException:
-            log.warning("[enricher] timeout — using original chunk")
-            return chunk_content
         except Exception as e:
             log.warning(f"[enricher] failed: {e} — using original chunk")
             return chunk_content

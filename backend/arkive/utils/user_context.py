@@ -26,7 +26,7 @@ class UserContext:
     role: str  # 'admin', 'user', 'reviewer'
     department: Optional[str]
     clearance_level: int  # 0=public, 1=internal, 2=confidential, 3=restricted
-    geo_zone: Optional[str]
+    region: Optional[str]
     usage_policy_id: Optional[str]
     allowed_collection_ids: list[str]
     can_export: bool
@@ -51,7 +51,7 @@ async def resolve_user_context(user) -> UserContext:
     if policy is None:
         department = None
         clearance_level = _DEFAULT_CLEARANCE
-        geo_zone = None
+        region = None
         usage_policy_id = None
         allowed_collection_ids: list[str] = []
         can_export = _DEFAULT_CAN_EXPORT
@@ -60,7 +60,7 @@ async def resolve_user_context(user) -> UserContext:
     else:
         department = policy.department
         clearance_level = policy.clearance_level
-        geo_zone = policy.geo_zone
+        region = policy.region
         usage_policy_id = (
             str(policy.usage_policy_id) if policy.usage_policy_id else None
         )
@@ -90,7 +90,7 @@ async def resolve_user_context(user) -> UserContext:
         role=user.role,
         department=department,
         clearance_level=clearance_level,
-        geo_zone=geo_zone,
+        region=region,
         usage_policy_id=usage_policy_id,
         allowed_collection_ids=allowed_collection_ids,
         can_export=can_export,

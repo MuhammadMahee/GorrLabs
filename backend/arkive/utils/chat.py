@@ -30,6 +30,9 @@ from arkive.routers.openai import (
 from arkive.routers.ollama import (
     generate_chat_completion as generate_ollama_chat_completion,
 )
+from arkive.routers.bedrock import (
+    generate_chat_completion as generate_bedrock_chat_completion,
+)
 
 from arkive.routers.pipelines import (
     process_pipeline_inlet_filter,
@@ -292,6 +295,13 @@ async def generate_chat_completion(
                 )
             else:
                 return convert_response_ollama_to_openai(response)
+        elif model.get('owned_by') == 'bedrock':
+            return await generate_bedrock_chat_completion(
+                request=request,
+                form_data=form_data,
+                user=user,
+                bypass_system_prompt=bypass_system_prompt,
+            )
         else:
             return await generate_openai_chat_completion(
                 request=request,

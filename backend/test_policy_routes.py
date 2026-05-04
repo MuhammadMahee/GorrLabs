@@ -92,7 +92,7 @@ def _user(
         role="admin" if is_admin else "user",
         department=None,
         clearance_level=clearance,
-        geo_zone=None,
+        region=None,
         usage_policy_id=None,
         allowed_collection_ids=allowed_collections if allowed_collections is not None else [],
         can_export=False,

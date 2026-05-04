@@ -2380,6 +2380,53 @@ async def process_chat_payload(request, form_data, user, metadata, model):
 
     variables = form_data.pop('variables', None)
 
+    # ── HISTORY SANITIZATION ─────────────────────────────────────────────
+    # Strip previously-blocked messages from conversation history so the model
+    # never sees sensitive content that was denied in a prior turn.
+    if user and len(form_data.get('messages', [])) > 1:
+        try:
+            import hashlib as _hashlib
+            from arkive.models.policy_decisions import PolicyDecisions as _PDec
+
+            _decisions = _PDec.get_decisions_by_user_id(user.id, limit=500)
+            _blocked_hashes = {
+                d.query_hash for d in _decisions if d.decision == 'block'
+            }
+
+            if _blocked_hashes:
+                msgs = form_data['messages']
+                clean: list = []
+                i = 0
+                while i < len(msgs) - 1:  # preserve last message (current query)
+                    msg = msgs[i]
+                    if msg.get('role') == 'user':
+                        content = msg.get('content', '')
+                        if isinstance(content, list):
+                            content = ' '.join(
+                                p.get('text', '') for p in content if isinstance(p, dict)
+                            )
+                        _h = _hashlib.sha256(content.encode('utf-8')).hexdigest()
+                        if _h in _blocked_hashes:
+                            # Skip this user message and the immediately following
+                            # assistant message (if present) — both are tainted context.
+                            i += 1
+                            if i < len(msgs) - 1 and msgs[i].get('role') == 'assistant':
+                                i += 1
+                            log.info('[history_sanitize] stripped 1 blocked turn from history')
+                            continue
+                    clean.append(msg)
+                    i += 1
+                clean.append(msgs[-1])  # always keep current user query
+                if len(clean) != len(msgs):
+                    log.info(
+                        f'[history_sanitize] removed {len(msgs) - len(clean)} messages '
+                        f'from history (blocked in prior turns)'
+                    )
+                    form_data['messages'] = clean
+        except Exception as _hs_err:
+            log.warning(f'[history_sanitize] failed: {_hs_err} — proceeding with unsanitized history')
+    # ── END HISTORY SANITIZATION ─────────────────────────────────────────
+
     # ── POLICY GATE ────────────────────────────────────────────────
     # chat_completion pre-evaluates the policy so blocks/flags can return
     # a structured 403 on the HTTP response. If that path ran, reuse its
@@ -2445,6 +2492,92 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     except Exception as _ra_err:
         log.warning(f'[route_a] model override check failed: {_ra_err}')
     # ── END POLICY GATE ────────────────────────────────────────────
+
+    # ── ROUTING ENFORCEMENT ────────────────────────────────────────────
+    # Enforce local_only routing: if the policy engine determined the
+    # query must stay internal, override the selected model to the local
+    # fallback before any downstream processing touches form_data['model'].
+    #
+    # CURRENT MODE (Option A — Bedrock as fallback):
+    #   LOCAL_FALLBACK_MODEL=qwen.qwen3-32b-v1:0 in .env
+    #   Sensitive queries still go to Bedrock. The routing field is set
+    #   correctly in the audit log and the infrastructure is wired, but
+    #   true data isolation is not enforced until Option B is active.
+    #
+    # FUTURE MODE (Option B — GPU Ollama as fallback):
+    #   Uncomment the GPU block below and set in .env:
+    #     LOCAL_FALLBACK_MODEL=qwen2.5:7b   (or whichever model is on the GPU)
+    #     OLLAMA_BASE_URL=http://localhost:11434
+    #   Sensitive queries will be routed to the local Ollama instance.
+    #   External model (Bedrock) will only receive sensitivity_level == 0 queries.
+    #   To activate: set LOCAL_FALLBACK_MODEL to the Ollama model ID and
+    #   ensure the Ollama service is running with the GPU-backed model loaded.
+    if policy_result.routing == 'local_only':
+        try:
+            selected_model_id = form_data.get('model', '')
+            selected_model = request.app.state.MODELS.get(selected_model_id, {})
+            connection_type = selected_model.get('connection_type', 'local')
+
+            if connection_type == 'external':
+                _local_model_id = os.getenv(
+                    'LOCAL_FALLBACK_MODEL',
+                    os.getenv('OLLAMA_MODEL', 'qwen2.5:7b')
+                )
+                form_data['model'] = _local_model_id
+                log.info(
+                    f'[routing] local_only enforced — '
+                    f'overriding model {selected_model_id!r} → {_local_model_id!r} '
+                    f'sensitivity={policy_result.sensitivity_level}'
+                )
+
+                # ── GPU / OLLAMA ISOLATION BLOCK (Option B) ──────────────
+                # Uncomment this entire block when GPU Ollama is available.
+                # This validates that the fallback model is actually reachable
+                # before committing the override, so a missing Ollama instance
+                # doesn't silently fail by sending sensitive data to Bedrock.
+                #
+                # import httpx as _httpx
+                # _ollama_base = os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
+                # try:
+                #     _health = _httpx.get(f'{_ollama_base}/api/tags', timeout=2)
+                #     if _health.status_code == 200:
+                #         form_data['model'] = _local_model_id
+                #         log.info(
+                #             f'[routing] GPU local model confirmed reachable — '
+                #             f'overriding to {_local_model_id!r}'
+                #         )
+                #     else:
+                #         # Ollama is up but unhealthy — block rather than leak to Bedrock
+                #         log.error(
+                #             f'[routing] local model unhealthy (status={_health.status_code}) '
+                #             f'— blocking sensitive request rather than leaking to external model'
+                #         )
+                #         return JSONResponse(
+                #             status_code=503,
+                #             content={'detail': 'Local model unavailable. Sensitive request cannot be processed.'},
+                #         )
+                # except Exception as _ollama_err:
+                #     log.error(
+                #         f'[routing] cannot reach local Ollama at {_ollama_base}: {_ollama_err} '
+                #         f'— blocking sensitive request'
+                #     )
+                #     return JSONResponse(
+                #         status_code=503,
+                #         content={'detail': 'Local model unavailable. Sensitive request cannot be processed.'},
+                #     )
+                # ── END GPU / OLLAMA ISOLATION BLOCK ─────────────────────
+
+            else:
+                log.debug(
+                    f'[routing] local_only — model {selected_model_id!r} '
+                    f'is already local, no override needed'
+                )
+        except Exception as _routing_exc:
+            log.exception(
+                f'[routing] enforcement failed: {_routing_exc} — '
+                f'request proceeds but model override may not have applied'
+            )
+    # ── END ROUTING ENFORCEMENT ────────────────────────────────────────
 
     # ── QUERY CLASSIFICATION ────────────────────────────────────────
     try:

@@ -9,6 +9,7 @@ import sys
 import time
 import random
 import re
+import uuid
 from uuid import uuid4
 
 
@@ -74,6 +75,7 @@ from arkive.routers import (
     images,
     ollama,
     openai,
+    bedrock,
     retrieval,
     pipelines,
     tasks,
@@ -817,6 +819,14 @@ app.state.OPENAI_MODELS = {}
 
 ########################################
 #
+# BEDROCK
+#
+########################################
+
+app.state.BEDROCK_MODELS = {}
+
+########################################
+#
 # TOOL SERVERS
 #
 ########################################
@@ -1468,6 +1478,62 @@ async def commit_session_after_request(request: Request, call_next):
 
 
 @app.middleware('http')
+async def attach_request_id(request: Request, call_next):
+    request_id = request.headers.get('X-Request-ID') or str(uuid.uuid4())
+    request.state.request_id = request_id
+
+    # Derive trace_id from the active OpenTelemetry span if one exists,
+    # otherwise fall back to the request_id so it's always a non-empty string.
+    try:
+        from opentelemetry import trace as _otel_trace
+        span = _otel_trace.get_current_span()
+        ctx = span.get_span_context()
+        if ctx.is_valid:
+            request.state.trace_id = format(ctx.trace_id, '032x')
+        else:
+            request.state.trace_id = request_id
+    except Exception:
+        request.state.trace_id = request_id
+
+    response = await call_next(request)
+    response.headers['X-Request-ID'] = request_id
+    response.headers['X-Trace-ID'] = request.state.trace_id
+    return response
+
+
+@app.middleware('http')
+async def attach_user_context(request: Request, call_next):
+    # Resolve UserContext for every authenticated request and store on
+    # request.state.user_context so all endpoints can read it without
+    # calling resolve_user_context() themselves.
+    # Unauthenticated requests (no token) are passed through unchanged.
+    try:
+        token = None
+
+        cred = get_http_authorization_cred(request.headers.get('Authorization'))
+        if cred:
+            token = cred.credentials
+        if token is None and request.cookies.get('token'):
+            token = request.cookies.get('token')
+
+        if token:
+            if token.startswith('sk-'):
+                from arkive.utils.auth import get_current_user_by_api_key
+                user = get_current_user_by_api_key(request, token)
+            else:
+                data = decode_token(token)
+                user = Users.get_user_by_id(data['id']) if data and 'id' in data else None
+
+            if user:
+                from arkive.utils.user_context import get_user_context
+                request.state.user_context = await get_user_context(user)
+    except Exception:
+        pass  # auth failures are handled by the route dependencies, not here
+
+    return await call_next(request)
+
+
+@app.middleware('http')
 async def check_url(request: Request, call_next):
     start_time = int(time.time())
     request.state.token = get_http_authorization_cred(request.headers.get('Authorization'))
@@ -1523,6 +1589,7 @@ app.mount('/ws', socket_app)
 
 app.include_router(ollama.router, prefix='/ollama', tags=['ollama'])
 app.include_router(openai.router, prefix='/openai', tags=['openai'])
+app.include_router(bedrock.router, prefix='/bedrock', tags=['bedrock'])
 
 
 app.include_router(pipelines.router, prefix='/api/v1/pipelines', tags=['pipelines'])

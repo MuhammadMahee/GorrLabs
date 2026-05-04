@@ -1,9 +1,8 @@
 import json
 import logging
-import httpx
 from typing import Optional
 
-from arkive.env import OLLAMA_BASE_URL, OLLAMA_MODEL
+from arkive.utils.bedrock_client import bedrock_llm_call
 
 log = logging.getLogger(__name__)
 
@@ -69,75 +68,27 @@ async def llm_classify(query: str) -> tuple[int, str]:
     """
     prompt = CLASSIFICATION_PROMPT.format(query=query)
 
-    payload = {
-        "model": OLLAMA_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.0,
-        # Reasoning-style models (qwen3, deepseek-r1) burn 200-400 tokens
-        # on internal <think> before emitting JSON. 80 tokens starved them
-        # and the API returned empty content; 512 is a safe headroom.
-        "max_tokens": 512,
-        "stream": False,
-    }
-
     try:
-        async with httpx.AsyncClient(timeout=CLASSIFIER_TIMEOUT) as client:
-            content = None
+        # Reasoning-style models burn 200-400 tokens on <think> before JSON; 512 is safe headroom.
+        content = await bedrock_llm_call(prompt, max_tokens=512, timeout=CLASSIFIER_TIMEOUT)
 
-            try:
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/v1/chat/completions",
-                    json=payload,
-                )
-                response.raise_for_status()
-                data = response.json()
-                content = data["choices"][0]["message"]["content"].strip()
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code != 404:
-                    raise
+        if not content:
+            return 0, "classifier empty response"
 
-                # Older/non-OpenAI-compatible Ollama builds expose /api/chat instead.
-                native_payload = {
-                    "model": OLLAMA_MODEL,
-                    "messages": payload["messages"],
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.0,
-                    },
-                }
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/api/chat",
-                    json=native_payload,
-                )
-                response.raise_for_status()
-                data = response.json()
-                content = (data.get("message", {}) or {}).get("content", "").strip()
+        if content.startswith("```"):
+            content = content.split("```")[1]
+            if content.startswith("json"):
+                content = content[4:]
+        content = content.strip()
 
-            if not content:
-                return 0, "classifier empty response"
+        parsed = json.loads(content)
+        level = int(parsed.get("level", 0))
+        reason = str(parsed.get("reason", "llm classification"))
+        level = max(0, min(3, level))
 
-            # Strip any markdown fences the model adds despite instructions
-            if content.startswith("```"):
-                content = content.split("```")[1]
-                if content.startswith("json"):
-                    content = content[4:]
-            content = content.strip()
+        log.debug(f"[llm_classifier] level={level} reason={reason!r}")
+        return level, reason
 
-            parsed = json.loads(content)
-            level = int(parsed.get("level", 0))
-            reason = str(parsed.get("reason", "llm classification"))
-
-            # Clamp to valid range
-            level = max(0, min(3, level))
-
-            log.debug(
-                f"[llm_classifier] level={level} reason={reason!r}"
-            )
-            return level, reason
-
-    except httpx.TimeoutException:
-        log.warning("[llm_classifier] timeout — falling back to level 0")
-        return 0, "classifier timeout"
     except json.JSONDecodeError as e:
         log.warning(f"[llm_classifier] invalid JSON response: {e}")
         return 0, "classifier parse error"
@@ -163,13 +114,6 @@ async def llm_extract_entities(text: str) -> list[dict]:
         return []
 
     prompt = EXTRACT_PROMPT.format(text=text)
-    payload = {
-        "model": OLLAMA_MODEL,
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.0,
-        "max_tokens": 1024,
-        "stream": False,
-    }
 
     _TYPE_MAP = {
         "SALARY":            "SALARY",
@@ -180,29 +124,7 @@ async def llm_extract_entities(text: str) -> list[dict]:
 
     raw_content = None
     try:
-        async with httpx.AsyncClient(timeout=EXTRACT_TIMEOUT) as client:
-            try:
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/v1/chat/completions",
-                    json=payload,
-                )
-                response.raise_for_status()
-                raw_content = response.json()["choices"][0]["message"]["content"].strip()
-            except httpx.HTTPStatusError as e:
-                if e.response.status_code != 404:
-                    raise
-                native_payload = {
-                    "model": OLLAMA_MODEL,
-                    "messages": payload["messages"],
-                    "stream": False,
-                    "options": {"temperature": 0.0},
-                }
-                response = await client.post(
-                    f"{OLLAMA_BASE_URL}/api/chat",
-                    json=native_payload,
-                )
-                response.raise_for_status()
-                raw_content = (response.json().get("message", {}) or {}).get("content", "").strip()
+        raw_content = await bedrock_llm_call(prompt, max_tokens=1024, timeout=EXTRACT_TIMEOUT)
 
         if not raw_content:
             return []
@@ -243,9 +165,6 @@ async def llm_extract_entities(text: str) -> list[dict]:
         log.debug(f"[llm_extract_entities] found {len(entities)} entities in {len(text)} chars")
         return entities
 
-    except httpx.TimeoutException:
-        log.warning("[llm_extract_entities] timeout — skipping LLM pass")
-        return []
     except json.JSONDecodeError as e:
         log.warning(f"[llm_extract_entities] invalid JSON from model: {e} | raw={raw_content!r:.200}")
         return []

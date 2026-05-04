@@ -37,6 +37,7 @@ class PolicyDecision(Base):
     sensitivity_level = Column(Integer, nullable=True)
     decision = Column(Text, nullable=False)
     reason = Column(Text, nullable=True)
+    routing = Column(Text, nullable=True)
     created_at = Column(BigInteger, nullable=False)
 
 
@@ -49,6 +50,7 @@ class PolicyDecisionModel(BaseModel):
     sensitivity_level: Optional[int] = None
     decision: str
     reason: Optional[str] = None
+    routing: Optional[str] = None
     created_at: int  # timestamp in epoch
 
     model_config = ConfigDict(from_attributes=True)
@@ -67,6 +69,7 @@ class PolicyDecisionForm(BaseModel):
     sensitivity_level: Optional[int] = None
     decision: str
     reason: Optional[str] = None
+    routing: Optional[str] = None
 
 
 class PolicyDecisionsTable:

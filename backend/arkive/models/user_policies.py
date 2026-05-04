@@ -2,11 +2,12 @@ import logging
 import time
 from typing import Optional
 import uuid
+from enum import IntEnum
 
 from sqlalchemy.orm import Session
 from arkive.internal.db import Base, get_db_context
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from sqlalchemy import (
     BigInteger,
     Boolean,
@@ -17,6 +18,14 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import ARRAY, UUID, insert as pg_insert
 
 log = logging.getLogger(__name__)
+
+
+class ClearanceLevel(IntEnum):
+    PUBLIC = 0
+    INTERNAL = 1
+    CONFIDENTIAL = 2
+    RESTRICTED = 3
+
 
 ####################
 # UserPolicy DB Schema
@@ -29,7 +38,7 @@ class UserPolicy(Base):
     user_id = Column(Text, primary_key=True)
     department = Column(Text, nullable=True)
     clearance_level = Column(Integer, nullable=False, default=0)
-    geo_zone = Column(Text, nullable=True)
+    region = Column(Text, nullable=True)
     usage_policy_id = Column(UUID(as_uuid=True), nullable=True)
     allowed_collection_ids = Column(ARRAY(Text), nullable=False, default=list)
     can_export = Column(Boolean, nullable=False, default=False)
@@ -41,7 +50,7 @@ class UserPolicyModel(BaseModel):
     user_id: str
     department: Optional[str] = None
     clearance_level: int = 0
-    geo_zone: Optional[str] = None
+    region: Optional[str] = None
     usage_policy_id: Optional[uuid.UUID] = None
     allowed_collection_ids: list[str] = []
     can_export: bool = False
@@ -49,6 +58,13 @@ class UserPolicyModel(BaseModel):
     updated_at: int  # timestamp in epoch
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_validator('clearance_level')
+    @classmethod
+    def validate_clearance_level(cls, v: int) -> int:
+        if v not in (0, 1, 2, 3):
+            raise ValueError(f'clearance_level must be 0-3 (public/internal/confidential/restricted), got {v}')
+        return v
 
 
 ####################
@@ -59,11 +75,18 @@ class UserPolicyModel(BaseModel):
 class UserPolicyForm(BaseModel):
     department: Optional[str] = None
     clearance_level: int = 0
-    geo_zone: Optional[str] = None
+    region: Optional[str] = None
     usage_policy_id: Optional[uuid.UUID] = None
     allowed_collection_ids: list[str] = []
     can_export: bool = False
     can_upload: bool = True
+
+    @field_validator('clearance_level')
+    @classmethod
+    def validate_clearance_level(cls, v: int) -> int:
+        if v not in (0, 1, 2, 3):
+            raise ValueError(f'clearance_level must be 0-3 (public/internal/confidential/restricted), got {v}')
+        return v
 
 
 class UserPoliciesTable:
