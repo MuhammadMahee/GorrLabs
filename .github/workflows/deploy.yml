@@ -130,6 +130,13 @@ jobs:
             LOCAL_ONLY_ABOVE_SENSITIVITY=1
             ENVEOF
 
+            echo "==> Forcing Docker to use IPv4"
+            sudo tee /etc/docker/daemon.json > /dev/null << 'DAEMONEOF'
+            {"ipv6": false, "dns": ["8.8.8.8", "8.8.4.4"], "max-concurrent-downloads": 2}
+            DAEMONEOF
+            sudo systemctl restart docker
+            sleep 5
+
             echo "==> Logging in to GHCR"
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
