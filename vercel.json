@@ -2,7 +2,7 @@
   "buildCommand": "cd Downloads/GorrLabs-main && pip install -r requirements.txt",
   "functions": {
     "Downloads/GorrLabs-main/api/index.py": {
-      "runtime": "python@3.11"
+      "runtime": "python@3.9"
     }
   },
   "outputDirectory": "Downloads/GorrLabs-main/public"
