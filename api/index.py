@@ -4,7 +4,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 
-app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), "../public"))
+app = Flask(__name__, template_folder=os.path.dirname(__file__))
 
 SMTP_SERVER   = "smtp.gmail.com"
 SMTP_PORT     = 587
