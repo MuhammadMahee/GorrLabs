@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 from pathlib import Path
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="/var/task/public/static", static_url_path="/static")
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
