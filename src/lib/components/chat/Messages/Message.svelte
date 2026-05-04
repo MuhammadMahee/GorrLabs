@@ -43,9 +43,9 @@
 
 <div
 	role="listitem"
-	class="flex flex-col justify-between px-5 mb-3 w-full {($settings?.widescreenMode ?? null)
+	class="group mb-3 flex w-full flex-col justify-between {($settings?.widescreenMode ?? null)
 		? 'max-w-full'
-		: 'max-w-5xl'} mx-auto rounded-lg group"
+		: 'max-w-full'} mx-auto rounded-lg"
 >
 	{#if history.messages[messageId]}
 		{#if history.messages[messageId].role === 'user'}

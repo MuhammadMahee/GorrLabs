@@ -15,7 +15,6 @@
 		showArtifacts,
 		mobile,
 		temporaryChatEnabled,
-		theme,
 		user,
 		settings,
 		folders,
@@ -31,7 +30,6 @@
 	import AdjustmentsHorizontal from '$lib/components/icons/AdjustmentsHorizontal.svelte';
 	import Cube from '$lib/components/icons/Cube.svelte';
 	import Folder from '$lib/components/icons/Folder.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
 	import Messages from '$lib/components/chat/Messages.svelte';
 	import Download from '$lib/components/icons/Download.svelte';
@@ -41,7 +39,6 @@
 	export let shareEnabled: boolean = false;
 	$: void shareEnabled;
 
-	export let shareHandler: Function;
 	export let moveChatHandler: Function;
 
 	export let archiveChatHandler: Function;
@@ -278,7 +275,7 @@
 
 	<div slot="content">
 		<div
-			class="select-none min-w-[200px] max-w-[200px] rounded-2xl px-1 py-1 border border-gray-100 dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg transition"
+			class="z-50 min-w-[220px] max-w-[220px] select-none rounded-2xl border border-gray-200 bg-white/95 p-1.5 text-sm text-gray-900 shadow-2xl shadow-black/10 backdrop-blur-xl transition dark:border-white/[0.08] dark:bg-[#080a10]/95 dark:text-white dark:shadow-black/40"
 		>
 			<!-- <DropdownMenu.Item draggable="false"
 				class="flex gap-2 items-center px-3 py-1.5 text-sm  cursor-pointer dark:hover:bg-gray-800 rounded-xl"
@@ -311,7 +308,7 @@
 			{#if ($artifactContents ?? []).length > 0}
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 					id="chat-artifacts-button"
 					on:click={async () => {
 						await showControls.set(true);
@@ -319,41 +316,31 @@
 						await showEmbeds.set(false);
 					}}
 				>
-					<Cube className=" size-4" strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Artifacts')}</div>
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<Cube className="size-4" strokeWidth="1.5" />
+					</div>
+					<div class="flex items-center font-medium">{$i18n.t('Artifacts')}</div>
 				</button>
 
-				<hr class="border-gray-50/30 dark:border-gray-800/30 my-1" />
-			{/if}
-
-			{#if !$temporaryChatEnabled && ($user?.role === 'admin' || ($user.permissions?.chat?.share ?? true))}
-				<button
-					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
-					id="chat-share-button"
-					on:click={() => {
-						shareHandler();
-					}}
-				>
-					<Share strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Share')}</div>
-				</button>
+				<hr class="my-1 border-gray-100 p-0 dark:border-white/[0.06]" />
 			{/if}
 
 			<DropdownSub>
 				<button
 					slot="trigger"
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				>
-					<Download strokeWidth="1.5" />
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<Download strokeWidth="1.5" />
+					</div>
 
-					<div class="flex items-center">{$i18n.t('Download')}</div>
+					<div class="flex items-center font-medium">{$i18n.t('Download')}</div>
 				</button>
 				{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 					<button
 						draggable="false"
-						class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+						class="flex h-9 w-full cursor-pointer select-none items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 						on:click={() => {
 							downloadJSONExport();
 						}}
@@ -363,7 +350,7 @@
 				{/if}
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-9 w-full cursor-pointer select-none items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 					on:click={() => {
 						downloadTxt();
 					}}
@@ -373,7 +360,7 @@
 
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-9 w-full cursor-pointer select-none items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 					on:click={() => {
 						downloadPdf();
 					}}
@@ -384,7 +371,7 @@
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+				class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				id="chat-copy-button"
 				on:click={async () => {
 					const res = await copyToClipboard(await getChatAsText()).catch((e) => {
@@ -396,29 +383,33 @@
 					}
 				}}
 			>
-				<Clipboard className=" size-4" strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Copy')}</div>
+				<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+					<Clipboard className="size-4" strokeWidth="1.5" />
+				</div>
+				<div class="flex items-center font-medium">{$i18n.t('Copy')}</div>
 			</button>
 
 			{#if !$temporaryChatEnabled && chat?.id}
-				<hr class="border-gray-50/30 dark:border-gray-800/30 my-1" />
+				<hr class="my-1 border-gray-100 p-0 dark:border-white/[0.06]" />
 
 				{#if $folders.length > 0}
 					<DropdownSub maxWidth={200}>
 						<button
 							slot="trigger"
 							draggable="false"
-							class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+							class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 						>
-							<Folder strokeWidth="1.5" />
+							<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+								<Folder strokeWidth="1.5" />
+							</div>
 
-							<div class="flex items-center">{$i18n.t('Move')}</div>
+							<div class="flex items-center font-medium">{$i18n.t('Move')}</div>
 						</button>
 						{#each $folders.sort((a, b) => b.updated_at - a.updated_at) as folder}
 							{#if folder?.id}
 								<button
 									draggable="false"
-									class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl overflow-hidden w-full"
+									class="flex h-9 w-full cursor-pointer items-center gap-2 overflow-hidden rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 									on:click={() => {
 										moveChatHandler(chat.id, folder.id);
 									}}
@@ -436,13 +427,15 @@
 
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 					on:click={() => {
 						archiveChatHandler();
 					}}
 				>
-					<ArchiveBox className="size-4" strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Archive')}</div>
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<ArchiveBox className="size-4" strokeWidth="1.5" />
+					</div>
+					<div class="flex items-center font-medium">{$i18n.t('Archive')}</div>
 				</button>
 
 			{/if}

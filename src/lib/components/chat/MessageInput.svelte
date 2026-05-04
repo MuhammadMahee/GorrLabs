@@ -1248,9 +1248,9 @@
 
 						<div
 							id="message-input-container"
-							class="flex-1 flex flex-col relative w-full shadow-lg rounded-3xl border {$temporaryChatEnabled
-								? 'border-dashed border-gray-100 dark:border-gray-800 hover:border-gray-200 focus-within:border-gray-200 hover:dark:border-gray-700 focus-within:dark:border-gray-700'
-								: ' border-gray-100/30 dark:border-gray-850/30 hover:border-gray-200 focus-within:border-gray-100 hover:dark:border-gray-800 focus-within:dark:border-gray-800'}  transition px-1 bg-white/5 dark:bg-gray-500/5 backdrop-blur-sm dark:text-gray-100"
+							class="relative flex w-full flex-1 flex-col rounded-3xl border px-1 shadow-2xl shadow-black/25 backdrop-blur-xl transition {$temporaryChatEnabled
+								? 'border-dashed border-white/[0.12] hover:border-white/[0.18] focus-within:border-cyan-400/35'
+								: 'border-white/[0.075] hover:border-white/[0.12] focus-within:border-cyan-400/35'} bg-[#101118]/92 text-gray-100"
 							dir={$settings?.chatDirection ?? 'auto'}
 						>
 							{#if atSelectedModel !== undefined}
@@ -1377,11 +1377,11 @@
 
 							<div class="px-2.5">
 								<div
-									class="scrollbar-hidden rtl:text-right ltr:text-left bg-transparent dark:text-gray-100 outline-hidden w-full pb-1 px-1 resize-none h-fit max-h-96 overflow-auto {files.length ===
+									class="scrollbar-hidden h-fit max-h-96 w-full resize-none overflow-auto bg-transparent px-1 pb-1 text-[15px] leading-6 text-gray-100 outline-hidden placeholder:text-gray-600 rtl:text-right ltr:text-left {files.length ===
 									0
 										? atSelectedModel !== undefined
 											? 'pt-1.5'
-											: 'pt-2.5'
+											: 'pt-3'
 										: ''}"
 									id="chat-input-container"
 								>
@@ -1571,8 +1571,8 @@
 								</div>
 							</div>
 
-							<div class=" flex justify-between mt-0.5 mb-2.5 mx-0.5 max-w-full" dir="ltr">
-								<div class="ml-1 self-end flex items-center flex-1 max-w-[80%]">
+							<div class="mx-0.5 mb-2.5 mt-0.5 flex max-w-full justify-between" dir="ltr">
+								<div class="ml-1 flex max-w-[80%] flex-1 items-center self-end">
 									<InputMenu
 										bind:files
 										selectedModels={atSelectedModel ? [atSelectedModel.id] : selectedModels}
@@ -1629,7 +1629,7 @@
 									>
 										<div
 											id="input-menu-button"
-											class="bg-transparent hover:bg-gray-100 text-gray-700 dark:text-white dark:hover:bg-gray-800 rounded-full size-8 flex justify-center items-center outline-hidden focus:outline-hidden"
+											class="flex size-8 items-center justify-center rounded-xl bg-transparent text-gray-300 outline-hidden transition hover:bg-white/[0.07] hover:text-white focus:outline-hidden"
 										>
 											<PlusAlt className="size-5.5" />
 										</div>
@@ -1668,7 +1668,7 @@
 										>
 											<div
 												id="integration-menu-button"
-												class="bg-transparent hover:bg-gray-100 text-gray-700 dark:text-white dark:hover:bg-gray-800 rounded-full size-8 flex justify-center items-center outline-hidden focus:outline-hidden"
+												class="flex size-8 items-center justify-center rounded-xl bg-transparent text-gray-300 outline-hidden transition hover:bg-white/[0.07] hover:text-white focus:outline-hidden"
 											>
 												<Component className="size-4.5" strokeWidth="1.5" />
 											</div>
@@ -1681,7 +1681,7 @@
 												<button
 													type="button"
 													id="model-valves-button"
-													class="bg-transparent hover:bg-gray-100 text-gray-700 dark:text-white dark:hover:bg-gray-800 rounded-full size-8 flex justify-center items-center outline-hidden focus:outline-hidden"
+													class="flex size-8 items-center justify-center rounded-xl bg-transparent text-gray-300 outline-hidden transition hover:bg-white/[0.07] hover:text-white focus:outline-hidden"
 													on:click={() => {
 														selectedValvesType = 'function';
 														selectedValvesItemId = selectedModelIds[0]?.split('.')[0];
@@ -1840,13 +1840,13 @@
 									</div>
 								</div>
 
-								<div class="self-end flex space-x-1 mr-1 shrink-0 gap-[0.5px]">
+								<div class="mr-1 flex shrink-0 self-end space-x-1 gap-[0.5px]">
 									{#if (taskIds && taskIds.length > 0) || (history.currentId && history.messages[history.currentId]?.done != true) || generating}
 										<div class=" flex items-center">
 											<Tooltip content={$i18n.t('Stop')}>
 												<!-- svelte-ignore a11y_consider_explicit_label -->
 												<button
-													class="bg-white hover:bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-800 transition rounded-full p-1.5"
+													class="rounded-xl bg-white/[0.08] p-1.5 text-white transition hover:bg-white/[0.12]"
 													on:click={() => {
 														stopResponse();
 													}}
@@ -1872,7 +1872,7 @@
 											<Tooltip content={$i18n.t('Create note')} className=" flex items-center">
 												<button
 													id="create-note-button"
-													class=" text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 transition rounded-full p-1.5 -mr-1 self-center"
+														class="-mr-1 self-center rounded-xl p-1.5 text-gray-500 transition hover:bg-white/[0.06] hover:text-gray-200"
 													type="button"
 													disabled={prompt === '' && files.length === 0}
 													on:click={() => {
@@ -1895,7 +1895,7 @@
 												<Tooltip content={$i18n.t('Dictate')}>
 													<button
 														id="voice-input-button"
-														class=" text-gray-600 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 transition rounded-full p-1.5 self-center mr-0.5"
+														class="mr-0.5 self-center rounded-xl p-1.5 text-gray-400 transition hover:bg-white/[0.06] hover:text-white"
 														type="button"
 														on:click={async () => {
 															try {
@@ -1946,7 +1946,7 @@
 												<!-- {$i18n.t('Call')} -->
 												<Tooltip content={$i18n.t('Voice mode')}>
 													<button
-														class=" bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full p-1.5 self-center"
+														class="self-center rounded-xl bg-white p-1.5 text-black transition hover:bg-gray-100"
 														type="button"
 														on:click={async () => {
 															if (selectedModels.length > 1) {
@@ -2014,8 +2014,8 @@
 													<button
 														id="send-message-button"
 														class="{!(prompt === '' && files.length === 0) || uploadPending
-															? 'bg-black text-white hover:bg-gray-900 dark:bg-white dark:text-black dark:hover:bg-gray-100 '
-															: 'text-white bg-gray-200 dark:text-gray-900 dark:bg-gray-700 disabled'} transition rounded-full p-1.5 self-center"
+															? 'bg-white text-black hover:bg-gray-100 '
+															: 'bg-white/[0.08] text-gray-500 disabled'} self-center rounded-xl p-1.5 transition"
 														type="submit"
 														disabled={(prompt === '' && files.length === 0) || uploadPending}
 													>

@@ -23,8 +23,6 @@
 	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
 	import Chats from './InputMenu/Chats.svelte';
 	import Knowledge from './InputMenu/Knowledge.svelte';
-	import AttachWebpageModal from './AttachWebpageModal.svelte';
-	import GlobeAlt from '$lib/components/icons/GlobeAlt.svelte';
 
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
@@ -46,15 +44,10 @@
 	let show = false;
 	let tab = '';
 
-	let showAttachWebpageModal = false;
-
 	let fileUploadEnabled = true;
 	$: fileUploadEnabled =
 		fileUploadCapableModels.length === selectedModels.length &&
 		($user?.role === 'admin' || $user?.permissions?.chat?.file_upload);
-
-	let webUploadEnabled = true;
-	$: webUploadEnabled = $user?.role === 'admin' || ($user?.permissions?.chat?.web_upload ?? true);
 
 	$: if (!fileUploadEnabled && files.length > 0) {
 		files = [];
@@ -88,13 +81,6 @@
 		show = false;
 	};
 </script>
-
-<AttachWebpageModal
-	bind:show={showAttachWebpageModal}
-	onSubmit={(e) => {
-		onUpload(e);
-	}}
-/>
 
 <!-- Hidden file input used to open the camera on mobile -->
 <input
@@ -180,29 +166,6 @@
 							<div class=" line-clamp-1">{$i18n.t('Capture')}</div>
 						</button>
 					</Tooltip>
-
-					<Tooltip
-						content={!webUploadEnabled
-							? $i18n.t('You do not have permission to upload web content.')
-							: ''}
-						className="w-full"
-					>
-						<button
-							class="flex w-full gap-2 items-center px-3 py-1.5 text-sm select-none cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl {!webUploadEnabled
-								? 'opacity-50'
-								: ''}"
-							type="button"
-							on:click={() => {
-								if (webUploadEnabled) {
-									showAttachWebpageModal = true;
-								}
-							}}
-						>
-							<GlobeAlt />
-							<div class="line-clamp-1">{$i18n.t('Attach Webpage')}</div>
-						</button>
-					</Tooltip>
-
 
 					<Tooltip
 						content={fileUploadCapableModels.length !== selectedModels.length

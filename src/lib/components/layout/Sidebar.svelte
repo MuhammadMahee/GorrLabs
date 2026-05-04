@@ -863,10 +863,10 @@
 		bind:this={navElement}
 		id="sidebar"
 		class="h-screen max-h-[100dvh] min-h-screen select-none {$showSidebar
-			? `${$mobile ? 'bg-gray-50 dark:bg-gray-950' : 'bg-gray-50/70 dark:bg-gray-950/70'} z-50`
+			? `${$mobile ? 'bg-gray-50 dark:bg-[#07080d]' : 'bg-gray-50/95 dark:bg-[#07080d]/95'} z-50`
 			: ' bg-transparent z-0 '} {$isApp
 			? `ml-[4.5rem] md:ml-0 `
-			: ' transition-all duration-300 '} shrink-0 text-gray-900 dark:text-gray-200 text-sm fixed top-0 left-0 overflow-x-hidden
+			: ' transition-all duration-300 '} shrink-0 border-r border-gray-200/80 text-gray-900 dark:border-white/[0.06] dark:text-gray-200 text-sm fixed top-0 left-0 overflow-x-hidden
         "
 		transition:slide={{ duration: 250, axis: 'x' }}
 		data-state={$showSidebar}
@@ -876,11 +876,9 @@
 				? ''
 				: 'invisible'}"
 		>
-			<div
-				class="sidebar px-[0.5625rem] pt-2 pb-1.5 flex justify-between space-x-1 text-gray-600 dark:text-gray-400 sticky top-0 z-10 -mb-3"
-			>
+			<div class="sidebar sticky top-0 z-10 flex justify-between gap-1 px-3 pb-3 pt-3 text-gray-600 dark:text-gray-400">
 				<a
-					class="flex items-center rounded-xl size-8.5 h-full justify-center hover:bg-gray-100/50 dark:hover:bg-gray-850/50 transition no-drag-region"
+					class="flex size-9 items-center justify-center rounded-xl transition no-drag-region hover:bg-gray-100 dark:hover:bg-white/[0.06]"
 					href="/"
 					draggable="false"
 					on:click={newChatHandler}
@@ -893,10 +891,10 @@
 					/>
 				</a>
 
-				<a href="/" class="flex flex-1 px-1.5" on:click={newChatHandler}>
+				<a href="/" class="flex min-w-0 flex-1 px-1.5" on:click={newChatHandler}>
 					<div
 						id="sidebar-arkive-name"
-						class=" self-center font-medium text-gray-850 dark:text-white font-primary"
+						class="self-center truncate font-primary text-[15px] font-semibold text-gray-850 dark:text-white"
 					>
 						{$ARKIVE_NAME}
 					</div>
@@ -906,7 +904,7 @@
 					placement="bottom"
 				>
 					<button
-						class="flex rounded-xl size-8.5 justify-center items-center hover:bg-gray-100/50 dark:hover:bg-gray-850/50 transition {isWindows
+						class="flex size-9 items-center justify-center rounded-xl text-gray-500 transition hover:bg-gray-100 hover:text-gray-900 dark:text-gray-500 dark:hover:bg-white/[0.06] dark:hover:text-white {isWindows
 							? 'cursor-pointer'
 							: 'cursor-[w-resize]'}"
 						on:click={() => {
@@ -923,12 +921,12 @@
 				<div
 					class="{scrollTop > 0
 						? 'visible'
-						: 'invisible'} sidebar-bg-gradient-to-b bg-linear-to-b from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mb-6"
+						: 'invisible'} sidebar-bg-gradient-to-b bg-linear-to-b from-gray-50 dark:from-[#07080d] to-transparent from-55% pointer-events-none absolute inset-0 -z-10 -mb-6"
 				></div>
 			</div>
 
 			<div
-				class="relative flex flex-col flex-1 overflow-y-auto scrollbar-hidden pt-3 pb-3"
+				class="relative flex flex-1 flex-col overflow-y-auto px-2 pb-4 pt-1 scrollbar-hidden"
 				on:scroll={(e) => {
 					if ((e.target as HTMLElement).scrollTop === 0) {
 						scrollTop = 0;
@@ -937,44 +935,44 @@
 					}
 				}}
 			>
-				<div class="pb-1.5">
-					<div class="px-[0.4375rem] flex justify-center text-gray-800 dark:text-gray-200">
+				<div class="space-y-1 pb-2">
+					<div class="flex justify-center text-gray-800 dark:text-gray-200">
 						<a
 							id="sidebar-new-chat-button"
-							class="group grow flex items-center space-x-3 rounded-2xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition outline-none"
+							class="group flex h-10 grow items-center gap-3 rounded-xl px-3 text-gray-700 outline-none transition hover:bg-gray-100 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-white/[0.055] dark:hover:text-white"
 							href="/"
 							draggable="false"
 							on:click={newChatHandler}
 							aria-label={$i18n.t('New Chat')}
 						>
-							<div class="self-center">
+							<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
 								<PencilSquare className=" size-4.5" strokeWidth="2" />
 							</div>
 
-							<div class="flex flex-1 self-center translate-y-[0.5px]">
-								<div class=" self-center text-sm font-primary">{$i18n.t('New Chat')}</div>
+							<div class="flex min-w-0 flex-1 self-center">
+								<div class="truncate font-primary text-sm font-medium">{$i18n.t('New Chat')}</div>
 							</div>
 
 							<HotkeyHint name="newChat" className=" group-hover:visible invisible" />
 						</a>
 					</div>
 
-					<div class="px-[0.4375rem] flex justify-center text-gray-800 dark:text-gray-200">
+					<div class="flex justify-center text-gray-800 dark:text-gray-200">
 						<button
 							id="sidebar-search-button"
-							class="group grow flex items-center space-x-3 rounded-2xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition outline-none"
+							class="group flex h-10 grow items-center gap-3 rounded-xl px-3 text-gray-700 outline-none transition hover:bg-gray-100 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-white/[0.055] dark:hover:text-white"
 							on:click={() => {
 								showSearch.set(true);
 							}}
 							draggable="false"
 							aria-label={$i18n.t('Search')}
 						>
-							<div class="self-center">
+							<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
 								<Search strokeWidth="2" className="size-4.5" />
 							</div>
 
-							<div class="flex flex-1 self-center translate-y-[0.5px]">
-								<div class=" self-center text-sm font-primary">{$i18n.t('Search')}</div>
+							<div class="flex min-w-0 flex-1 self-center">
+								<div class="truncate font-primary text-sm font-medium">{$i18n.t('Search')}</div>
 							</div>
 							<HotkeyHint name="search" className=" group-hover:visible invisible" />
 						</button>
@@ -982,16 +980,16 @@
 
 
 					{#if $user?.role === 'admin' || $user?.permissions?.workspace?.models || $user?.permissions?.workspace?.knowledge || $user?.permissions?.workspace?.prompts || $user?.permissions?.workspace?.tools || $user?.permissions?.workspace?.skills}
-						<div class="px-[0.4375rem] flex justify-center text-gray-800 dark:text-gray-200">
+						<div class="flex justify-center text-gray-800 dark:text-gray-200">
 							<a
 								id="sidebar-workspace-button"
-								class="grow flex items-center space-x-3 rounded-2xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+								class="flex h-10 grow items-center gap-3 rounded-xl px-3 text-gray-700 transition hover:bg-gray-100 hover:text-gray-950 dark:text-gray-300 dark:hover:bg-white/[0.055] dark:hover:text-white"
 								href="/workspace"
 								on:click={itemClickHandler}
 								draggable="false"
 								aria-label={$i18n.t('Workspace')}
 							>
-								<div class="self-center">
+								<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
@@ -1008,8 +1006,8 @@
 									</svg>
 								</div>
 
-								<div class="flex self-center translate-y-[0.5px]">
-									<div class=" self-center text-sm font-primary">{$i18n.t('Workspace')}</div>
+								<div class="flex min-w-0 self-center">
+									<div class="truncate font-primary text-sm font-medium">{$i18n.t('Workspace')}</div>
 								</div>
 							</a>
 						</div>
@@ -1020,8 +1018,9 @@
 					<Folder
 						id="sidebar-models"
 						bind:open={showPinnedModels}
-						className="px-2 mt-0.5"
+						className="mt-3"
 						name={$i18n.t('Models')}
+						buttonClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
 						chevron={false}
 						dragAndDrop={false}
 					>
@@ -1033,8 +1032,9 @@
 					<Folder
 						id="sidebar-channels"
 						bind:open={showChannels}
-						className="px-2 mt-0.5"
+						className="mt-3"
 						name={$i18n.t('Channels')}
+						buttonClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
 						chevron={false}
 						dragAndDrop={false}
 						onAdd={$user?.role === 'admin' || ($user?.permissions?.features?.channels ?? true)
@@ -1068,8 +1068,9 @@
 					<Folder
 						id="sidebar-folders"
 						bind:open={showFolders}
-						className="px-2 mt-0.5"
+						className="mt-3"
 						name={$i18n.t('Folders')}
+						buttonClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
 						chevron={false}
 						onAdd={() => {
 							showCreateFolderModal = true;
@@ -1120,8 +1121,9 @@
 
 				<Folder
 					id="sidebar-chats"
-					className="px-2 mt-0.5"
+					className="mt-3"
 					name={$i18n.t('Chats')}
+					buttonClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
 					chevron={false}
 					on:change={async (e) => {
 						selectedFolder.set(null);
@@ -1191,7 +1193,7 @@
 							<div class="flex flex-col space-y-1 rounded-xl">
 								<Folder
 									id="sidebar-pinned-chats"
-									buttonClassName=" text-gray-500"
+									buttonClassName="text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
 									on:import={(e) => {
 										importChatHandler(e.detail, true);
 									}}
@@ -1239,7 +1241,7 @@
 									name={$i18n.t('Pinned')}
 								>
 									<div
-										class="ml-3 pl-1 mt-[1px] flex flex-col overflow-y-auto scrollbar-hidden border-s border-gray-100 dark:border-gray-900 text-gray-900 dark:text-gray-200"
+										class="ml-2 mt-1 flex flex-col overflow-y-auto border-s border-gray-200 pl-2 text-gray-900 scrollbar-hidden dark:border-white/[0.06] dark:text-gray-200"
 									>
 										{#each $pinnedChats as chat, idx (`pinned-chat-${chat?.id ?? idx}`)}
 											<ChatItem
@@ -1271,12 +1273,12 @@
 					{/if}
 
 					<div class=" flex-1 flex flex-col overflow-y-auto scrollbar-hidden">
-						<div class="pt-1.5">
+						<div class="pt-1">
 							{#if $chats}
 								{#each $chats as chat, idx (`chat-${chat?.id ?? idx}`)}
 									{#if idx === 0 || (idx > 0 && chat.time_range !== $chats[idx - 1].time_range)}
 										<div
-											class="w-full pl-2.5 text-xs text-gray-500 dark:text-gray-500 font-medium {idx ===
+											class="w-full pl-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-gray-500 dark:text-gray-600 {idx ===
 											0
 												? ''
 												: 'pt-5'} pb-1.5"
@@ -1355,9 +1357,9 @@
 				</Folder>
 			</div>
 
-			<div class="px-1.5 pt-1.5 pb-2 sticky bottom-0 z-10 -mt-3 sidebar">
+			<div class="sticky bottom-0 z-10 -mt-3 px-2 pb-2 pt-4 sidebar">
 				<div
-					class=" sidebar-bg-gradient-to-t bg-linear-to-t from-gray-50 dark:from-gray-950 to-transparent from-50% pointer-events-none absolute inset-0 -z-10 -mt-6"
+					class="sidebar-bg-gradient-to-t pointer-events-none absolute inset-0 -z-10 -mt-8 bg-linear-to-t from-gray-50 from-55% to-transparent dark:from-[#07080d]"
 				></div>
 				<div class="flex flex-col font-primary">
 					{#if $user !== undefined && $user !== null}
@@ -1373,12 +1375,12 @@
 							}}
 						>
 							<div
-								class=" flex items-center rounded-2xl py-2 px-1.5 w-full hover:bg-gray-100/50 dark:hover:bg-gray-900/50 transition"
+								class="flex w-full items-center rounded-2xl border border-gray-200 bg-white/70 px-2.5 py-2.5 shadow-sm transition hover:bg-white dark:border-white/[0.07] dark:bg-white/[0.035] dark:shadow-black/20 dark:hover:bg-white/[0.06]"
 							>
-								<div class=" self-center mr-3 relative">
+								<div class="relative mr-3 self-center">
 									<img
 										src={`${ARKIVE_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class=" size-7 object-cover rounded-full"
+										class="size-8 rounded-full object-cover ring-1 ring-black/5 dark:ring-white/10"
 										alt={$i18n.t('Open User Profile Menu')}
 										aria-label={$i18n.t('Open User Profile Menu')}
 									/>
@@ -1389,13 +1391,23 @@
 												<span
 													class="relative inline-flex size-2.5 rounded-full {true
 														? 'bg-green-500'
-														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-gray-900"
+														: 'bg-gray-300 dark:bg-gray-700'} border-2 border-white dark:border-[#111219]"
 												></span>
 											</span>
 										</div>
 									{/if}
 								</div>
-								<div class=" self-center font-medium">{$user?.name}</div>
+								<div class="min-w-0 flex-1 self-center">
+									<div class="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+										{$user?.name}
+									</div>
+									{#if $config?.features?.enable_user_status}
+										<div class="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-gray-500">
+											<span class="size-1.5 rounded-full bg-green-500"></span>
+											<span>{$i18n.t('Active')}</span>
+										</div>
+									{/if}
+								</div>
 							</div>
 						</UserMenu>
 					{/if}

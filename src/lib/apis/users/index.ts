@@ -524,6 +524,59 @@ export const updateUserById = async (token: string, userId: string, user: UserUp
 	return res;
 };
 
+export const getUserPolicyById = async (token: string, userId: string) => {
+	let error = null;
+
+	const res = await fetch(`${ARKIVE_API_BASE_URL}/users/${userId}/policy`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		}
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			error = err.detail;
+			return null;
+		});
+
+	if (error) {
+		throw error;
+	}
+
+	return res;
+};
+
+export const updateUserPolicyById = async (token: string, userId: string, policy: object) => {
+	let error = null;
+
+	const res = await fetch(`${ARKIVE_API_BASE_URL}/users/${userId}/policy`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify(policy)
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			error = err.detail;
+			return null;
+		});
+
+	if (error) {
+		throw error;
+	}
+
+	return res;
+};
+
 export const getUserGroupsById = async (token: string, userId: string) => {
 	let error = null;
 

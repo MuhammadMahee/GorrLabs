@@ -54,7 +54,7 @@
 	}
 </script>
 
-<div class=" space-y-1 text-xs pb-safe-bottom">
+<div class="advanced-params space-y-1 text-xs pb-safe-bottom">
 
 	<!-- ── Temperature ── -->
 	<div class=" py-0.5 w-full justify-between">
@@ -1629,3 +1629,101 @@
 	<!-- end admin -->
 
 </div>
+
+<style>
+	.advanced-params {
+		color: rgb(226, 232, 240);
+	}
+
+	.advanced-params > div {
+		border: 1px solid transparent;
+		border-radius: 0.625rem;
+		padding: 0.5rem 0.625rem;
+		transition:
+			background-color 150ms ease,
+			border-color 150ms ease;
+	}
+
+	.advanced-params > div:hover {
+		border-color: rgba(255, 255, 255, 0.055);
+		background: rgba(255, 255, 255, 0.025);
+	}
+
+	.advanced-params :global(.inline-tooltip) {
+		display: block;
+		width: 100%;
+	}
+
+	.advanced-params :global(.inline-tooltip > div) {
+		width: 100%;
+	}
+
+	.advanced-params :global(.inline-tooltip > div > div) {
+		align-items: center;
+		gap: 0.875rem;
+		min-height: 2.25rem;
+	}
+
+	.advanced-params :global(.inline-tooltip > div > div > div:first-child) {
+		max-width: calc(100% - 5.75rem);
+		color: rgb(214, 223, 237);
+		font-size: 0.78rem;
+		font-weight: 600;
+		line-height: 1.05rem;
+	}
+
+	.advanced-params :global(.inline-tooltip > div > div > div:first-child span) {
+		display: block;
+		margin-top: 0.125rem;
+		color: rgb(100, 116, 139) !important;
+		font-size: 0.72rem;
+		font-weight: 500;
+		line-height: 0.95rem;
+	}
+
+	.advanced-params button {
+		min-width: 4.5rem;
+		min-height: 1.9rem;
+		justify-content: center;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		border-radius: 0.625rem;
+		background: rgba(255, 255, 255, 0.04);
+		color: rgb(226, 232, 240);
+		font-size: 0.72rem;
+		font-weight: 700;
+	}
+
+	.advanced-params button:hover {
+		border-color: rgba(34, 211, 238, 0.25);
+		background: rgba(34, 211, 238, 0.08);
+		color: white;
+	}
+
+	.advanced-params button span {
+		margin-left: 0;
+	}
+
+	.advanced-params input[type='number'] {
+		width: 4rem;
+		border-radius: 0.625rem;
+		border: 1px solid rgba(255, 255, 255, 0.07);
+		background: rgba(255, 255, 255, 0.04);
+		padding: 0.25rem 0.375rem;
+		color: rgb(226, 232, 240);
+		font-weight: 700;
+	}
+
+	.advanced-params input[type='range'] {
+		accent-color: rgb(34, 211, 238);
+	}
+
+	.advanced-params input[type='range']::-webkit-slider-runnable-track {
+		height: 0.375rem;
+		border-radius: 9999px;
+		background: rgba(51, 65, 85, 0.8);
+	}
+
+	.advanced-params input[type='range']::-webkit-slider-thumb {
+		margin-top: -0.3rem;
+	}
+</style>

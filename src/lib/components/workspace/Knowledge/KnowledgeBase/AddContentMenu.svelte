@@ -9,14 +9,11 @@
 	import ArrowUpCircle from '$lib/components/icons/ArrowUpCircle.svelte';
 	import BarsArrowUp from '$lib/components/icons/BarsArrowUp.svelte';
 	import FolderOpen from '$lib/components/icons/FolderOpen.svelte';
-	import ArrowPath from '$lib/components/icons/ArrowPath.svelte';
-	import GlobeAlt from '$lib/components/icons/GlobeAlt.svelte';
 
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	export let onClose: Function = () => {};
 
-	export let onSync: Function = () => {};
 	export let onUpload: Function = (data) => {};
 
 	let show = false;
@@ -75,33 +72,6 @@
 			>
 				<FolderOpen strokeWidth="2" />
 				<div class="flex items-center">{$i18n.t('Upload directory')}</div>
-			</button>
-
-			<Tooltip
-				content={$i18n.t(
-					'This option will delete all existing files in the collection and replace them with newly uploaded files.'
-				)}
-				className="w-full"
-			>
-				<button
-					class="select-none flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
-					on:click={() => {
-						onSync();
-					}}
-				>
-					<ArrowPath strokeWidth="2" />
-					<div class="flex items-center">{$i18n.t('Sync directory')}</div>
-				</button>
-			</Tooltip>
-
-			<button
-				class="select-none flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
-				on:click={() => {
-					onUpload({ type: 'web' });
-				}}
-			>
-				<GlobeAlt strokeWidth="2" />
-				<div class="flex items-center">{$i18n.t('Add webpage')}</div>
 			</button>
 
 			<button

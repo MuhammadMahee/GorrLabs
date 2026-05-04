@@ -373,7 +373,7 @@
 					<div class="flex {($settings?.chatBubble ?? true) ? 'justify-end pb-1' : 'w-full'}">
 						<div
 							class="rounded-3xl {($settings?.chatBubble ?? true)
-								? `max-w-[90%] px-4 py-1.5  bg-gray-50 dark:bg-gray-850 ${
+								? `max-w-[82%] border border-white/[0.06] px-4 py-2 bg-white/[0.055] text-gray-100 shadow-lg shadow-black/10 ${
 										message.files ? 'rounded-tr-lg' : ''
 									}`
 								: ' w-full'}"

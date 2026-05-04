@@ -859,7 +859,10 @@
 		// Call visibility change handler initially to set state on load
 		handleVisibilityChange();
 
-		theme.set(localStorage.theme);
+		localStorage.theme = 'dark';
+		document.documentElement.classList.remove('light', 'oled-dark', 'her');
+		document.documentElement.classList.add('dark');
+		theme.set('dark');
 
 		mobile.set(window.innerWidth < BREAKPOINT);
 
@@ -1067,13 +1070,7 @@
 {/if}
 
 <Toaster
-	theme={$theme.includes('dark')
-		? 'dark'
-		: $theme === 'system'
-			? window.matchMedia('(prefers-color-scheme: dark)').matches
-				? 'dark'
-				: 'light'
-			: 'light'}
+	theme="dark"
 	richColors
 	position="top-right"
 	closeButton

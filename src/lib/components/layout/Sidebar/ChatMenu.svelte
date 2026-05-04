@@ -11,7 +11,6 @@
 	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 	import Pencil from '$lib/components/icons/Pencil.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Share from '$lib/components/icons/Share.svelte';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
 	import DocumentDuplicate from '$lib/components/icons/DocumentDuplicate.svelte';
 	import Bookmark from '$lib/components/icons/Bookmark.svelte';
@@ -21,7 +20,7 @@
 		getChatPinnedStatusById,
 		toggleChatPinnedStatusById
 	} from '$lib/apis/chats';
-	import { chats, folders, settings, theme, user } from '$lib/stores';
+	import { chats, folders, settings, user } from '$lib/stores';
 	import { createMessagesList } from '$lib/utils';
 	import { downloadChatAsPDF } from '$lib/apis/utils';
 	import Download from '$lib/components/icons/Download.svelte';
@@ -30,7 +29,6 @@
 
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
-	export let shareHandler: Function;
 	export let moveChatHandler: Function;
 
 	export let cloneChatHandler: Function;
@@ -291,37 +289,26 @@
 
 	<div slot="content">
 		<div
-			class="select-none min-w-[200px] rounded-2xl px-1 py-1 border border-gray-100 dark:border-gray-800 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg transition"
+			class="z-50 min-w-[220px] select-none rounded-2xl border border-gray-200 bg-white/95 p-1.5 text-sm text-gray-900 shadow-2xl shadow-black/10 backdrop-blur-xl transition dark:border-white/[0.08] dark:bg-[#080a10]/95 dark:text-white dark:shadow-black/40"
 		>
-			{#if $user?.role === 'admin' || ($user.permissions?.chat?.share ?? true)}
-				<button
-					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
-					on:click={() => {
-						shareHandler();
-					}}
-				>
-					<Share strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Share')}</div>
-				</button>
-			{/if}
-
 			<DropdownSub
-				contentClass="select-none rounded-2xl p-1 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg border border-gray-100 dark:border-gray-800"
+				contentClass="select-none rounded-2xl p-1.5 z-50 bg-white/95 dark:bg-[#080a10]/95 dark:text-white shadow-2xl shadow-black/10 dark:shadow-black/40 border border-gray-200 dark:border-white/[0.08] backdrop-blur-xl"
 			>
 				<button
 					slot="trigger"
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+					class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				>
-					<Download strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Download')}</div>
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<Download strokeWidth="1.5" />
+					</div>
+					<div class="flex items-center font-medium">{$i18n.t('Download')}</div>
 				</button>
 
 				{#if $user?.role === 'admin' || ($user.permissions?.chat?.export ?? true)}
 					<button
 						draggable="false"
-						class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+						class="flex h-9 w-full cursor-pointer items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 						on:click={() => {
 							downloadJSONExport();
 						}}
@@ -332,7 +319,7 @@
 
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+					class="flex h-9 w-full cursor-pointer items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 					on:click={() => {
 						downloadTxt();
 					}}
@@ -342,7 +329,7 @@
 
 				<button
 					draggable="false"
-					class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+					class="flex h-9 w-full cursor-pointer select-none items-center rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 					on:click={() => {
 						downloadPdf();
 					}}
@@ -353,62 +340,72 @@
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+				class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				on:click={() => {
 					renameHandler();
 				}}
 			>
-				<Pencil strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Rename')}</div>
+				<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+					<Pencil strokeWidth="1.5" />
+				</div>
+				<div class="flex items-center font-medium">{$i18n.t('Rename')}</div>
 			</button>
 
-			<hr class="border-gray-50/30 dark:border-gray-800/30 my-1" />
+			<hr class="my-1 border-gray-100 p-0 dark:border-white/[0.06]" />
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+				class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				on:click={() => {
 					pinHandler();
 				}}
 			>
 				{#if pinned}
-					<BookmarkSlash strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Unpin')}</div>
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<BookmarkSlash strokeWidth="1.5" />
+					</div>
+					<div class="flex items-center font-medium">{$i18n.t('Unpin')}</div>
 				{:else}
-					<Bookmark strokeWidth="1.5" />
-					<div class="flex items-center">{$i18n.t('Pin')}</div>
+					<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+						<Bookmark strokeWidth="1.5" />
+					</div>
+					<div class="flex items-center font-medium">{$i18n.t('Pin')}</div>
 				{/if}
 			</button>
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+				class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				on:click={() => {
 					show = false;
 					cloneChatHandler();
 				}}
 			>
-				<DocumentDuplicate strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Clone')}</div>
+				<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+					<DocumentDuplicate strokeWidth="1.5" />
+				</div>
+				<div class="flex items-center font-medium">{$i18n.t('Clone')}</div>
 			</button>
 
 			{#if chatId && $folders.length > 0}
 				<DropdownSub
-					contentClass="select-none rounded-2xl p-1 z-50 bg-white dark:bg-gray-850 dark:text-white border border-gray-100 dark:border-gray-800 shadow-lg max-h-52 overflow-y-auto scrollbar-hidden"
+					contentClass="select-none rounded-2xl p-1.5 z-50 bg-white/95 dark:bg-[#080a10]/95 dark:text-white border border-gray-200 dark:border-white/[0.08] shadow-2xl shadow-black/10 dark:shadow-black/40 max-h-52 overflow-y-auto scrollbar-hidden backdrop-blur-xl"
 				>
 					<button
 						slot="trigger"
 						draggable="false"
-						class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl select-none w-full"
+						class="flex h-10 w-full cursor-pointer select-none items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 					>
-						<Folder />
-						<div class="flex items-center">{$i18n.t('Move')}</div>
+						<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+							<Folder />
+						</div>
+						<div class="flex items-center font-medium">{$i18n.t('Move')}</div>
 					</button>
 
 					{#each $folders.sort((a, b) => b.updated_at - a.updated_at) as folder}
 						<button
 							draggable="false"
-							class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl overflow-hidden w-full"
+							class="flex h-9 w-full cursor-pointer items-center gap-2 overflow-hidden rounded-xl px-3 text-sm text-gray-700 transition hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-white/[0.055]"
 							on:click={() => {
 								moveChatHandler(chatId, folder.id);
 							}}
@@ -425,24 +422,28 @@
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+				class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-gray-800 transition hover:bg-gray-50 dark:text-gray-100 dark:hover:bg-white/[0.055]"
 				on:click={() => {
 					archiveChatHandler();
 				}}
 			>
-				<ArchiveBox strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Archive')}</div>
+				<div class="flex size-5 items-center justify-center text-gray-500 dark:text-gray-400">
+					<ArchiveBox strokeWidth="1.5" />
+				</div>
+				<div class="flex items-center font-medium">{$i18n.t('Archive')}</div>
 			</button>
 
 			<button
 				draggable="false"
-				class="flex gap-2 items-center px-3 py-1.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-xl w-full"
+				class="flex h-10 w-full cursor-pointer items-center gap-3 rounded-xl px-3 text-red-600 transition hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-400/10"
 				on:click={() => {
 					deleteHandler();
 				}}
 			>
-				<GarbageBin strokeWidth="1.5" />
-				<div class="flex items-center">{$i18n.t('Delete')}</div>
+				<div class="flex size-5 items-center justify-center text-red-500 dark:text-red-300">
+					<GarbageBin strokeWidth="1.5" />
+				</div>
+				<div class="flex items-center font-medium">{$i18n.t('Delete')}</div>
 			</button>
 		</div>
 	</div>

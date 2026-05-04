@@ -69,6 +69,13 @@ jobs:
             RAG_TOP_K_RERANKER=5
             RAG_TEXT_SPLITTER=semantic
             ENABLE_CONTEXTUAL_ENRICHMENT=false
+            ENABLE_BEDROCK_API=True
+            AWS_BEDROCK_REGION=${{ secrets.AWS_BEDROCK_REGION }}
+            AWS_BEDROCK_MODEL=${{ secrets.AWS_BEDROCK_MODEL }}
+            AWS_BEDROCK_ENDPOINT_URL=
+            AWS_BEDROCK_API_KEY=${{ secrets.AWS_BEDROCK_API_KEY }}
+            LOCAL_FALLBACK_MODEL=${{ secrets.AWS_BEDROCK_MODEL }}
+            LOCAL_ONLY_ABOVE_SENSITIVITY=1
             EOF
 
             echo "==> Rebuilding containers"

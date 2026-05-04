@@ -35,7 +35,6 @@
 
 	import ChatMenu from './ChatMenu.svelte';
 	import DeleteConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-	import ShareChatModal from '$lib/components/chat/ShareChatModal.svelte';
 	import GarbageBin from '$lib/components/icons/GarbageBin.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
@@ -90,7 +89,6 @@
 		}
 	};
 
-	let showShareChatModal = false;
 	let confirmEdit = false;
 
 	let chatTitle = title;
@@ -349,8 +347,6 @@
 	};
 </script>
 
-<ShareChatModal bind:show={showShareChatModal} chatId={id} />
-
 <DeleteConfirmDialog
 	bind:show={showDeleteConfirm}
 	title={$i18n.t('Delete chat?')}
@@ -385,12 +381,12 @@
 	{#if confirmEdit}
 		<div
 			id="sidebar-chat-item"
-			class=" w-full flex justify-between rounded-xl px-[11px] py-[6px] {id === $chatId ||
+			class="w-full flex justify-between rounded-xl px-3 py-2 {id === $chatId ||
 			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900 selected'
+				? 'bg-gray-100 text-gray-950 dark:bg-white/[0.08] dark:text-white selected'
 				: selected
-					? 'bg-gray-100 dark:bg-gray-950 selected'
-					: 'group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis relative {generating
+					? 'bg-gray-100 text-gray-950 dark:bg-white/[0.06] dark:text-white selected'
+					: 'text-gray-700 group-hover:bg-gray-100 group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:bg-white/[0.055] dark:group-hover:text-white'} whitespace-nowrap text-ellipsis relative {generating
 				? 'cursor-not-allowed'
 				: ''}"
 		>
@@ -421,12 +417,12 @@
 	{:else}
 		<a
 			id="sidebar-chat-item"
-			class=" w-full flex justify-between rounded-xl px-[11px] py-[6px] {id === $chatId ||
+			class="w-full flex justify-between rounded-xl px-3 py-2 transition {id === $chatId ||
 			confirmEdit
-				? 'bg-gray-100 dark:bg-gray-900 selected'
+				? 'bg-gray-100 text-gray-950 dark:bg-white/[0.08] dark:text-white selected'
 				: selected
-					? 'bg-gray-100 dark:bg-gray-950 selected'
-					: ' group-hover:bg-gray-100 dark:group-hover:bg-gray-950'}  whitespace-nowrap text-ellipsis"
+					? 'bg-gray-100 text-gray-950 dark:bg-white/[0.06] dark:text-white selected'
+					: 'text-gray-700 group-hover:bg-gray-100 group-hover:text-gray-950 dark:text-gray-300 dark:group-hover:bg-white/[0.055] dark:group-hover:text-white'} whitespace-nowrap text-ellipsis"
 			href="/c/{id}"
 			on:click={() => {
 				dispatch('select');
@@ -463,14 +459,14 @@
 			{/if}
 
 			<div class="flex self-center flex-1 w-full min-w-0">
-				<div dir="auto" class="text-left self-center overflow-hidden w-full h-[20px] truncate">
+				<div dir="auto" class="h-[20px] w-full overflow-hidden truncate text-left text-[13px] font-medium leading-5">
 					{title}
 				</div>
 			</div>
 
 			<!-- Time ago indicator -->
 			{#if createdAt && !mouseOver}
-				<div class="shrink-0 self-center text-[10px] text-gray-400 dark:text-gray-500 pl-2">
+				<div class="shrink-0 self-center pl-2 text-[10px] font-medium text-gray-400 dark:text-gray-600">
 					{formatTimeAgo(createdAt)}
 				</div>
 			{/if}
@@ -482,13 +478,13 @@
 		id="sidebar-chat-item-menu"
 		class="
         {id === $chatId || confirmEdit
-			? 'from-gray-100 dark:from-gray-900 selected'
+			? 'from-gray-100 dark:from-[#1a1b22] selected'
 			: selected
-				? 'from-gray-100 dark:from-gray-950 selected'
-				: 'invisible group-hover:visible from-gray-100 dark:from-gray-950'}
+				? 'from-gray-100 dark:from-[#171820] selected'
+				: 'invisible group-hover:visible from-gray-100 dark:from-[#15161d]'}
             absolute {className === 'pr-2'
 			? 'right-[8px]'
-			: 'right-1'} top-[4px] py-1 pr-0.5 mr-1.5 pl-5 bg-linear-to-l from-80%
+			: 'right-1'} top-[5px] py-1 pr-0.5 mr-1.5 pl-5 bg-linear-to-l from-80%
 
               to-transparent"
 		on:mouseenter={(e) => {
@@ -547,9 +543,6 @@
 					chatId={id}
 					cloneChatHandler={() => {
 						cloneChatHandler(id);
-					}}
-					shareHandler={() => {
-						showShareChatModal = true;
 					}}
 					{moveChatHandler}
 					archiveChatHandler={() => {

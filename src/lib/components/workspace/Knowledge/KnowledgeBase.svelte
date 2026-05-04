@@ -30,15 +30,12 @@
 		addFileToKnowledgeById,
 		getKnowledgeById,
 		removeFileFromKnowledgeById,
-		resetKnowledgeById,
-		updateFileFromKnowledgeById,
 		updateKnowledgeById,
 		updateKnowledgeAccessGrants,
 		searchKnowledgeFilesById
 	} from '$lib/apis/knowledge';
-	import { processWeb, processYoutubeVideo } from '$lib/apis/retrieval';
 
-	import { blobToFile, isYoutubeUrl } from '$lib/utils';
+	import { blobToFile } from '$lib/utils';
 
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import Files from './KnowledgeBase/Files.svelte';
@@ -47,7 +44,6 @@
 	import AddContentMenu from './KnowledgeBase/AddContentMenu.svelte';
 	import AddTextContentModal from './KnowledgeBase/AddTextContentModal.svelte';
 
-	import SyncConfirmDialog from '../../common/ConfirmDialog.svelte';
 	import Drawer from '$lib/components/common/Drawer.svelte';
 	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
 	import LockClosed from '$lib/components/icons/LockClosed.svelte';
@@ -56,17 +52,14 @@
 	import FilesOverlay from '$lib/components/chat/MessageInput/FilesOverlay.svelte';
 	import DropdownOptions from '$lib/components/common/DropdownOptions.svelte';
 	import Pagination from '$lib/components/common/Pagination.svelte';
-	import AttachWebpageModal from '$lib/components/chat/MessageInput/AttachWebpageModal.svelte';
 
 	let largeScreen = true;
 
 	let pane;
 	let showSidepanel = true;
 
-	let showAddWebpageModal = false;
 	let showAddTextContentModal = false;
 
-	let showSyncConfirmModal = false;
 	let showAccessControlModal = false;
 
 	let minSize = 0;
@@ -185,82 +178,6 @@
 
 		console.log(file);
 		return file;
-	};
-
-	const uploadWeb = async (urls) => {
-		if (!Array.isArray(urls)) {
-			urls = [urls];
-		}
-
-		const newFileItems = urls.map((url) => ({
-			type: 'file',
-			file: '',
-			id: null,
-			url: url,
-			name: url,
-			size: null,
-			status: 'uploading',
-			error: '',
-			itemId: uuidv4()
-		}));
-
-		// Display all items at once
-		fileItems = [...newFileItems, ...(fileItems ?? [])];
-
-		for (const fileItem of newFileItems) {
-			try {
-				console.log(fileItem);
-				const res = await processWeb(localStorage.token, '', fileItem.url, false).catch((e) => {
-					console.error('Error processing web URL:', e);
-					return null;
-				});
-
-				if (res) {
-					console.log(res);
-					const file = createFileFromText(
-						// Use URL as filename, sanitized
-						fileItem.url
-							.replace(/[^a-z0-9]/gi, '_')
-							.toLowerCase()
-							.slice(0, 50),
-						res.content
-					);
-
-					const uploadedFile = await uploadFile(localStorage.token, file).catch((e) => {
-						toast.error(`${e}`);
-						return null;
-					});
-
-					if (uploadedFile) {
-						console.log(uploadedFile);
-						fileItems = fileItems.map((item) => {
-							if (item.itemId === fileItem.itemId) {
-								item.id = uploadedFile.id;
-							}
-							return item;
-						});
-
-						if (uploadedFile.error) {
-							console.warn('File upload warning:', uploadedFile.error);
-							toast.warning(uploadedFile.error);
-							fileItems = fileItems.filter((file) => file.id !== uploadedFile.id);
-						} else {
-							await addFileHandler(uploadedFile.id);
-						}
-					} else {
-						toast.error($i18n.t('Failed to upload file.'));
-					}
-				} else {
-					// remove the item from fileItems
-					fileItems = fileItems.filter((item) => item.itemId !== fileItem.itemId);
-					toast.error($i18n.t('Failed to process URL: {{url}}', { url: fileItem.url }));
-				}
-			} catch (e) {
-				// remove the item from fileItems
-				fileItems = fileItems.filter((item) => item.itemId !== fileItem.itemId);
-				toast.error(`${e}`);
-			}
-		}
 	};
 
 	const uploadFileHandler = async (file) => {
@@ -510,25 +427,6 @@
 		} else {
 			toast.error($i18n.t('Error accessing directory'));
 			console.error('Directory access error:', error);
-		}
-	};
-
-	// Helper function to maintain file paths within zip
-	const syncDirectoryHandler = async () => {
-		if (fileItems.length > 0) {
-			const res = await resetKnowledgeById(localStorage.token, id).catch((e) => {
-				toast.error(`${e}`);
-			});
-
-			if (res) {
-				fileItems = [];
-				toast.success($i18n.t('Knowledge reset successfully.'));
-
-				// Upload directory
-				uploadDirectoryHandler();
-			}
-		} else {
-			uploadDirectoryHandler();
 		}
 	};
 
@@ -783,22 +681,6 @@
 </script>
 
 <FilesOverlay show={dragged} />
-<SyncConfirmDialog
-	bind:show={showSyncConfirmModal}
-	message={$i18n.t(
-		'This will reset the knowledge base and sync all files. Do you wish to continue?'
-	)}
-	on:confirm={() => {
-		syncDirectoryHandler();
-	}}
-/>
-
-<AttachWebpageModal
-	bind:show={showAddWebpageModal}
-	onSubmit={async (e) => {
-		uploadWeb(e.data);
-	}}
-/>
 
 <AddTextContentModal
 	bind:show={showAddTextContentModal}
@@ -944,16 +826,11 @@
 								onUpload={(data) => {
 									if (data.type === 'directory') {
 										uploadDirectoryHandler();
-									} else if (data.type === 'web') {
-										showAddWebpageModal = true;
 									} else if (data.type === 'text') {
 										showAddTextContentModal = true;
 									} else {
 										document.getElementById('files-input').click();
 									}
-								}}
-								onSync={() => {
-									showSyncConfirmModal = true;
 								}}
 							/>
 						</div>

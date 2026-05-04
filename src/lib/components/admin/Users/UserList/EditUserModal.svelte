@@ -9,7 +9,7 @@
 
 	import { goto } from '$app/navigation';
 
-	import { updateUserById, getUserGroupsById } from '$lib/apis/users';
+	import { updateUserById, getUserGroupsById, getUserPolicyById, updateUserPolicyById } from '$lib/apis/users';
 
 	import Modal from '$lib/components/common/Modal.svelte';
 	import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -58,6 +58,7 @@
 				created_at: selectedUser.created_at
 			};
 			loadUserGroups();
+			loadUserPolicy();
 		}
 	};
 
@@ -71,14 +72,44 @@
 
 	let userGroups: Array<{ id: string; name: string }> | null = null;
 
+	type UserPolicy = {
+		clearance_level: number;
+		department: string;
+		region: string;
+		can_export: boolean;
+		can_upload: boolean;
+	};
+
+	let _policy: UserPolicy = {
+		clearance_level: 0,
+		department: '',
+		region: '',
+		can_export: false,
+		can_upload: true
+	};
+
+	const clearanceLevels = [
+		{ value: 0, label: 'Public' },
+		{ value: 1, label: 'Internal' },
+		{ value: 2, label: 'Confidential' },
+		{ value: 3, label: 'Restricted' }
+	];
+
 	const submitHandler = async () => {
-		if (!selectedUser?.id) {
-			return;
-		}
+		if (!selectedUser?.id) return;
 
 		const res = await updateUserById(localStorage.token, selectedUser.id, _user).catch((error) => {
 			toast.error(`${error}`);
 		});
+
+		await updateUserPolicyById(localStorage.token, selectedUser.id, {
+			clearance_level: _policy.clearance_level,
+			department: _policy.department || null,
+			region: _policy.region || null,
+			can_export: _policy.can_export,
+			can_upload: _policy.can_upload,
+			allowed_collection_ids: []
+		}).catch(() => {});
 
 		if (res) {
 			dispatch('save');
@@ -94,6 +125,23 @@
 			toast.error(`${error}`);
 			return null;
 		});
+	};
+
+	const loadUserPolicy = async () => {
+		if (!selectedUser?.id) return;
+
+		const policy = await getUserPolicyById(localStorage.token, selectedUser.id).catch(() => null);
+		if (policy) {
+			_policy = {
+				clearance_level: policy.clearance_level ?? 0,
+				department: policy.department ?? '',
+				region: policy.region ?? '',
+				can_export: policy.can_export ?? false,
+				can_upload: policy.can_upload ?? true
+			};
+		} else {
+			_policy = { clearance_level: 0, department: '', region: '', can_export: false, can_upload: true };
+		}
 	};
 </script>
 
@@ -245,6 +293,57 @@
 											/>
 										</div>
 									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+							<div class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Access Policy</div>
+
+							<div class="flex flex-col space-y-1.5">
+								<div class="flex flex-col w-full">
+									<div class="mb-1 text-xs text-gray-500">{$i18n.t('Clearance Level')}</div>
+									<select
+										class="w-full text-sm bg-transparent outline-hidden"
+										bind:value={_policy.clearance_level}
+										aria-label={$i18n.t('Clearance Level')}
+									>
+										{#each clearanceLevels as level}
+											<option value={level.value}>{level.label}</option>
+										{/each}
+									</select>
+								</div>
+
+								<div class="flex flex-col w-full">
+									<div class="mb-1 text-xs text-gray-500">{$i18n.t('Department')}</div>
+									<input
+										class="w-full text-sm bg-transparent outline-hidden"
+										type="text"
+										bind:value={_policy.department}
+										placeholder={$i18n.t('e.g. HR, Finance, Engineering')}
+										autocomplete="off"
+									/>
+								</div>
+
+								<div class="flex flex-col w-full">
+									<div class="mb-1 text-xs text-gray-500">{$i18n.t('Region')}</div>
+									<input
+										class="w-full text-sm bg-transparent outline-hidden"
+										type="text"
+										bind:value={_policy.region}
+										placeholder={$i18n.t('e.g. EU, US, APAC')}
+										autocomplete="off"
+									/>
+								</div>
+
+								<div class="flex items-center justify-between w-full">
+									<div class="text-xs text-gray-500">{$i18n.t('Can Export')}</div>
+									<input type="checkbox" bind:checked={_policy.can_export} />
+								</div>
+
+								<div class="flex items-center justify-between w-full">
+									<div class="text-xs text-gray-500">{$i18n.t('Can Upload')}</div>
+									<input type="checkbox" bind:checked={_policy.can_upload} />
 								</div>
 							</div>
 						</div>

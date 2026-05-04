@@ -71,21 +71,21 @@
 	$: models = selectedModels.map((id) => $_models.find((m) => m.id === id));
 </script>
 
-<div class="m-auto w-full max-w-6xl px-2 @2xl:px-20 translate-y-6 py-24 text-center">
+<div class="m-auto w-full max-w-4xl px-4 py-24 text-center">
 	{#if $temporaryChatEnabled}
 		<Tooltip
 			content={$i18n.t("This chat won't appear in history and your messages will not be saved.")}
 			className="w-full flex justify-center mb-0.5"
 			placement="top"
 		>
-			<div class="flex items-center gap-2 text-gray-500 text-base my-2 w-fit">
+			<div class="my-2 flex w-fit items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.035] px-3 py-1.5 text-sm text-gray-400">
 				<EyeSlash strokeWidth="2.5" className="size-4" />{$i18n.t('Temporary Chat')}
 			</div>
 		</Tooltip>
 	{/if}
 
 	<div
-		class="w-full text-3xl text-gray-800 dark:text-gray-100 text-center flex items-center gap-4 font-primary"
+		class="flex w-full items-center gap-4 text-center font-primary text-gray-100"
 	>
 		<div class="w-full flex flex-col justify-center items-center">
 			{#if $selectedFolder}
@@ -103,7 +103,9 @@
 					}}
 				/>
 			{:else}
-				<div class="flex flex-row justify-center gap-3 @sm:gap-3.5 w-fit px-5 max-w-xl">
+				<div
+					class="flex w-fit max-w-xl flex-row items-center justify-center gap-3 rounded-3xl px-5 py-3 @sm:gap-3.5"
+				>
 					<div class="flex shrink-0 justify-center">
 						<div class="flex -space-x-4 mb-0.5" in:fade={{ duration: 100 }}>
 							{#each models as model, modelIdx}
@@ -139,7 +141,7 @@
 					</div>
 
 					<div
-						class=" text-3xl @sm:text-3xl line-clamp-1 flex items-center"
+						class="flex items-center text-2xl font-semibold leading-tight @sm:text-3xl"
 						in:fade={{ duration: 100 }}
 					>
 						{#if models[selectedModelIdx]?.name}
@@ -158,7 +160,7 @@
 					</div>
 				</div>
 
-				<div class="flex mt-1 mb-2">
+				<div class="mb-4 mt-1 flex">
 					<div in:fade={{ duration: 100, delay: 50 }}>
 						{#if models[selectedModelIdx]?.info?.meta?.description ?? null}
 							<Tooltip
@@ -171,7 +173,7 @@
 								placement="top"
 							>
 								<div
-									class="mt-0.5 px-2 text-sm font-normal text-gray-500 dark:text-gray-400 line-clamp-2 max-w-xl markdown"
+									class="markdown mt-0.5 max-w-xl px-2 text-sm font-normal text-gray-500 line-clamp-2"
 								>
 									{@html marked.parse(
 										sanitizeResponseContent(
@@ -202,7 +204,9 @@
 				</div>
 			{/if}
 
-			<div class="text-base font-normal @md:max-w-3xl w-full py-3 {atSelectedModel ? 'mt-2' : ''}">
+			<div
+				class="mx-auto w-full max-w-3xl text-base font-normal {atSelectedModel ? 'mt-2' : ''}"
+			>
 				<MessageInput
 					bind:this={messageInput}
 					{history}

@@ -443,9 +443,9 @@
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder modelIds={selectedModels} {atSelectedModel} {onSelect} />
 	{:else}
-		<div class="w-full pt-2">
+		<div class="w-full pt-4">
 			{#key chatId}
-				<section class="w-full" aria-labelledby="chat-conversation">
+				<section class="mx-auto w-full max-w-5xl px-3 @xl:px-6" aria-labelledby="chat-conversation">
 					<h2 class="sr-only" id="chat-conversation">{$i18n.t('Chat Conversation')}</h2>
 					{#if messages.at(0)?.parentId !== null}
 						<Loader
@@ -462,7 +462,13 @@
 							</div>
 						</Loader>
 					{/if}
-					<ul role="log" aria-live="polite" aria-relevant="additions" aria-atomic="false">
+					<ul
+						class="space-y-5"
+						role="log"
+						aria-live="polite"
+						aria-relevant="additions"
+						aria-atomic="false"
+					>
 						{#each messages as message, messageIdx (message.id)}
 							<Message
 								{chatId}

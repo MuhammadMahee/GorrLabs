@@ -104,7 +104,7 @@ ENV HF_HOME="/app/backend/data/cache/embedding/models"
 ## Torch Extensions ##
 # ENV TORCH_EXTENSIONS_DIR="/.cache/torch_extensions"
 
-#### Other models ##########################################################
+#### Other models #################
 
 WORKDIR /app/backend
 

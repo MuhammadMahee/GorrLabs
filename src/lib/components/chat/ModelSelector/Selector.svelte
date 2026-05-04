@@ -28,15 +28,12 @@
 		type Model
 	} from '$lib/stores';
 	import { toast } from 'svelte-sonner';
-	import { capitalizeFirstLetter, sanitizeResponseContent, splitStream } from '$lib/utils';
+	import { splitStream } from '$lib/utils';
 	import { getModels } from '$lib/apis';
 
 	import ChevronDown from '$lib/components/icons/ChevronDown.svelte';
-	import Check from '$lib/components/icons/Check.svelte';
 	import Search from '$lib/components/icons/Search.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
-	import Switch from '$lib/components/common/Switch.svelte';
-	import ChatBubbleOval from '$lib/components/icons/ChatBubbleOval.svelte';
 
 	import ModelItem from './ModelItem.svelte';
 
@@ -464,55 +461,59 @@
 							{...props}
 							class="{props.class} z-40 {$mobile
 								? `w-full`
-								: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-2xl bg-white dark:bg-gray-850 dark:text-white shadow-lg outline-hidden"
+								: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-2xl border border-gray-200/70 dark:border-white/[0.09] bg-white/95 dark:bg-[#080a10]/95 dark:text-white shadow-2xl shadow-black/30 backdrop-blur-xl outline-hidden overflow-hidden"
 							transition:flyAndScale
 						>
 							<slot>
 								{#if searchEnabled}
-									<div class="flex items-center gap-2.5 px-4.5 pt-3.5 mb-1.5">
-										<Search className="size-4" strokeWidth="2.5" />
+									<div class="px-3 pt-3">
+										<div
+											class="flex h-10 items-center gap-2.5 rounded-xl border border-gray-100 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.025] px-3 focus-within:border-gray-300 dark:focus-within:border-white/20 transition"
+										>
+											<Search className="size-4 text-gray-500 dark:text-gray-400" strokeWidth="2.5" />
 
-										<input
-											id="model-search-input"
-											bind:value={searchValue}
-											class="w-full text-sm bg-transparent outline-hidden"
-											placeholder={searchPlaceholder}
-											autocomplete="off"
-											aria-label={$i18n.t('Search In Models')}
-											on:keydown={(e) => {
-												if (e.code === 'Enter' && filteredItems.length > 0) {
-													value = filteredItems[selectedModelIdx].value;
-													show = false;
-													return; // dont need to scroll on selection
-												} else if (e.code === 'ArrowDown') {
-													e.stopPropagation();
-													selectedModelIdx = Math.min(
-														selectedModelIdx + 1,
-														filteredItems.length - 1
-													);
-												} else if (e.code === 'ArrowUp') {
-													e.stopPropagation();
-													selectedModelIdx = Math.max(selectedModelIdx - 1, 0);
-												} else {
-													// if the user types something, reset to the top selection.
-													selectedModelIdx = 0;
-												}
+											<input
+												id="model-search-input"
+												bind:value={searchValue}
+												class="w-full text-sm bg-transparent text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-500 outline-hidden"
+												placeholder={searchPlaceholder}
+												autocomplete="off"
+												aria-label={$i18n.t('Search In Models')}
+												on:keydown={(e) => {
+													if (e.code === 'Enter' && filteredItems.length > 0) {
+														value = filteredItems[selectedModelIdx].value;
+														show = false;
+														return; // dont need to scroll on selection
+													} else if (e.code === 'ArrowDown') {
+														e.stopPropagation();
+														selectedModelIdx = Math.min(
+															selectedModelIdx + 1,
+															filteredItems.length - 1
+														);
+													} else if (e.code === 'ArrowUp') {
+														e.stopPropagation();
+														selectedModelIdx = Math.max(selectedModelIdx - 1, 0);
+													} else {
+														// if the user types something, reset to the top selection.
+														selectedModelIdx = 0;
+													}
 
-												const item = document.querySelector(`[data-arrow-selected="true"]`);
-												item?.scrollIntoView({
-													block: 'center',
-													inline: 'nearest',
-													behavior: 'instant'
-												});
-											}}
-										/>
+													const item = document.querySelector(`[data-arrow-selected="true"]`);
+													item?.scrollIntoView({
+														block: 'center',
+														inline: 'nearest',
+														behavior: 'instant'
+													});
+												}}
+											/>
+										</div>
 									</div>
 								{/if}
 
-								<div class="px-2">
+								<div class="px-3 pt-2">
 									{#if tags && items.filter((item) => !(item.model?.info?.meta?.hidden ?? false)).length > 0}
 										<div
-											class=" flex w-full bg-white dark:bg-gray-850 overflow-x-auto scrollbar-none font-[450] mb-0.5"
+											class="flex w-full overflow-x-auto scrollbar-none font-[450]"
 											on:wheel={(e) => {
 												if (e.deltaY !== 0) {
 													e.preventDefault();
@@ -521,15 +522,15 @@
 											}}
 										>
 											<div
-												class="flex gap-1 w-fit text-center text-sm rounded-full bg-transparent px-1.5 whitespace-nowrap"
+												class="flex gap-1 w-fit text-center text-xs rounded-full bg-transparent whitespace-nowrap"
 												bind:this={tagsContainerElement}
 											>
 												{#if items.find((item) => item.model?.connection_type === 'local') || items.find((item) => item.model?.connection_type === 'external') || items.find((item) => item.model?.direct) || tags.length > 0}
 													<button
-														class="min-w-fit outline-none px-1.5 py-0.5 {selectedTag === '' &&
+														class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag === '' &&
 														selectedConnectionType === ''
-															? ''
-															: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+															? 'bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
+															: 'text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 														aria-pressed={selectedTag === '' && selectedConnectionType === ''}
 														on:click={() => {
 															selectedConnectionType = '';
@@ -544,8 +545,8 @@
 													<button
 														class="min-w-fit outline-none px-1.5 py-0.5 {selectedConnectionType ===
 														'local'
-															? ''
-															: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+															? 'rounded-full bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
+															: 'rounded-full text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 														aria-pressed={selectedConnectionType === 'local'}
 														on:click={() => {
 															selectedTag = '';
@@ -560,8 +561,8 @@
 													<button
 														class="min-w-fit outline-none px-1.5 py-0.5 {selectedConnectionType ===
 														'external'
-															? ''
-															: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+															? 'rounded-full bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
+															: 'rounded-full text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 														aria-pressed={selectedConnectionType === 'external'}
 														on:click={() => {
 															selectedTag = '';
@@ -576,8 +577,8 @@
 													<button
 														class="min-w-fit outline-none px-1.5 py-0.5 {selectedConnectionType ===
 														'direct'
-															? ''
-															: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+															? 'rounded-full bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
+															: 'rounded-full text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 														aria-pressed={selectedConnectionType === 'direct'}
 														on:click={() => {
 															selectedTag = '';
@@ -591,9 +592,9 @@
 												{#each tags as tag}
 													<Tooltip content={tag}>
 														<button
-															class="min-w-fit outline-none px-1.5 py-0.5 {selectedTag === tag
-																? ''
-																: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition capitalize"
+															class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag === tag
+																? 'bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
+																: 'text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 															aria-pressed={selectedTag === tag}
 															on:click={() => {
 																selectedConnectionType = '';
@@ -609,7 +610,7 @@
 									{/if}
 								</div>
 
-								<div class="px-2.5 group relative">
+								<div class="px-3 pt-2 group relative">
 									{#if filteredItems.length === 0}
 										{#if items.length === 0 && $user?.role === 'admin'}
 											<div class="flex flex-col items-start justify-center py-6 px-4 text-start">
@@ -639,7 +640,7 @@
 									{:else}
 										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<div
-											class="max-h-64 overflow-y-auto"
+											class="max-h-64 overflow-y-auto rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/40 dark:bg-white/[0.02] p-1"
 											role="listbox"
 											aria-label={$i18n.t('Available models')}
 											bind:this={listContainer}
@@ -754,7 +755,7 @@
 									{/each}
 								</div>
 
-								<div class="pb-2.5"></div>
+								<div class="pb-3"></div>
 
 								<div class="hidden w-[42rem]" ></div>
 								<div class="hidden w-[32rem]" ></div>

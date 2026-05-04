@@ -22,7 +22,6 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
-	import ShareChatModal from '../chat/ShareChatModal.svelte';
 	import ModelSelector from '../chat/ModelSelector.svelte';
 	import Tooltip from '../common/Tooltip.svelte';
 	import Menu from '$lib/components/layout/Navbar/Menu.svelte';
@@ -61,11 +60,8 @@
 
 	let closedBannerIds = [];
 
-	let showShareChatModal = false;
 	let showDownloadChatModal = false;
 </script>
-
-<ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
 
 <button
 	id="new-chat-button"
@@ -77,27 +73,27 @@
 ></button>
 
 <nav
-	class="sticky top-0 z-30 w-full {chat?.id
-		? 'pt-0.5 pb-1'
-		: 'pt-1 pb-1'} -mb-12 flex flex-col items-center drag-region"
+	class="sticky top-0 z-30 flex w-full flex-col items-center border-b border-transparent {chat?.id
+		? 'pt-2 pb-2'
+		: 'pt-2 pb-2'} drag-region"
 >
-	<div class="flex items-center w-full pl-1.5 pr-1">
+	<div class="flex w-full items-center px-3">
 		<div
 			id="navbar-bg-gradient-to-b"
 			class="{chat?.id
 				? 'visible'
-				: 'invisible'} bg-linear-to-b via-40% to-97% from-white/90 via-white/50 to-transparent dark:from-gray-900/90 dark:via-gray-900/50 dark:to-transparent pointer-events-none absolute inset-0 -bottom-10 z-[-1]"
+				: 'visible'} pointer-events-none absolute inset-0 -bottom-8 z-[-1] bg-linear-to-b from-[#08090f]/95 via-[#08090f]/78 via-40% to-transparent"
 		></div>
 
-		<div class=" flex max-w-full w-full mx-auto px-1.5 md:px-2 pt-0.5 bg-transparent">
-			<div class="flex items-center w-full max-w-full">
+		<div class="mx-auto flex w-full max-w-full bg-transparent">
+			<div class="flex w-full max-w-full items-center">
 				{#if $mobile && !$showSidebar}
 					<div
 						class="-translate-x-0.5 mr-1 mt-1 self-start flex flex-none items-center text-gray-600 dark:text-gray-400"
 					>
 						<Tooltip content={$showSidebar ? $i18n.t('Close Sidebar') : $i18n.t('Open Sidebar')}>
 							<button
-								class=" cursor-pointer flex rounded-lg hover:bg-gray-100 dark:hover:bg-gray-850 transition"
+								class="flex cursor-pointer rounded-xl p-1 text-gray-500 transition hover:bg-white/[0.06] hover:text-white"
 								on:click={() => {
 									showSidebar.set(!$showSidebar);
 								}}
@@ -111,7 +107,7 @@
 				{/if}
 
 				<div
-					class="flex-1 overflow-hidden max-w-full mt-0.5 py-0.5
+					class="max-w-full flex-1 overflow-hidden py-0.5
 			{$showSidebar ? 'ml-1' : ''}
 			"
 				>
@@ -120,14 +116,14 @@
 					{/if}
 				</div>
 
-				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
+				<div class="flex flex-none items-center gap-1 text-gray-500">
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
 
 					{#if $user?.role === 'user' ? ($user?.permissions?.chat?.temporary ?? true) && !($user?.permissions?.chat?.temporary_enforced ?? false) : true}
 						{#if !chat?.id}
 							<Tooltip content={$i18n.t(`Temporary Chat`)}>
 								<button
-									class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+									class="flex size-9 cursor-pointer items-center justify-center rounded-xl transition hover:bg-white/[0.06] hover:text-white"
 									id="temporary-chat-button"
 									on:click={async () => {
 										if (($settings?.temporaryChatByDefault ?? false) && $temporaryChatEnabled) {
@@ -161,7 +157,7 @@
 						{:else if $temporaryChatEnabled}
 							<Tooltip content={$i18n.t(`Save Chat`)}>
 								<button
-									class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+									class="flex size-9 cursor-pointer items-center justify-center rounded-xl transition hover:bg-white/[0.06] hover:text-white"
 									id="save-temporary-chat-button"
 									on:click={async () => {
 										onSaveTempChat();
@@ -178,9 +174,9 @@
 					{#if $mobile && !$temporaryChatEnabled && chat && chat.id}
 						<Tooltip content={$i18n.t('New Chat')}>
 							<button
-								class=" flex {$showSidebar
+								class="flex size-9 {$showSidebar
 									? 'md:hidden'
-									: ''} cursor-pointer px-2 py-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+									: ''} cursor-pointer items-center justify-center rounded-xl text-gray-500 transition hover:bg-white/[0.06] hover:text-white"
 								on:click={() => {
 									initNewChat();
 								}}
@@ -197,16 +193,13 @@
 						<Menu
 							{chat}
 							{shareEnabled}
-							shareHandler={() => {
-								showShareChatModal = !showShareChatModal;
-							}}
 							archiveChatHandler={() => {
 								archiveChatHandler(chat.id);
 							}}
 							{moveChatHandler}
 						>
 							<button
-								class="flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								class="flex size-9 cursor-pointer items-center justify-center rounded-xl transition hover:bg-white/[0.06] hover:text-white"
 								id="chat-context-menu-button"
 							>
 								<div class=" m-auto self-center">
@@ -219,7 +212,7 @@
 					{#if $user?.role === 'admin' || ($user?.permissions.chat?.controls ?? true)}
 						<Tooltip content={$i18n.t('Controls')}>
 							<button
-								class=" flex cursor-pointer px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								class="flex size-9 cursor-pointer items-center justify-center rounded-xl transition hover:bg-white/[0.06] hover:text-white"
 								on:click={async () => {
 									await showControls.set(!$showControls);
 								}}
@@ -244,13 +237,13 @@
 							}}
 						>
 							<div
-								class="select-none flex rounded-xl p-1.5 w-full hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+								class="flex size-9 select-none items-center justify-center rounded-xl transition hover:bg-white/[0.06]"
 							>
 								<div class=" self-center">
 									<span class="sr-only">{$i18n.t('User menu')}</span>
 									<img
 										src={`${ARKIVE_API_BASE_URL}/users/${$user?.id}/profile/image`}
-										class="size-6 object-cover rounded-full"
+										class="size-6 rounded-full object-cover ring-1 ring-white/10"
 										alt=""
 										draggable="false"
 									/>
