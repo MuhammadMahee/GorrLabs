@@ -1,22 +1,27 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
 from pathlib import Path
 
-# Set up paths for Vercel environment
-BASE_DIR = Path(__file__).parent.parent
-TEMPLATE_DIR = BASE_DIR / "public"
-STATIC_DIR = BASE_DIR / "public" / "static"
-
-app = Flask(__name__, template_folder=str(TEMPLATE_DIR), static_folder=str(STATIC_DIR), static_url_path="/static")
+app = Flask(__name__)
 
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 RECIPIENT = os.getenv("RECIPIENT_EMAIL", "gorrlabs@gmail.com")
+
+# Read HTML files
+try:
+    with open("/var/task/public/index.html", "r") as f:
+        INDEX_HTML = f.read()
+    with open("/var/task/public/contact.html", "r") as f:
+        CONTACT_HTML = f.read()
+except:
+    INDEX_HTML = "<h1>Gorr Labs</h1><p>Home page</p>"
+    CONTACT_HTML = "<h1>Contact</h1><p>Contact page</p>"
 
 
 def send_email(name, email, message):
@@ -62,18 +67,12 @@ def send_email(name, email, message):
 
 @app.route("/")
 def home():
-    template_path = TEMPLATE_DIR / "index.html"
-    if template_path.exists():
-        return template_path.read_text()
-    return render_template("index.html")
+    return INDEX_HTML, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 
 @app.route("/contact")
 def contact():
-    template_path = TEMPLATE_DIR / "contact.html"
-    if template_path.exists():
-        return template_path.read_text()
-    return render_template("contact.html")
+    return CONTACT_HTML, 200, {"Content-Type": "text/html; charset=utf-8"}
 
 
 @app.route("/api/send-message", methods=["POST"])
@@ -98,4 +97,3 @@ def send_message():
             "success": True,
             "message": "Message received! We'll be in touch soon."
         })
-
