@@ -6,9 +6,9 @@ import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__, 
+app = Flask(__name__,
             template_folder=BASE_DIR,
-            static_folder=os.path.join(BASE_DIR, "../public/static"),
+            static_folder=BASE_DIR,
             static_url_path="/static")
 
 SMTP_SERVER   = "smtp.gmail.com"
