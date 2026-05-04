@@ -1,63 +1,63 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-from pathlib import Path
 
-app = Flask(__name__, static_folder="/var/task/public/static", static_url_path="/static")
+app = Flask(__name__)
 
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-SMTP_USER = os.getenv("SMTP_USER", "")
-SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
-RECIPIENT = os.getenv("RECIPIENT_EMAIL", "gorrlabs@gmail.com")
-
-# Read HTML files from the same directory as this script
-import os
-API_DIR = os.path.dirname(os.path.abspath(__file__))
-
-try:
-    with open(os.path.join(API_DIR, "index.html"), "r") as f:
-        INDEX_HTML = f.read()
-except:
-    INDEX_HTML = "<h1>Gorr Labs</h1><p>Home page</p>"
-
-try:
-    with open(os.path.join(API_DIR, "contact.html"), "r") as f:
-        CONTACT_HTML = f.read()
-except:
-    CONTACT_HTML = "<h1>Contact</h1><p>Contact page</p>"
+SMTP_SERVER   = "smtp.gmail.com"
+SMTP_PORT     = 587
+SMTP_USER     = "gorrlabs@gmail.com"
+SMTP_PASSWORD = "oyxt vvxv rmvw hsvg"  # ⚠️ replace this
+RECIPIENT     = "gorrlabs@gmail.com"
 
 
 def send_email(name, email, message):
     msg = MIMEMultipart("alternative")
+    
     msg["Subject"] = "Gorr Labs — We received your message"
     msg["From"] = SMTP_USER
-    msg["To"] = email
-    msg["Cc"] = RECIPIENT
-    recipients = [email, RECIPIENT]
+    msg["To"] = email                  # ✅ user gets email
+    msg["Cc"] = RECIPIENT              # ✅ you get CC
+
+    recipients = [email, RECIPIENT]    # ✅ must include both
 
     html = f"""
     <html>
     <body style="font-family:Arial,sans-serif;background:#0A0A0A;color:#fff;padding:30px;">
       <div style="max-width:600px;margin:auto;background:#111;border:1px solid #FF7A00;
                   border-radius:12px;padding:30px;text-align:center;">
-        <img src="https://gorrlabs.com/static/assets/logo.png"
+
+        <!-- LOGO -->
+        <img src="https://GorrLabs.com/static/assets/logo.png"
              alt="Gorr Labs"
              style="width:120px;margin-bottom:20px;">
+
         <h2 style="color:#FF7A00;">Gorr Labs</h2>
+
         <p style="text-align:left;">Hi {name},</p>
-        <p style="text-align:left;">We've received your message and will get back to you within 24 hours.</p>
+
+        <p style="text-align:left;">
+          We’ve received your message and will get back to you within 24 hours.
+        </p>
+
         <hr style="border-color:#333;margin:20px 0;">
+
         <p style="text-align:left;"><strong>Your Message:</strong></p>
+
         <p style="background:#1a1a1a;padding:16px;border-left:3px solid #FF2D2D;
-                  border-radius:6px;line-height:1.7;text-align:left;">{message}</p>
+                  border-radius:6px;line-height:1.7;text-align:left;">
+          {message}
+        </p>
+
         <hr style="border-color:#333;margin:20px 0;">
+
         <p style="font-size:12px;color:#777;text-align:left;">
           Submitted Email: {email}<br>
           This is an automated confirmation from Gorr Labs.
         </p>
+
       </div>
     </body>
     </html>
@@ -73,17 +73,18 @@ def send_email(name, email, message):
 
 @app.route("/")
 def home():
-    return INDEX_HTML, 200, {"Content-Type": "text/html; charset=utf-8"}
+    return render_template("index.html")
 
 
 @app.route("/contact")
 def contact():
-    return CONTACT_HTML, 200, {"Content-Type": "text/html; charset=utf-8"}
+    return render_template("contact.html")
 
 
-@app.route("/api/send-message", methods=["POST"])
+@app.route("/send-message", methods=["POST"])
 def send_message():
     data = request.get_json() or {}
+
     name = data.get("name", "").strip()
     email = data.get("email", "").strip()
     message = data.get("message", "").strip()
@@ -103,3 +104,7 @@ def send_message():
             "success": True,
             "message": "Message received! We'll be in touch soon."
         })
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
