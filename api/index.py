@@ -6,8 +6,7 @@ import os
 from pathlib import Path
 
 # Set up paths for Vercel environment
-# In Vercel, files are at /var/task/Downloads/GorrLabs-main/
-BASE_DIR = Path(__file__).parent.parent / "Downloads" / "GorrLabs-main"
+BASE_DIR = Path(__file__).parent.parent
 TEMPLATE_DIR = BASE_DIR / "public"
 STATIC_DIR = BASE_DIR / "public" / "static"
 
