@@ -12,16 +12,66 @@ concurrency:
 
 jobs:
   # ─────────────────────────────────────────
-  # Deploy (main branch only)
+  # Build Docker image in CI and push to GHCR
+  # ─────────────────────────────────────────
+  build:
+    name: Build & Push Image
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    permissions:
+      contents: read
+      packages: write
+
+    outputs:
+      image: ${{ steps.meta.outputs.tags }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          build-args: |
+            USE_EMBEDDING_MODEL=BAAI/bge-large-en-v1.5
+            USE_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:buildcache,mode=max
+
+  # ─────────────────────────────────────────
+  # Deploy (pull pre-built image on VPS)
   # ─────────────────────────────────────────
   deploy:
     name: Deploy to VPS
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: build
     environment: production
 
     steps:
-      - name: SSH → git pull → docker compose up
+      - name: SSH → pull image → docker compose up
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -29,27 +79,21 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           port: 22
-          command_timeout: 30m
+          command_timeout: 15m
           script: |
             set -euo pipefail
             cd ${{ secrets.VPS_DEPLOY_PATH }}
 
-            echo "==> Pulling latest code"
-            git pull origin main
-
             echo "==> Writing .env"
-            cat > .env << 'EOF'
+            cat > .env << 'ENVEOF'
             ARKIVE_SECRET_KEY=${{ secrets.ARKIVE_SECRET_KEY }}
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
             ARKIVE_PORT=${{ secrets.ARKIVE_PORT }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
-            DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@localhost:${{ secrets.POSTGRES_PORT }}/${{ secrets.POSTGRES_DB }}
-            OLLAMA_BASE_URL=http://localhost:11434
-            OLLAMA_MODEL=qwen2.5:7b
-            LOCAL_FALLBACK_MODEL=qwen2.5:7b
-            LOCAL_ONLY_ABOVE_SENSITIVITY=3
+            DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres:5432/${{ secrets.POSTGRES_DB }}
+            OLLAMA_BASE_URL=http://ollama:11434
             ENABLE_OLLAMA_API=True
             ENABLE_OPENAI_API=False
             OPENAI_API_BASE_URL=
@@ -76,10 +120,19 @@ jobs:
             AWS_BEDROCK_API_KEY=${{ secrets.AWS_BEDROCK_API_KEY }}
             LOCAL_FALLBACK_MODEL=${{ secrets.AWS_BEDROCK_MODEL }}
             LOCAL_ONLY_ABOVE_SENSITIVITY=1
-            EOF
+            ENVEOF
 
-            echo "==> Rebuilding containers"
-            docker compose up -d --build --remove-orphans
+            echo "==> Logging in to GHCR"
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "==> Pulling pre-built image"
+            docker pull ghcr.io/${{ github.repository }}:latest
+
+            echo "==> Updating compose to use pre-built image"
+            export ARKIVE_IMAGE=ghcr.io/${{ github.repository }}:latest
+
+            echo "==> Starting containers"
+            docker compose up -d --no-build --remove-orphans
 
             echo "==> Pruning old images"
             docker image prune -f

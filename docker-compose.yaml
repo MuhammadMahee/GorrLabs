@@ -27,6 +27,7 @@ services:
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
 
   arkive:
+    image: ${ARKIVE_IMAGE:-}
     build:
       context: .
       dockerfile: Dockerfile
