@@ -35,7 +35,7 @@ def send_email(name, email, message):
                   border-radius:12px;padding:30px;text-align:center;">
 
         <!-- LOGO -->
-        <img src="https://GorrLabs.com/static/assets/logo.png"
+        <img src="https://gorrlabs.vercel.app/static/logo.png"
              alt="Gorr Labs"
              style="width:120px;margin-bottom:20px;">
 
