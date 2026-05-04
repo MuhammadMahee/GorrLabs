@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "Gorr_Labs.py",
+      "src": "api/index.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "Gorr_Labs.py"
+      "dest": "api/index.py"
     }
   ]
 }
