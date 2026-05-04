@@ -1,4 +1,15 @@
 {
-  "buildCommand": "cd Downloads/GorrLabs-main && pip install -r requirements.txt",
-  "outputDirectory": "Downloads/GorrLabs-main/public"
+  "version": 2,
+  "builds": [
+    {
+      "src": "Gorr_Labs.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "Gorr_Labs.py"
+    }
+  ]
 }
