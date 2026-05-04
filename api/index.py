@@ -63,11 +63,17 @@ def send_email(name, email, message):
 
 @app.route("/")
 def home():
+    template_path = TEMPLATE_DIR / "index.html"
+    if template_path.exists():
+        return template_path.read_text()
     return render_template("index.html")
 
 
 @app.route("/contact")
 def contact():
+    template_path = TEMPLATE_DIR / "contact.html"
+    if template_path.exists():
+        return template_path.read_text()
     return render_template("contact.html")
 
 
