@@ -13,33 +13,20 @@ SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 RECIPIENT = os.getenv("RECIPIENT_EMAIL", "gorrlabs@gmail.com")
 
-# Read HTML files - try multiple possible paths
-INDEX_HTML = None
-CONTACT_HTML = None
+# Read HTML files from the same directory as this script
+import os
+API_DIR = os.path.dirname(os.path.abspath(__file__))
 
-possible_paths = [
-    "/var/task/public",
-    "/var/task/../public",
-    "./public",
-    "../public"
-]
-
-for base_path in possible_paths:
-    try:
-        index_file = f"{base_path}/index.html"
-        contact_file = f"{base_path}/contact.html"
-        with open(index_file, "r") as f:
-            INDEX_HTML = f.read()
-        with open(contact_file, "r") as f:
-            CONTACT_HTML = f.read()
-        break
-    except:
-        continue
-
-# Fallback if files not found
-if not INDEX_HTML:
+try:
+    with open(os.path.join(API_DIR, "index.html"), "r") as f:
+        INDEX_HTML = f.read()
+except:
     INDEX_HTML = "<h1>Gorr Labs</h1><p>Home page</p>"
-if not CONTACT_HTML:
+
+try:
+    with open(os.path.join(API_DIR, "contact.html"), "r") as f:
+        CONTACT_HTML = f.read()
+except:
     CONTACT_HTML = "<h1>Contact</h1><p>Contact page</p>"
 
 
