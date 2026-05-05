@@ -1481,7 +1481,7 @@ def save_docs_to_vector_db(
     )
     if _enrichment_enabled:
         try:
-            from arkive.utils.contextual_enricher import enrich_chunks
+            from arkive.agents.enricher import enrich_chunks
 
             _first_meta = docs[0].metadata if docs else {}
             _doc_title = (

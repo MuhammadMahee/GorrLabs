@@ -2272,6 +2272,14 @@ async def process_chat_payload(request, form_data, user, metadata, model):
         except Exception:
             pass
 
+    # Always respond in English regardless of query language
+    form_data = apply_system_prompt_to_body(
+        'Always respond in English, regardless of the language used in the query.',
+        form_data,
+        metadata,
+        user,
+    )
+
     form_data = await convert_url_images_to_base64(form_data)
 
     event_emitter = get_event_emitter(metadata)
@@ -2581,7 +2589,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
 
     # ── QUERY CLASSIFICATION ────────────────────────────────────────
     try:
-        from arkive.utils.query_classifier import classify_query, should_use_agentic_path
+        from arkive.agents.query_classifier import classify_query, should_use_agentic_path
         _classification = await classify_query(user_message or "")
         _use_agentic = should_use_agentic_path(_classification)
         request.state.query_classification = _classification
@@ -2608,12 +2616,37 @@ async def process_chat_payload(request, form_data, user, metadata, model):
     _agentic_succeeded = False
     if getattr(request.state, 'use_agentic_path', False):
         try:
-            from arkive.utils.agent_supervisor import run_agentic_rag
+            from arkive.agents.supervisor import run_agentic_rag
 
             _agent_collection_ids = [
                 f.get('id') for f in form_data.get('files', [])
                 if f.get('id')
             ] or None
+
+            # Extract recent conversation history from the sanitized
+            # message list. Blocked turns are already stripped by
+            # process_chat_payload before we reach this point.
+            # Limit to last 6 messages (3 turns) to bound context size.
+            _conv_history: list[str] = []
+            try:
+                _messages = form_data.get('messages', [])
+                for _msg in reversed(_messages[:-1]):
+                    if len(_conv_history) >= 6:
+                        break
+                    _role = _msg.get('role', '')
+                    _content = _msg.get('content', '')
+                    if isinstance(_content, list):
+                        _content = ' '.join(
+                            p.get('text', '')
+                            for p in _content
+                            if isinstance(p, dict) and p.get('type') == 'text'
+                        )
+                    if _role in ('user', 'assistant') and _content:
+                        _conv_history.append(f'{_role.upper()}: {_content[:500]}')
+                _conv_history.reverse()
+            except Exception as _ch_err:
+                log.warning(f'[agentic_rag] history extraction failed: {_ch_err}')
+                _conv_history = []
 
             _agent_response = await run_agentic_rag(
                 query=user_message,
@@ -2621,6 +2654,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                 user_context=getattr(request.state, 'user_context', None),
                 request=request,
                 collection_ids=_agent_collection_ids,
+                conversation_history=_conv_history,
             )
 
             if not _agent_response.fell_back and _agent_response.answer:

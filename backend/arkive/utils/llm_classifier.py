@@ -21,9 +21,32 @@ Types:
   NATIONAL_ID      — CNIC, NIC, SSN, Aadhaar, national ID of any country
   MEDICAL_CONDITION — diagnosis, disease, illness, medical condition values
   CREDENTIAL       — passwords, API keys, tokens, secrets
+  BUSINESS_SENSITIVE — specific non-public commercial or
+                     operational information that combines a
+                     named external party with non-public terms,
+                     figures, timelines, or competitive intent.
+                     Industry-agnostic — applies to any sector.
+
+                     Triggers on:
+                     - Named party + specific clause or term
+                       ("3-year exclusivity with [Vendor]")
+                     - Named party + specific figure or discount
+                       ("30% discount to close deal with [Client]")
+                     - Unreleased plan + named competitor or
+                       market timing
+                       ("launch before [Competitor] enters Q3")
+                     - Non-public operational commitment with
+                       identifiable counterparty
+
+                     Does NOT trigger on:
+                     - "our strategy", "the contract", "pricing"
+                       without specific parties or terms
+                     - Any information already publicly known
+                     - Internal team plans with no external party
 
 Important:
 - Only return types from the list above. Presidio already handles emails, phones, bank accounts, credit cards, SSNs — do NOT duplicate those.
+- For BUSINESS_SENSITIVE: only extract when a specific named external party AND specific non-public terms or figures are both present. Do not extract vague business references.
 - "value" must be the EXACT substring as it appears in the text (copy-paste, no paraphrasing)
 - If nothing sensitive is found, return an empty array: []
 - Return ONLY valid JSON. No explanation, no markdown fences.
@@ -39,8 +62,19 @@ sensitive information that should be restricted.
 Rate the following query on this scale:
 0 = Public — completely safe, no sensitive information
 1 = Internal — mentions people, internal topics, company references
-2 = Confidential — personal identifiers used together, private
-    business information
+2 = Confidential — personal identifiers used together, OR
+        information that combines any of the following signals:
+        - A specific or identifiable external party (named or by role:
+          "the client", "our main competitor", "the vendor") combined
+          with non-public commercial or operational terms (figures,
+          clauses, timelines, commitments, SLA conditions)
+        - Unreleased internal plans or competitive timing intent that
+          would cause harm if seen by a competitor before execution —
+          e.g. "launch before competitor enters the market", "release
+          ahead of their announcement", pre-emption strategies
+        - Specific figures, durations, or conditions tied to
+          identifiable deals, relationships, or market moves
+          that are not publicly known
 3 = Restricted — financial IDs, government IDs (SSN, passport),
     medical records, credentials, API keys, passwords
 
@@ -49,6 +83,10 @@ Important rules:
 - A question asking FOR sensitive info is not itself sensitive
 - Only rate 3 if actual restricted data appears in the text
 - Be conservative — when uncertain, rate lower not higher
+- Vague references without specifics are NOT level 2.
+  "Our strategy", "check the contract", "our pricing" alone
+  are level 0-1. Level 2 requires specific parties, figures,
+  timelines, or terms that would cause harm if exposed.
 
 Query to classify:
 "{query}"
@@ -116,10 +154,11 @@ async def llm_extract_entities(text: str) -> list[dict]:
     prompt = EXTRACT_PROMPT.format(text=text)
 
     _TYPE_MAP = {
-        "SALARY":            "SALARY",
-        "NATIONAL_ID":       "NATIONAL_ID",
-        "MEDICAL_CONDITION": "MEDICAL_CONDITION",
-        "CREDENTIAL":        "CREDENTIAL",
+        "SALARY":             "SALARY",
+        "NATIONAL_ID":        "NATIONAL_ID",
+        "MEDICAL_CONDITION":  "MEDICAL_CONDITION",
+        "CREDENTIAL":         "CREDENTIAL",
+        "BUSINESS_SENSITIVE": "BUSINESS_SENSITIVE",
     }
 
     raw_content = None

@@ -240,7 +240,7 @@ _LEVEL_3_TYPES = {
     'US_DRIVER_LICENSE',
 }
 
-_LEVEL_1_TYPES = {'PERSON', 'LOCATION', 'IP_ADDRESS', 'NRP'}
+_LEVEL_1_TYPES = {'PERSON', 'IP_ADDRESS', 'NRP'}
 
 # Narrow entity set used when scanning LLM responses.
 # Deliberately excludes PERSON, LOCATION, DATE_TIME, NRP —
