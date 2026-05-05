@@ -91,7 +91,37 @@ class DocumentClassificationsTable:
                 )
                 db.execute(stmt)
                 db.commit()
-                return self.get_classification_by_file_id(file_id=file_id, db=db)
+                result = self.get_classification_by_file_id(file_id=file_id, db=db)
+                if result:
+                    try:
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_document_classification
+
+                        fire_and_forget(
+                            event_type='document_classification',
+                            event_id=str(result.file_id),
+                            payload=payload_document_classification(
+                                {
+                                    'file_id': str(result.file_id),
+                                    'sensitivity_level': result.sensitivity_level,
+                                    'topic_labels': result.topic_labels or [],
+                                    'entity_types_detected': [
+                                        entity.get('entity_type')
+                                        for entity in (result.detected_entities or [])
+                                        if isinstance(entity, dict) and entity.get('entity_type')
+                                    ],
+                                    'classification_method': result.classification_source or 'auto',
+                                    'classified_at': str(result.classified_at),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[document_classifications] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
+                return result
             except Exception as e:
                 log.exception(f'Error upserting document classification: {e}')
                 return None

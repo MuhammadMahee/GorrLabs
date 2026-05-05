@@ -133,6 +133,29 @@ class OAuthSessionTable:
                 db.refresh(result)
 
                 if result:
+                    try:
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_oauth_session
+
+                        fire_and_forget(
+                            event_type='oauth_session',
+                            event_id=str(result.id),
+                            payload=payload_oauth_session(
+                                {
+                                    'session_id': str(result.id),
+                                    'user_id': str(result.user_id),
+                                    'provider': result.provider,
+                                    'created_at': str(result.created_at),
+                                    'expires_at': str(result.expires_at),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[oauth_sessions] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                     db.expunge(result)  # Detach so dict swap is never flushed
                     result.token = token  # Return decrypted token
                     return OAuthSessionModel.model_validate(result)

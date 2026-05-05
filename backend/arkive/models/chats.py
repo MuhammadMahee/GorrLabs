@@ -319,6 +319,31 @@ class ChatTable:
             except Exception as e:
                 log.warning(f'Failed to write initial messages to chat_message table: {e}')
 
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_chat_event
+
+                fire_and_forget(
+                    event_type='chat_event',
+                    event_id=str(chat_item.id),
+                    payload=payload_chat_event(
+                        {
+                            'chat_id': str(chat_item.id),
+                            'user_id': str(chat_item.user_id),
+                            'event_type': 'created',
+                            'title': chat_item.title,
+                            'share_id': str(chat_item.share_id or ''),
+                            'changed_at': str(chat_item.updated_at),
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
+
             return ChatModel.model_validate(chat_item) if chat_item else None
 
     def _chat_import_form_to_chat_model(self, user_id: str, form_data: ChatImportForm) -> ChatModel:
@@ -383,6 +408,31 @@ class ChatTable:
 
                 db.commit()
                 db.refresh(chat_item)
+
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_chat_event
+
+                    fire_and_forget(
+                        event_type='chat_event',
+                        event_id=str(chat_item.id),
+                        payload=payload_chat_event(
+                            {
+                                'chat_id': str(chat_item.id),
+                                'user_id': str(chat_item.user_id),
+                                'event_type': 'updated',
+                                'title': chat_item.title,
+                                'share_id': str(chat_item.share_id or ''),
+                                'changed_at': str(chat_item.updated_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
 
                 return ChatModel.model_validate(chat_item)
         except Exception:
@@ -554,6 +604,31 @@ class ChatTable:
             # Update the original chat with the share_id
             result = db.query(Chat).filter_by(id=chat_id).update({'share_id': shared_chat.id})
             db.commit()
+            if shared_result and result:
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_chat_event
+
+                    fire_and_forget(
+                        event_type='chat_event',
+                        event_id=str(chat_id),
+                        payload=payload_chat_event(
+                            {
+                                'chat_id': str(chat_id),
+                                'user_id': str(chat.user_id),
+                                'event_type': 'shared',
+                                'title': chat.title,
+                                'share_id': str(shared_chat.id),
+                                'changed_at': str(shared_chat.updated_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
             return shared_chat if (shared_result and result) else None
 
     def update_shared_chat_by_chat_id(self, chat_id: str, db: Optional[Session] = None) -> Optional[ChatModel]:
@@ -623,6 +698,30 @@ class ChatTable:
                 chat.updated_at = int(time.time())
                 db.commit()
                 db.refresh(chat)
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_chat_event
+
+                    fire_and_forget(
+                        event_type='chat_event',
+                        event_id=str(chat.id),
+                        payload=payload_chat_event(
+                            {
+                                'chat_id': str(chat.id),
+                                'user_id': str(chat.user_id),
+                                'event_type': 'pinned',
+                                'title': chat.title,
+                                'share_id': str(chat.share_id or ''),
+                                'changed_at': str(chat.updated_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return ChatModel.model_validate(chat)
         except Exception:
             return None
@@ -636,6 +735,30 @@ class ChatTable:
                 chat.updated_at = int(time.time())
                 db.commit()
                 db.refresh(chat)
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_chat_event
+
+                    fire_and_forget(
+                        event_type='chat_event',
+                        event_id=str(chat.id),
+                        payload=payload_chat_event(
+                            {
+                                'chat_id': str(chat.id),
+                                'user_id': str(chat.user_id),
+                                'event_type': 'archived',
+                                'title': chat.title,
+                                'share_id': str(chat.share_id or ''),
+                                'changed_at': str(chat.updated_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return ChatModel.model_validate(chat)
         except Exception:
             return None

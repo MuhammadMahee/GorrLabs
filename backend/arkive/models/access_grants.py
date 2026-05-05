@@ -319,6 +319,32 @@ class AccessGrantsTable:
             db.add(grant)
             db.commit()
             db.refresh(grant)
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_access_grant
+
+                fire_and_forget(
+                    event_type='access_grant',
+                    event_id=str(grant.id),
+                    payload=payload_access_grant(
+                        {
+                            'grant_id': str(grant.id),
+                            'grantor_id': '',
+                            'grantee_id': str(grant.principal_id),
+                            'resource_type': grant.resource_type,
+                            'resource_id': str(grant.resource_id),
+                            'permission_level': grant.permission,
+                            'granted_at': str(grant.created_at),
+                            'expires_at': '',
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return AccessGrantModel.model_validate(grant)
 
     def revoke_access(
@@ -399,6 +425,34 @@ class AccessGrantsTable:
 
             db.commit()
 
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_access_grant
+
+                for grant in results:
+                    fire_and_forget(
+                        event_type='access_grant',
+                        event_id=str(grant.id),
+                        payload=payload_access_grant(
+                            {
+                                'grant_id': str(grant.id),
+                                'grantor_id': '',
+                                'grantee_id': str(grant.principal_id),
+                                'resource_type': grant.resource_type,
+                                'resource_id': str(grant.resource_id),
+                                'permission_level': grant.permission,
+                                'granted_at': str(grant.created_at),
+                                'expires_at': '',
+                            }
+                        ),
+                    )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
+
             return [AccessGrantModel.model_validate(g) for g in results]
 
     def set_access_grants(
@@ -434,6 +488,33 @@ class AccessGrantsTable:
                 results.append(grant)
 
             db.commit()
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_access_grant
+
+                for grant in results:
+                    fire_and_forget(
+                        event_type='access_grant',
+                        event_id=str(grant.id),
+                        payload=payload_access_grant(
+                            {
+                                'grant_id': str(grant.id),
+                                'grantor_id': '',
+                                'grantee_id': str(grant.principal_id),
+                                'resource_type': grant.resource_type,
+                                'resource_id': str(grant.resource_id),
+                                'permission_level': grant.permission,
+                                'granted_at': str(grant.created_at),
+                                'expires_at': '',
+                            }
+                        ),
+                    )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return [AccessGrantModel.model_validate(g) for g in results]
 
     def get_access_control(

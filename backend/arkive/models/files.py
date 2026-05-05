@@ -148,6 +148,39 @@ class FilesTable:
                 db.commit()
                 db.refresh(result)
                 if result:
+                    try:
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_file_upload
+
+                        fire_and_forget(
+                            event_type='file_upload',
+                            event_id=str(result.id),
+                            payload=payload_file_upload(
+                                {
+                                    'file_id': str(result.id),
+                                    'user_id': str(result.user_id),
+                                    'filename': result.filename,
+                                    'file_hash': result.hash or '',
+                                    'content_type': (
+                                        result.meta.get('content_type', '')
+                                        if isinstance(result.meta, dict)
+                                        else ''
+                                    ),
+                                    'file_size': (
+                                        result.meta.get('size', 0)
+                                        if isinstance(result.meta, dict)
+                                        else 0
+                                    ),
+                                    'uploaded_at': str(result.created_at),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[files] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                     return FileModel.model_validate(result)
                 else:
                     return None

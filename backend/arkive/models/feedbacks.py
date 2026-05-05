@@ -160,6 +160,33 @@ class FeedbackTable:
                 db.commit()
                 db.refresh(result)
                 if result:
+                    try:
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_user_feedback
+
+                        _data = result.data if isinstance(result.data, dict) else {}
+                        _meta = result.meta if isinstance(result.meta, dict) else {}
+                        fire_and_forget(
+                            event_type='user_feedback',
+                            event_id=str(result.id),
+                            payload=payload_user_feedback(
+                                {
+                                    'feedback_id': str(result.id),
+                                    'user_id': str(result.user_id),
+                                    'model_id': str(_data.get('model_id', '')),
+                                    'rating': _data.get('rating', 0),
+                                    'comment': _data.get('comment') or _data.get('reason'),
+                                    'chat_id': str(_meta.get('chat_id', '')),
+                                    'created_at': str(result.created_at),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[feedbacks] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                     return FeedbackModel.model_validate(result)
                 else:
                     return None

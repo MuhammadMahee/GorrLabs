@@ -355,6 +355,45 @@ class ChannelTable:
             db.add(new_channel)
             db.commit()
             AccessGrants.set_access_grants('channel', new_channel.id, form_data.access_grants, db=db)
+            try:
+                from datetime import datetime, timezone
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import (
+                    payload_channel_event,
+                    payload_channel_membership,
+                )
+
+                fire_and_forget(
+                    event_type='channel_event',
+                    event_id=str(new_channel.id),
+                    payload=payload_channel_event(
+                        {
+                            'channel_id': str(new_channel.id),
+                            'user_id': str(user_id),
+                            'event_type': 'created',
+                            'changed_at': datetime.now(timezone.utc).isoformat(),
+                        }
+                    ),
+                )
+                for membership in memberships if form_data.type in ['group', 'dm'] else []:
+                    fire_and_forget(
+                        event_type='channel_membership',
+                        event_id=str(membership.id),
+                        payload=payload_channel_membership(
+                            {
+                                'channel_id': str(membership.channel_id),
+                                'user_id': str(membership.user_id),
+                                'event_type': 'invite',
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return self._to_channel_model(new_channel, db=db)
 
     def get_channels(self, db: Optional[Session] = None) -> list[ChannelModel]:
@@ -475,6 +514,31 @@ class ChannelTable:
             db.add_all(new_memberships)
             db.commit()
 
+            try:
+                from datetime import datetime, timezone
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_channel_membership
+
+                for membership in new_memberships:
+                    fire_and_forget(
+                        event_type='channel_membership',
+                        event_id=str(membership.id),
+                        payload=payload_channel_membership(
+                            {
+                                'channel_id': str(membership.channel_id),
+                                'user_id': str(membership.user_id),
+                                'event_type': 'invite',
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
+
             return [ChannelMemberModel.model_validate(membership) for membership in new_memberships]
 
     def remove_members_from_channel(
@@ -493,6 +557,31 @@ class ChannelTable:
                 .delete(synchronize_session=False)
             )
             db.commit()
+            if result:
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_channel_membership
+
+                    for uid in user_ids:
+                        fire_and_forget(
+                            event_type='channel_membership',
+                            event_id=f'{channel_id}:{uid}:leave',
+                            payload=payload_channel_membership(
+                                {
+                                    'channel_id': str(channel_id),
+                                    'user_id': str(uid),
+                                    'event_type': 'leave',
+                                    'changed_at': datetime.now(timezone.utc).isoformat(),
+                                }
+                            ),
+                        )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
             return result  # number of rows deleted
 
     def is_user_channel_manager(self, channel_id: str, user_id: str, db: Optional[Session] = None) -> bool:
@@ -549,6 +638,29 @@ class ChannelTable:
 
             db.add(new_membership)
             db.commit()
+            try:
+                from datetime import datetime, timezone
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_channel_membership
+
+                fire_and_forget(
+                    event_type='channel_membership',
+                    event_id=str(new_membership.id),
+                    payload=payload_channel_membership(
+                        {
+                            'channel_id': str(channel_id),
+                            'user_id': str(user_id),
+                            'event_type': 'join',
+                            'changed_at': datetime.now(timezone.utc).isoformat(),
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return channel_member
 
     def leave_channel(self, channel_id: str, user_id: str, db: Optional[Session] = None) -> bool:
@@ -570,6 +682,29 @@ class ChannelTable:
             membership.updated_at = int(time.time_ns())
 
             db.commit()
+            try:
+                from datetime import datetime, timezone
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_channel_membership
+
+                fire_and_forget(
+                    event_type='channel_membership',
+                    event_id=str(membership.id),
+                    payload=payload_channel_membership(
+                        {
+                            'channel_id': str(channel_id),
+                            'user_id': str(user_id),
+                            'event_type': 'leave',
+                            'changed_at': datetime.now(timezone.utc).isoformat(),
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return True
 
     def get_member_by_channel_and_user_id(
@@ -888,9 +1023,34 @@ class ChannelTable:
 
     def delete_channel_by_id(self, id: str, db: Optional[Session] = None) -> bool:
         with get_db_context(db) as db:
+            channel = db.query(Channel).filter(Channel.id == id).first()
             AccessGrants.revoke_all_access('channel', id, db=db)
             db.query(Channel).filter(Channel.id == id).delete()
             db.commit()
+            if channel:
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_channel_event
+
+                    fire_and_forget(
+                        event_type='channel_event',
+                        event_id=str(channel.id),
+                        payload=payload_channel_event(
+                            {
+                                'channel_id': str(channel.id),
+                                'user_id': str(channel.user_id),
+                                'event_type': 'deleted',
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
             return True
 
     ####################

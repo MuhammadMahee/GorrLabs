@@ -72,6 +72,31 @@ class PromptHistoryTable:
             db.add(history)
             db.commit()
             db.refresh(history)
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_prompt_history
+
+                _snapshot = history.snapshot if isinstance(history.snapshot, dict) else {}
+                fire_and_forget(
+                    event_type='prompt_history',
+                    event_id=str(history.id),
+                    payload=payload_prompt_history(
+                        {
+                            'prompt_id': str(history.prompt_id or ''),
+                            'version': str(_snapshot.get('version', '')),
+                            'user_id': str(history.user_id),
+                            'content': _snapshot.get('content', ''),
+                            'commit_message': history.commit_message or '',
+                            'created_at': str(history.created_at),
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[prompt_history] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
             return PromptHistoryModel.model_validate(history)
 
     def get_history_by_prompt_id(

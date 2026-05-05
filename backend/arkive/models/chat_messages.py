@@ -203,6 +203,48 @@ class ChatMessageTable:
                 db.add(message)
                 db.commit()
                 db.refresh(message)
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_chat_message
+
+                    _usage = message.usage or {}
+                    _token_count = (
+                        _usage.get('total_tokens')
+                        or _usage.get('total')
+                        or _usage.get('eval_count')
+                        or 0
+                        if isinstance(_usage, dict)
+                        else 0
+                    )
+                    _error_code = None
+                    if isinstance(message.error, dict):
+                        _error_code = message.error.get('code')
+                    elif message.error:
+                        _error_code = str(message.error)
+
+                    fire_and_forget(
+                        event_type='chat_message',
+                        event_id=str(message.id),
+                        payload=payload_chat_message(
+                            {
+                                'message_id': str(message.id),
+                                'chat_id': str(message.chat_id),
+                                'user_id': str(message.user_id),
+                                'model_id': str(message.model_id or ''),
+                                'role': message.role,
+                                'content': message.content,
+                                'token_count': _token_count,
+                                'status': 'completed' if message.done else 'pending',
+                                'error_code': _error_code,
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[chat_messages] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return ChatMessageModel.model_validate(message)
 
     def get_message_by_id(self, id: str, db: Optional[Session] = None) -> Optional[ChatMessageModel]:

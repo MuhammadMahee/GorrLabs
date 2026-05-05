@@ -172,6 +172,32 @@ class MessageTable:
             db.add(result)
             db.commit()
             db.refresh(result)
+            if result:
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_message_event
+
+                    fire_and_forget(
+                        event_type='message_event',
+                        event_id=str(result.id),
+                        payload=payload_message_event(
+                            {
+                                'message_id': str(result.id),
+                                'channel_id': str(result.channel_id or ''),
+                                'user_id': str(result.user_id),
+                                'content': result.content,
+                                'pinned_by': str(result.pinned_by or ''),
+                                'reaction_count': 0,
+                                'created_at': str(result.created_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[messages] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
             return MessageModel.model_validate(result) if result else None
 
     def get_message_by_id(
@@ -486,6 +512,37 @@ class MessageTable:
             db.add(result)
             db.commit()
             db.refresh(result)
+            if result:
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_message_event
+
+                    message = db.get(Message, id)
+                    reaction_count = (
+                        db.query(MessageReaction).filter_by(message_id=id).count()
+                    )
+                    if message:
+                        fire_and_forget(
+                            event_type='message_event',
+                            event_id=str(result.id),
+                            payload=payload_message_event(
+                                {
+                                    'message_id': str(message.id),
+                                    'channel_id': str(message.channel_id or ''),
+                                    'user_id': str(message.user_id),
+                                    'content': message.content,
+                                    'pinned_by': str(message.pinned_by or ''),
+                                    'reaction_count': reaction_count,
+                                    'created_at': str(message.created_at),
+                                }
+                            ),
+                        )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[messages] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
             return MessageReactionModel.model_validate(result) if result else None
 
     def get_reactions_by_message_id(self, id: str, db: Optional[Session] = None) -> list[Reactions]:

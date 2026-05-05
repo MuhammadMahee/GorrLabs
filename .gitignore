@@ -60,6 +60,8 @@ htmlcov/
 .env
 .env.*
 !.env.example
+.config/solana/
+secrets/
 
 # ----- Pyodide -----
 static/pyodide/
@@ -95,3 +97,4 @@ week1_missing.md
 week2_missing.md
 week3_missing.md
 week4_missing.md
+backendstructure.md

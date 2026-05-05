@@ -171,6 +171,29 @@ class KnowledgeTable:
                 db.refresh(result)
                 AccessGrants.set_access_grants('knowledge', result.id, form_data.access_grants, db=db)
                 if result:
+                    try:
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_knowledge_base_event
+
+                        fire_and_forget(
+                            event_type='knowledge_base_event',
+                            event_id=str(result.id),
+                            payload=payload_knowledge_base_event(
+                                {
+                                    'kb_id': str(result.id),
+                                    'user_id': str(result.user_id),
+                                    'event_type': 'created',
+                                    'file_id': '',
+                                    'changed_at': str(result.updated_at),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                     return self._to_knowledge_model(result, db=db)
                 else:
                     return None
@@ -545,6 +568,30 @@ class KnowledgeTable:
                 db.commit()
                 db.refresh(result)
                 if result:
+                    try:
+                        from datetime import datetime, timezone
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_knowledge_base_event
+
+                        fire_and_forget(
+                            event_type='knowledge_base_event',
+                            event_id=str(result.id),
+                            payload=payload_knowledge_base_event(
+                                {
+                                    'kb_id': str(result.knowledge_id),
+                                    'user_id': str(result.user_id),
+                                    'event_type': 'file_added',
+                                    'file_id': str(result.file_id),
+                                    'changed_at': datetime.now(timezone.utc).isoformat(),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                     return KnowledgeFileModel.model_validate(result)
                 else:
                     return None
@@ -562,8 +609,34 @@ class KnowledgeTable:
     def remove_file_from_knowledge_by_id(self, knowledge_id: str, file_id: str, db: Optional[Session] = None) -> bool:
         try:
             with get_db_context(db) as db:
+                knowledge_file = db.query(KnowledgeFile).filter_by(knowledge_id=knowledge_id, file_id=file_id).first()
                 db.query(KnowledgeFile).filter_by(knowledge_id=knowledge_id, file_id=file_id).delete()
                 db.commit()
+                if knowledge_file:
+                    try:
+                        from datetime import datetime, timezone
+                        from arkive.solana.tasks import fire_and_forget
+                        from arkive.solana.payloads import payload_knowledge_base_event
+
+                        fire_and_forget(
+                            event_type='knowledge_base_event',
+                            event_id=str(knowledge_file.id),
+                            payload=payload_knowledge_base_event(
+                                {
+                                    'kb_id': str(knowledge_id),
+                                    'user_id': str(knowledge_file.user_id),
+                                    'event_type': 'file_removed',
+                                    'file_id': str(file_id),
+                                    'changed_at': datetime.now(timezone.utc).isoformat(),
+                                }
+                            ),
+                        )
+                    except Exception as _anchor_err:
+                        import logging as _logging
+
+                        _logging.getLogger(__name__).warning(
+                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
+                        )
                 return True
         except Exception:
             return False

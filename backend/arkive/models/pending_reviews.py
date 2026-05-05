@@ -70,6 +70,32 @@ class PendingReviewsTable:
                 db.add(record)
                 db.commit()
                 db.refresh(record)
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_pending_review
+
+                    fire_and_forget(
+                        event_type='pending_review',
+                        event_id=str(record.id),
+                        payload=payload_pending_review(
+                            {
+                                'review_id': str(record.id),
+                                'user_id': str(record.user_id),
+                                'query_hash': record.query_hash,
+                                'sensitivity_level': record.sensitivity_level,
+                                'status': record.status,
+                                'reviewed_by': str(record.reviewed_by or ''),
+                                'reviewed_at': str(record.reviewed_at or ''),
+                                'reason': record.reason,
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[pending_reviews] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return PendingReviewModel.model_validate(record)
         except Exception as e:
             log.exception(f'[pending_reviews] insert failed: {e}')

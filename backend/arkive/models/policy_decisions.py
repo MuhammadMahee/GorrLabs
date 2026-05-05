@@ -88,6 +88,37 @@ class PolicyDecisionsTable:
                 db.add(decision)
                 db.commit()
                 db.refresh(decision)
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import (
+                        payload_policy_decision,
+                    )
+
+                    fire_and_forget(
+                        event_type="policy_decision",
+                        event_id=str(decision.id),
+                        payload=payload_policy_decision({
+                            "decision_id":       str(decision.id),
+                            "user_id":           str(form_data.user_id),
+                            "query_hash":        form_data.query_hash,
+                            "decision":          form_data.decision,
+                            "sensitivity_level": form_data.sensitivity_level,
+                            "routing":           getattr(form_data, "routing", None),
+                            "detected_entity_types": [
+                                e.get("entity_type")
+                                for e in (form_data.detected_entities or [])
+                                if isinstance(e, dict) and e.get("entity_type")
+                            ],
+                            "reason":     form_data.reason,
+                            "created_at": str(decision.created_at),
+                        }),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+                    _logging.getLogger(__name__).warning(
+                        f"[policy_decisions] solana anchor "
+                        f"fire_and_forget failed: {_anchor_err}"
+                    )
                 return PolicyDecisionModel.model_validate(decision)
             except Exception as e:
                 log.exception(f'Error inserting policy decision: {e}')

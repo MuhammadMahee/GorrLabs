@@ -291,6 +291,28 @@ class UsersTable:
             db.commit()
             db.refresh(result)
             if result:
+                try:
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_auth_event
+
+                    fire_and_forget(
+                        event_type='auth_event',
+                        event_id=str(user.id),
+                        payload=payload_auth_event(
+                            {
+                                'event': 'signup',
+                                'user_id': str(user.id),
+                                'email': user.email,
+                                'timestamp': str(user.created_at),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return user
             else:
                 return None
@@ -552,6 +574,29 @@ class UsersTable:
                 user.role = role
                 db.commit()
                 db.refresh(user)
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_user_activity
+
+                    fire_and_forget(
+                        event_type='user_activity',
+                        event_id=str(user.id),
+                        payload=payload_user_activity(
+                            {
+                                'user_id': str(user.id),
+                                'change_type': 'role_change',
+                                'changed_fields': ['role'],
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -583,6 +628,29 @@ class UsersTable:
                 user.profile_image_url = profile_image_url
                 db.commit()
                 db.refresh(user)
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_user_activity
+
+                    fire_and_forget(
+                        event_type='user_activity',
+                        event_id=str(user.id),
+                        payload=payload_user_activity(
+                            {
+                                'user_id': str(user.id),
+                                'change_type': 'profile_update',
+                                'changed_fields': ['profile_image_url'],
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -597,6 +665,29 @@ class UsersTable:
                 user.last_active_at = int(time.time())
                 db.commit()
                 db.refresh(user)
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_user_activity
+
+                    fire_and_forget(
+                        event_type='user_activity',
+                        event_id=str(user.id),
+                        payload=payload_user_activity(
+                            {
+                                'user_id': str(user.id),
+                                'change_type': 'last_active',
+                                'changed_fields': ['last_active_at'],
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -675,6 +766,29 @@ class UsersTable:
                     setattr(user, key, value)
                 db.commit()
                 db.refresh(user)
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_user_activity
+
+                    fire_and_forget(
+                        event_type='user_activity',
+                        event_id=str(user.id),
+                        payload=payload_user_activity(
+                            {
+                                'user_id': str(user.id),
+                                'change_type': 'profile_update',
+                                'changed_fields': list(updated.keys()),
+                                'changed_at': datetime.now(timezone.utc).isoformat(),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
                 return UserModel.model_validate(user)
         except Exception as e:
             print(e)
@@ -761,6 +875,30 @@ class UsersTable:
                 )
                 db.add(new_api_key)
                 db.commit()
+
+                try:
+                    from datetime import datetime, timezone
+                    from arkive.solana.tasks import fire_and_forget
+                    from arkive.solana.payloads import payload_api_key_usage
+
+                    fire_and_forget(
+                        event_type='api_key_usage',
+                        event_id=str(new_api_key.id),
+                        payload=payload_api_key_usage(
+                            {
+                                'key_id': str(new_api_key.id),
+                                'user_id': str(new_api_key.user_id),
+                                'used_at': datetime.now(timezone.utc).isoformat(),
+                                'expires_at': str(new_api_key.expires_at or ''),
+                            }
+                        ),
+                    )
+                except Exception as _anchor_err:
+                    import logging as _logging
+
+                    _logging.getLogger(__name__).warning(
+                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
+                    )
 
                 return True
 

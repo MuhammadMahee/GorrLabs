@@ -277,6 +277,33 @@ class AuditLoggingMiddleware:
                 response_object=response_body,
             )
 
+            try:
+                from arkive.solana.tasks import fire_and_forget
+                from arkive.solana.payloads import payload_http_request
+
+                status_code = context.metadata.get('response_status_code', None)
+                fire_and_forget(
+                    event_type='http_request',
+                    event_id=str(entry.id),
+                    payload=payload_http_request(
+                        {
+                            'user_id': str(user.get('id') or 'anonymous') if isinstance(user, dict) else 'anonymous',
+                            'ip_address': request.client.host if request.client else None,
+                            'method': request.method,
+                            'uri': str(request.url.path),
+                            'status_code': int(status_code or 0),
+                            'body': request_body if request_body else None,
+                            'response_status': 'error' if status_code and status_code >= 400 else 'success',
+                        }
+                    ),
+                )
+            except Exception as _anchor_err:
+                import logging as _logging
+
+                _logging.getLogger(__name__).warning(
+                    f'[audit] solana anchor fire_and_forget failed: {_anchor_err}'
+                )
+
             self.audit_logger.write(entry)
         except Exception as e:
             logger.error(f'Failed to log audit entry: {str(e)}')
