@@ -961,9 +961,6 @@
 							{/if}
 
 							{#if message.done}
-								{#if !readOnly}
-									{/if}
-
 								<Tooltip content={$i18n.t('Copy')} placement="bottom">
 									<button
 										aria-label={$i18n.t('Copy')}
