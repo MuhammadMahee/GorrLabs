@@ -277,57 +277,147 @@ body.light .scene-dot.active{
 }
 
 /* ═══ THEME TOGGLE ═══ */
-.theme-toggle{position:relative;width:52px;height:28px;border-radius:50px;border:none;
-  cursor:pointer;background:rgba(255,107,0,.15);border:1.5px solid rgba(255,107,0,.3);
-  display:flex;align-items:center;padding:0 3px;transition:all .5s cubic-bezier(.22,.61,.36,1);
-  flex-shrink:0;outline:none;overflow:hidden}
-.theme-toggle .toggle-knob{width:22px;height:22px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  transition:all .5s cubic-bezier(.22,.61,.36,1);position:relative;z-index:2;font-size:.7rem}
-/* Dark mode (default) — moon on left, orange */
-/* DARK MODE — knob on LEFT */
+
+.theme-toggle{
+  position:relative;
+  width:52px;
+  height:28px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+
+  background:rgba(255,107,0,.15);
+  border:1.5px solid rgba(255,107,0,.3);
+
+  display:flex;
+  align-items:center;
+  padding:0 3px;
+
+  transition:all .5s cubic-bezier(.22,.61,.36,1);
+
+  flex-shrink:0;
+  outline:none;
+  overflow:hidden;
+}
+
+/* TOGGLE KNOB */
+.theme-toggle .toggle-knob{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  transition:all .5s cubic-bezier(.22,.61,.36,1);
+
+  position:relative;
+  z-index:2;
+  font-size:.7rem;
+}
+
+/* DARK MODE */
 .theme-toggle .toggle-knob{
   background:var(--orange);
   color:var(--black);
+
   transform:translateX(0);
-  box-shadow:0 0 15px rgba(255,107,0,.5);
-}
 
-/* LIGHT MODE — knob on RIGHT */
-body.light .theme-toggle .toggle-knob{
-  background:var(--primary);
-  color:#fff;
-  transform:translateX(22px);
   box-shadow:
-    0 0 20px rgba(0,212,255,.55),
-    0 0 40px rgba(20,231,178,.18);
+    0 0 15px rgba(255,107,0,.5);
 }
-.theme-toggle .moon-face{font-size:.65rem}
 
-/* Light mode — sun on right, yellow */
-/* Light mode — cyber cyan */
+/* LIGHT MODE */
 body.light .theme-toggle{
   background:rgba(0,212,255,.12);
   border-color:rgba(0,212,255,.35);
 }
 
-/* Horror moon decorations */
-.toggle-crater{position:absolute;border-radius:50%;background:rgba(0,0,0,.15)}
-.toggle-crater.c1{width:5px;height:5px;top:4px;right:4px}
-.toggle-crater.c2{width:3px;height:3px;bottom:5px;left:5px}
-.toggle-crater.c3{width:4px;height:4px;top:9px;left:3px}
-body.light .toggle-crater{display:none}
+body.light .theme-toggle .toggle-knob{
+  background:var(--primary);
+  color:#fff;
 
-/* Sun rays */
-.sun-rays{display:none;position:absolute;inset:-4px;animation:spinSlow 8s linear infinite}
-body.light .sun-rays{display:block}
+  transform:translateX(22px);
+
+  box-shadow:
+    0 0 20px rgba(0,212,255,.55),
+    0 0 40px rgba(20,231,178,.18);
+}
+
+.theme-toggle .moon-face{
+  font-size:.65rem;
+}
+
+/* MOON CRATERS */
+.toggle-crater{
+  position:absolute;
+  border-radius:50%;
+  background:rgba(0,0,0,.15);
+}
+
+.toggle-crater.c1{
+  width:5px;
+  height:5px;
+  top:4px;
+  right:4px;
+}
+
+.toggle-crater.c2{
+  width:3px;
+  height:3px;
+  bottom:5px;
+  left:5px;
+}
+
+.toggle-crater.c3{
+  width:4px;
+  height:4px;
+  top:9px;
+  left:3px;
+}
+
+body.light .toggle-crater{
+  display:none;
+}
+
+/* SUN RAYS */
+.sun-rays{
+  display:none;
+  position:absolute;
+  inset:-4px;
+
+  animation:spinSlow 8s linear infinite;
+}
+
+body.light .sun-rays{
+  display:block;
+}
+
 .sun-ray{
   position:absolute;
+
   width:2px;
   height:6px;
+
   background:var(--primary);
-  left:50%;top:-3px;transform-origin:50% calc(50% + 14px)}
-@keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+  border-radius:1px;
+
+  left:50%;
+  top:-3px;
+
+  transform-origin:50% calc(50% + 14px);
+}
+
+@keyframes spinSlow{
+  from{
+    transform:rotate(0);
+  }
+  to{
+    transform:rotate(360deg);
+  }
+}
 
 /* Mobile theme toggle */
 .mob-theme-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;
@@ -733,7 +823,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
 <!-- CINEMATIC INTRO — click anywhere to go fullscreen + dismiss -->
 <div id="introOverlay" onclick="triggerFS()" style="position:fixed;inset:0;z-index:999999;background:var(--black);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;transition:opacity .8s ease,transform .8s ease;cursor:pointer">
   <div id="introLogo" style="width:100px;height:100px;border-radius:50%;border:2px solid rgba(255,107,0,.3);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5);box-shadow:0 0 0 rgba(255,107,0,0)">
-    <img src="/static/logo.png" alt="" style="width:60px;height:60px;object-fit:contain;filter:brightness(0) invert(1)"/>
+    <img id="mainIntroLogo" src="/static/logo.png" class="theme-logo" alt="" style="width:60px;height:60px;object-fit:contain;filter:brightness(0) invert(1)"/>
   </div>
   <div id="introText" style="font-family:var(--fd);font-size:clamp(1rem,2.5vw,1.6rem);letter-spacing:8px;text-transform:uppercase;opacity:0;transform:translateY(20px);background:var(--fire);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">GORR LABS</div>
   <div id="introLine" style="width:0;height:1px;background:var(--fire);transition:width 1s cubic-bezier(.22,.61,.36,1)"></div>
@@ -751,7 +841,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
 <div class="scene-counter" id="sceneDots"></div>
 
 <nav class="nav" id="nav">
-  <a href="/" class="logo-wrap"><img class="logo-img" src="/static/logo.png" alt="Gorr Labs"/><span class="logo-txt">GORR LABS</span></a>
+  <a href="/" class="logo-wrap"><img class="logo-img" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/><span class="logo-txt">GORR LABS</span></a>
   <ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#how">Process</a></li><li><a href="#portfolio">Work</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul>
   <a href="#contact" class="nav-cta">Get Started</a>
   <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -777,7 +867,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
 <section class="hero scene in-view" id="hero" data-scene="Hero">
   <div class="hero-inner">
     <div class="hero-badge"><span class="pulse"></span> AI-Powered Digital Solutions</div>
-    <div class="hero-logo"><div class="hero-ring hero-ring-3"></div><div class="hero-ring hero-ring-2"></div><div class="hero-ring hero-ring-1"></div><div class="hero-logo-core"><img src="/static/logo.png" alt="Gorr Labs"/></div></div>
+    <div class="hero-logo"><div class="hero-ring hero-ring-3"></div><div class="hero-ring hero-ring-2"></div><div class="hero-ring hero-ring-1"></div><div class="hero-logo-core"><img id="mainIntroLogo" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/></div></div>
     <h1><span class="fire-t">Gorr Labs</span> — Automate. Analyze. Accelerate.</h1>
     <p>Gorr Labs builds AI-powered automation, dashboards, and scalable digital systems for modern businesses that refuse to stay average.</p>
     <div class="hero-btns"><a href="#contact" class="btn-fire"><i class="fas fa-rocket"></i> Free Consultation</a><a href="#services" class="btn-ghost"><i class="fas fa-compass"></i> Explore Services</a></div>
@@ -786,7 +876,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
 </section><div class="divider"></div>
 
 <section class="scene" id="about" data-scene="About"><div class="scene-num">02</div><div class="depth-layer" style="width:400px;height:400px;background:var(--red);top:20%;left:-10%"></div><div class="about-grid">
-  <div class="about-visual"><div class="a-orbit o1"></div><div class="a-orbit o2"></div><div class="a-orbit o3"></div><div class="a-core"><img src="/static/logo.png" alt="Gorr Labs"/></div>
+  <div class="about-visual"><div class="a-orbit o1"></div><div class="a-orbit o2"></div><div class="a-orbit o3"></div><div class="a-core"><img id="mainIntroLogo" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/></div>
     <div class="a-node" style="top:12%;left:50%;transform:translateX(-50%);background:var(--orange)"></div><div class="a-node" style="bottom:12%;left:50%;transform:translateX(-50%);background:var(--red)"></div><div class="a-node" style="left:12%;top:50%;transform:translateY(-50%);background:var(--amber)"></div><div class="a-node" style="right:12%;top:50%;transform:translateY(-50%);background:var(--orange)"></div></div>
   <div class="about-text"><div class="scene-label">Who We Are</div><h2 class="scene-title">We Build the <span class="fire-t">Future</span>, Today</h2>
     <p>Gorr Labs is a next-generation technology studio based in Pakistan, specializing in AI-driven automation, intelligent business systems, and scalable digital infrastructure.</p>
@@ -868,7 +958,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
     <div class="f-status" id="fStatus"></div></div>
 </div></section><div class="divider"></div>
 
-<footer class="footer"><div class="ft-grid"><div class="ft-brand"><a href="/" class="ft-logo-wrap"><img class="ft-logo-img" src="/static/logo.png" alt="Gorr Labs"/><span class="ft-logo-txt">GORR LABS</span></a><p>Building the intelligent systems that power tomorrow's businesses.</p>
+<footer class="footer"><div class="ft-grid"><div class="ft-brand"><a href="/" class="ft-logo-wrap"><img class="ft-logo-img" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/><span class="ft-logo-txt">GORR LABS</span></a><p>Building the intelligent systems that power tomorrow's businesses.</p>
   <div class="soc-row" style="margin-top:1rem"><a href="https://www.facebook.com/people/Gorr-Labs/61570799826502/" class="soc-a" target="_blank"><i class="fab fa-facebook-f"></i></a><a href="https://www.instagram.com/gorrlabs/" class="soc-a" target="_blank"><i class="fab fa-instagram"></i></a><a href="https://www.linkedin.com/company/gorr-labs" class="soc-a" target="_blank"><i class="fab fa-linkedin-in"></i></a></div></div>
   <div class="ft-col"><h5>Services</h5><ul><li><a href="#services">Website Development</a></li><li><a href="#services">ERP / CRM Systems</a></li><li><a href="#services">AI Chatbots</a></li><li><a href="#services">Workflow Automation</a></li><li><a href="#services">Data Dashboards</a></li></ul></div>
   <div class="ft-col"><h5>Company</h5><ul><li><a href="#about">About Us</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="#how">Our Process</a></li><li><a href="#faq">FAQ</a></li></ul></div>
@@ -1090,22 +1180,77 @@ window.addEventListener('scroll',()=>{
 },{passive:true});
 
 // ═══ THEME TOGGLE ═══
-function toggleTheme(){
-  document.body.classList.toggle('light');
-  const isLight=document.body.classList.contains('light');
-  document.querySelectorAll('.moon-face').forEach(el=>{el.textContent=isLight?'☀️':'🌙'});
-  const liveC=document.getElementById('liveCanvas');if(liveC)liveC.style.opacity=isLight?'.15':'.5';
-  const trailC=document.getElementById('trailCanvas');if(trailC)trailC.style.opacity=isLight?'.25':'.7';
-  localStorage.setItem('gorr-theme',isLight?'light':'dark');
-}
-(function(){
-  const saved=localStorage.getItem('gorr-theme');
-  if(saved==='light'){
-    document.body.classList.add('light');
-    document.querySelectorAll('.moon-face').forEach(el=>{el.textContent='☀️'});
-    const liveC=document.getElementById('liveCanvas');if(liveC)liveC.style.opacity='.15';
-    const trailC=document.getElementById('trailCanvas');if(trailC)trailC.style.opacity='.25';
+
+function updateThemeAssets(isLight){
+
+  /* ICON */
+  document.querySelectorAll('.moon-face').forEach(el=>{
+    el.textContent = isLight ? '☀️' : '🌙';
+  });
+
+  /* CANVAS */
+  const liveC=document.getElementById('liveCanvas');
+  if(liveC){
+    liveC.style.opacity=isLight ? '.15' : '.5';
   }
+
+  const trailC=document.getElementById('trailCanvas');
+  if(trailC){
+    trailC.style.opacity=isLight ? '.25' : '.7';
+  }
+
+  /* LOGOS */
+  document.querySelectorAll(
+    '.logo-img, .hero-logo-core img, .a-core img, .ft-logo-img, #introLogo img'
+  ).forEach(img=>{
+
+    img.src = isLight
+      ? '/static/Black_Logo.png'
+      : '/static/logo.png';
+
+    /* LIGHT MODE */
+    if(isLight){
+      img.style.filter='none';
+    }
+
+    /* DARK MODE */
+    else{
+      img.style.filter='brightness(0) invert(1)';
+    }
+
+  });
+}
+
+/* TOGGLE */
+function toggleTheme(){
+
+  document.body.classList.toggle('light');
+
+  const isLight =
+    document.body.classList.contains('light');
+
+  localStorage.setItem(
+    'gorr-theme',
+    isLight ? 'light' : 'dark'
+  );
+
+  updateThemeAssets(isLight);
+}
+
+/* LOAD SAVED THEME */
+(function(){
+
+  const saved =
+    localStorage.getItem('gorr-theme');
+
+  const isLight = saved === 'light';
+
+  if(isLight){
+    document.body.classList.add('light');
+  }
+
+  updateThemeAssets(isLight);
+
 })();
 </script>
 </body>
