@@ -79,7 +79,7 @@ jobs:
         id: repo
         run: echo "name=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
-      - name: SSH → pull image → docker compose up
+      - name: SSH pull image and docker compose up
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -101,8 +101,7 @@ jobs:
             ARKIVE_PORT=${{ secrets.ARKIVE_PORT }}
             POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
             DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@postgres:5432/${{ secrets.POSTGRES_DB }}
-            OLLAMA_BASE_URL=http://ollama:11434
-            ENABLE_OLLAMA_API=True
+            ENABLE_OLLAMA_API=False
             ENABLE_OPENAI_API=False
             OPENAI_API_BASE_URL=
             OPENAI_API_KEY=

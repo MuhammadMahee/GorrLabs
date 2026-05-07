@@ -459,7 +459,7 @@
 					<div {...wrapperProps}>
 						<div
 							{...props}
-							class="{props.class} z-40 {$mobile
+							class="{props.class} arkive-model-selector-menu z-40 {$mobile
 								? `w-full`
 								: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-2xl border border-gray-200/70 dark:border-white/[0.09] bg-white/95 dark:bg-[#080a10]/95 dark:text-white shadow-2xl shadow-black/30 backdrop-blur-xl outline-hidden overflow-hidden"
 							transition:flyAndScale
@@ -468,9 +468,12 @@
 								{#if searchEnabled}
 									<div class="px-3 pt-3">
 										<div
-											class="flex h-10 items-center gap-2.5 rounded-xl border border-gray-100 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.025] px-3 focus-within:border-gray-300 dark:focus-within:border-white/20 transition"
+											class="arkive-model-search flex h-10 items-center gap-2.5 rounded-xl border border-gray-100 dark:border-white/[0.08] bg-gray-50/80 dark:bg-white/[0.025] px-3 focus-within:border-gray-300 dark:focus-within:border-white/20 transition"
 										>
-											<Search className="size-4 text-gray-500 dark:text-gray-400" strokeWidth="2.5" />
+											<Search
+												className="size-4 text-gray-500 dark:text-gray-400"
+												strokeWidth="2.5"
+											/>
 
 											<input
 												id="model-search-input"
@@ -527,8 +530,8 @@
 											>
 												{#if items.find((item) => item.model?.connection_type === 'local') || items.find((item) => item.model?.connection_type === 'external') || items.find((item) => item.model?.direct) || tags.length > 0}
 													<button
-														class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag === '' &&
-														selectedConnectionType === ''
+														class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag ===
+															'' && selectedConnectionType === ''
 															? 'bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
 															: 'text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 														aria-pressed={selectedTag === '' && selectedConnectionType === ''}
@@ -592,7 +595,8 @@
 												{#each tags as tag}
 													<Tooltip content={tag}>
 														<button
-															class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag === tag
+															class="min-w-fit outline-none rounded-full px-2.5 py-1 {selectedTag ===
+															tag
 																? 'bg-gray-900 text-white dark:bg-white/[0.11] dark:text-gray-100'
 																: 'text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/[0.045]'} transition capitalize"
 															aria-pressed={selectedTag === tag}
@@ -640,7 +644,7 @@
 									{:else}
 										<!-- svelte-ignore a11y-no-static-element-interactions -->
 										<div
-											class="max-h-64 overflow-y-auto rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/40 dark:bg-white/[0.02] p-1"
+											class="arkive-model-list max-h-64 overflow-y-auto rounded-xl border border-gray-100 dark:border-white/[0.06] bg-gray-50/40 dark:bg-white/[0.02] p-1"
 											role="listbox"
 											aria-label={$i18n.t('Available models')}
 											bind:this={listContainer}
@@ -648,7 +652,7 @@
 												listScrollTop = listContainer.scrollTop;
 											}}
 										>
-											<div style="height: {visibleStart * ITEM_HEIGHT}px;" ></div>
+											<div style="height: {visibleStart * ITEM_HEIGHT}px;"></div>
 											{#each filteredItems.slice(visibleStart, visibleEnd) as item, i (item.value)}
 												{@const index = visibleStart + i}
 												<ModelItem
@@ -666,7 +670,9 @@
 													}}
 												/>
 											{/each}
-											<div style="height: {(filteredItems.length - visibleEnd) * ITEM_HEIGHT}px;" ></div>
+											<div
+												style="height: {(filteredItems.length - visibleEnd) * ITEM_HEIGHT}px;"
+											></div>
 										</div>
 									{/if}
 
@@ -757,8 +763,8 @@
 
 								<div class="pb-3"></div>
 
-								<div class="hidden w-[42rem]" ></div>
-								<div class="hidden w-[32rem]" ></div>
+								<div class="hidden w-[42rem]"></div>
+								<div class="hidden w-[32rem]"></div>
 							</slot>
 						</div>
 					</div>

@@ -297,13 +297,8 @@ class AuditLoggingMiddleware:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[audit] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
-
+            except Exception:
+                pass
             self.audit_logger.write(entry)
         except Exception as e:
             logger.error(f'Failed to log audit entry: {str(e)}')

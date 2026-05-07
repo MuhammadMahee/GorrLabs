@@ -388,12 +388,8 @@ class ChannelTable:
                             }
                         ),
                     )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return self._to_channel_model(new_channel, db=db)
 
     def get_channels(self, db: Optional[Session] = None) -> list[ChannelModel]:
@@ -532,13 +528,8 @@ class ChannelTable:
                             }
                         ),
                     )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
-
+            except Exception:
+                pass
             return [ChannelMemberModel.model_validate(membership) for membership in new_memberships]
 
     def remove_members_from_channel(
@@ -576,12 +567,8 @@ class ChannelTable:
                                 }
                             ),
                         )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
             return result  # number of rows deleted
 
     def is_user_channel_manager(self, channel_id: str, user_id: str, db: Optional[Session] = None) -> bool:
@@ -655,12 +642,8 @@ class ChannelTable:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return channel_member
 
     def leave_channel(self, channel_id: str, user_id: str, db: Optional[Session] = None) -> bool:
@@ -699,12 +682,8 @@ class ChannelTable:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return True
 
     def get_member_by_channel_and_user_id(
@@ -1045,12 +1024,8 @@ class ChannelTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[channels] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
             return True
 
     ####################

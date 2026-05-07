@@ -228,9 +228,7 @@
 	};
 
 	onMount(() => {
-		actions = [
-			...actions,
-		];
+		actions = [...actions];
 
 		document.addEventListener('keydown', onKeyDown);
 	});
@@ -244,7 +242,7 @@
 </script>
 
 <Modal size="xl" bind:show>
-	<div class="py-3 dark:text-gray-300 text-gray-700">
+	<div id="arkive-search-modal" class="py-3 dark:text-gray-300 text-gray-700">
 		<div class="px-4 pb-1.5">
 			<SearchInput
 				bind:value={query}

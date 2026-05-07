@@ -239,12 +239,8 @@ class ChatMessageTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[chat_messages] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return ChatMessageModel.model_validate(message)
 
     def get_message_by_id(self, id: str, db: Optional[Session] = None) -> Optional[ChatMessageModel]:

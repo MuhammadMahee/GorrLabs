@@ -91,12 +91,8 @@ class PromptHistoryTable:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[prompt_history] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return PromptHistoryModel.model_validate(history)
 
     def get_history_by_prompt_id(

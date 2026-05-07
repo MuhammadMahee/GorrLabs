@@ -30,11 +30,11 @@
 
 {#if loaded}
 	<div
-		class=" flex flex-col h-screen max-h-[100dvh] flex-1 transition-width duration-200 ease-in-out {$showSidebar
+		class="arkive-page flex flex-col h-screen max-h-[100dvh] flex-1 transition-width duration-200 ease-in-out {$showSidebar
 			? 'md:max-w-[calc(100%-var(--sidebar-width))]'
 			: ' md:max-w-[calc(100%-49px)]'}  w-full max-w-full"
 	>
-		<nav class="   px-2.5 pt-1.5 backdrop-blur-xl drag-region select-none">
+		<nav class="arkive-topbar px-2.5 pt-1.5 drag-region select-none">
 			<div class=" flex items-center gap-1">
 				{#if $mobile}
 					<div class="{$showSidebar ? 'md:hidden' : ''} flex flex-none items-center self-end">
@@ -63,7 +63,11 @@
 					>
 						<a
 							draggable="false"
-							class="min-w-fit p-1.5 {$page.url.pathname.includes('/admin/users')
+							aria-current={$page.url.pathname === '/admin' ||
+							$page.url.pathname.includes('/admin/users')
+								? 'page'
+								: null}
+							class="arkive-tab min-w-fit p-1.5 {$page.url.pathname.includes('/admin/users')
 								? ''
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition select-none"
 							href="/admin">{$i18n.t('Users')}</a
@@ -72,17 +76,18 @@
 						{#if $config?.features.enable_admin_analytics ?? true}
 							<a
 								draggable="false"
-								class="min-w-fit p-1.5 {$page.url.pathname.includes('/admin/analytics')
+								aria-current={$page.url.pathname.includes('/admin/analytics') ? 'page' : null}
+								class="arkive-tab min-w-fit p-1.5 {$page.url.pathname.includes('/admin/analytics')
 									? ''
 									: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition select-none"
 								href="/admin/analytics">{$i18n.t('Analytics')}</a
 							>
 						{/if}
 
-
 						<a
 							draggable="false"
-							class="min-w-fit p-1.5 {$page.url.pathname.includes('/admin/settings')
+							aria-current={$page.url.pathname.includes('/admin/settings') ? 'page' : null}
+							class="arkive-tab min-w-fit p-1.5 {$page.url.pathname.includes('/admin/settings')
 								? ''
 								: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition select-none"
 							href="/admin/settings">{$i18n.t('Settings')}</a
@@ -92,7 +97,7 @@
 			</div>
 		</nav>
 
-		<div class="  pb-1 flex-1 max-h-full overflow-y-auto">
+		<div class="admin-content pb-1 flex-1 max-h-full overflow-y-auto">
 			<slot />
 		</div>
 	</div>

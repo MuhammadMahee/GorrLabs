@@ -1729,6 +1729,11 @@ def process_file(
                             'created_by': file.user_id,
                             'file_id': file.id,
                             'source': file.filename,
+                            'source_type': 'upload',
+                            'uploaded_by': file.user_id,
+                            'upload_date': file.created_at,
+                            'file_type': file.meta.get('content_type', ''),
+                            'original_filename': file.filename,
                         },
                     )
                 ]
@@ -1758,6 +1763,11 @@ def process_file(
                                 'created_by': file.user_id,
                                 'file_id': file.id,
                                 'source': file.filename,
+                                'source_type': 'upload',
+                                'uploaded_by': file.user_id,
+                                'upload_date': file.created_at,
+                                'file_type': file.meta.get('content_type', ''),
+                                'original_filename': file.filename,
                             },
                         )
                     ]
@@ -1813,6 +1823,11 @@ def process_file(
                                 'created_by': file.user_id,
                                 'file_id': file.id,
                                 'source': file.filename,
+                                'source_type': 'upload',
+                                'uploaded_by': file.user_id,
+                                'upload_date': file.created_at,
+                                'file_type': file.meta.get('content_type', ''),
+                                'original_filename': file.filename,
                             },
                         )
                         for doc in docs
@@ -1827,6 +1842,11 @@ def process_file(
                                 'created_by': file.user_id,
                                 'file_id': file.id,
                                 'source': file.filename,
+                                'source_type': 'upload',
+                                'uploaded_by': file.user_id,
+                                'upload_date': file.created_at,
+                                'file_type': file.meta.get('content_type', ''),
+                                'original_filename': file.filename,
                             },
                         )
                     ]

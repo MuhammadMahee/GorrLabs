@@ -714,6 +714,19 @@ body {
 	color: #d8def1;
 }
 
+body {
+	min-height: 100dvh;
+}
+
+.dark body {
+	background:
+		radial-gradient(ellipse 75% 55% at 12% 32%, rgba(59, 42, 76, 0.62) 0%, transparent 58%),
+		radial-gradient(ellipse 58% 48% at 86% 43%, rgba(96, 76, 60, 0.44) 0%, transparent 58%),
+		radial-gradient(ellipse 70% 58% at 52% 88%, rgba(51, 65, 77, 0.82) 0%, transparent 62%),
+		linear-gradient(180deg, #25262c 0%, #171b27 46%, #33414d 100%);
+	background-attachment: fixed;
+}
+
 /* ── Arkive Aurora Background ── */
 .dark body::before {
 	content: '';
@@ -721,12 +734,16 @@ body {
 	inset: 0;
 	z-index: -2;
 	background:
-		radial-gradient(ellipse 80% 60% at 15% 20%, rgba(255, 146, 177, 0.08) 0%, transparent 60%),
-		radial-gradient(ellipse 60% 50% at 75% 15%, rgba(255, 183, 156, 0.07) 0%, transparent 55%),
-		radial-gradient(ellipse 70% 55% at 50% 60%, rgba(149, 220, 255, 0.06) 0%, transparent 55%),
-		radial-gradient(ellipse 50% 40% at 25% 80%, rgba(59, 105, 192, 0.08) 0%, transparent 50%),
-		radial-gradient(ellipse 55% 45% at 80% 75%, rgba(179, 156, 255, 0.07) 0%, transparent 50%),
-		linear-gradient(180deg, #09080d 0%, #0d0e14 50%, #09080d 100%);
+		radial-gradient(ellipse 70% 54% at 12% 24%, rgba(255, 146, 177, 0.11) 0%, transparent 60%),
+		radial-gradient(ellipse 58% 46% at 80% 35%, rgba(255, 183, 156, 0.12) 0%, transparent 58%),
+		radial-gradient(ellipse 62% 50% at 54% 68%, rgba(149, 220, 255, 0.1) 0%, transparent 58%),
+		radial-gradient(ellipse 48% 40% at 28% 80%, rgba(140, 240, 201, 0.07) 0%, transparent 52%),
+		linear-gradient(
+			180deg,
+			rgba(9, 8, 13, 0.64) 0%,
+			rgba(13, 14, 20, 0.34) 52%,
+			rgba(9, 8, 13, 0.18) 100%
+		);
 	pointer-events: none;
 }
 
@@ -740,9 +757,9 @@ body {
 	height: 140%;
 	z-index: -1;
 	background:
-		radial-gradient(circle 400px at 20% 30%, rgba(149, 220, 255, 0.04) 0%, transparent 70%),
-		radial-gradient(circle 350px at 70% 60%, rgba(179, 156, 255, 0.04) 0%, transparent 70%),
-		radial-gradient(circle 300px at 50% 80%, rgba(140, 240, 201, 0.03) 0%, transparent 70%);
+		radial-gradient(circle 420px at 20% 30%, rgba(149, 220, 255, 0.055) 0%, transparent 72%),
+		radial-gradient(circle 360px at 72% 62%, rgba(179, 156, 255, 0.055) 0%, transparent 72%),
+		radial-gradient(circle 320px at 50% 82%, rgba(140, 240, 201, 0.045) 0%, transparent 72%);
 	animation: aurora-drift 25s ease-in-out infinite alternate;
 	pointer-events: none;
 	filter: blur(60px);
@@ -765,18 +782,25 @@ body {
 
 /* ── Arkive Glass Panel ── */
 .arkive-glass {
-	background: linear-gradient(135deg, rgba(31, 28, 40, 0.72) 0%, rgba(17, 17, 23, 0.85) 100%);
+	background:
+		linear-gradient(
+			135deg,
+			rgba(115, 126, 139, 0.18) 0%,
+			rgba(23, 27, 39, 0.46) 46%,
+			rgba(13, 14, 20, 0.74) 100%
+		),
+		rgba(17, 17, 23, 0.58);
 	backdrop-filter: blur(24px);
 	-webkit-backdrop-filter: blur(24px);
-	border: 1px solid rgba(163, 180, 214, 0.12);
+	border: 1px solid rgba(170, 245, 255, 0.16);
 	box-shadow:
-		inset 0 1px 0 0 rgba(255, 255, 255, 0.04),
-		0 8px 32px rgba(0, 0, 0, 0.4);
+		inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+		0 18px 60px rgba(0, 0, 0, 0.38);
 }
 
 /* ── Arkive Prism Text (animated gradient) ── */
 .arkive-prism-text {
-	background: linear-gradient(90deg, #ff92b1, #ffb79c, #ffd392, #8cf0c9, #95dcff, #a3b4d6, #b39cff);
+	background: linear-gradient(90deg, #ff92b1, #ffb79c, #ffd392, #8cf0c9, #95dcff, #b39cff);
 	background-size: 200% 100%;
 	-webkit-background-clip: text;
 	background-clip: text;
@@ -803,7 +827,7 @@ body {
 	inset: -1px;
 	border-radius: inherit;
 	padding: 1px;
-	background: linear-gradient(135deg, #ff92b1, #ffb79c, #95dcff, #b39cff);
+	background: linear-gradient(135deg, #b39cff, #95dcff, #8cf0c9, #ffd392, #ffb79c, #ff92b1);
 	-webkit-mask:
 		linear-gradient(#fff 0 0) content-box,
 		linear-gradient(#fff 0 0);
@@ -813,13 +837,13 @@ body {
 	-webkit-mask-composite: xor;
 	mask-composite: exclude;
 	pointer-events: none;
-	opacity: 0.5;
+	opacity: 0.72;
 }
 
 /* ── Arkive Glow Button ── */
 .arkive-glow-btn {
-	background: linear-gradient(135deg, rgba(59, 105, 192, 0.3), rgba(149, 220, 255, 0.15));
-	border: 1px solid rgba(149, 220, 255, 0.25);
+	background: linear-gradient(135deg, rgba(59, 105, 192, 0.34), rgba(149, 220, 255, 0.18));
+	border: 1px solid rgba(149, 220, 255, 0.32);
 	color: #95dcff;
 	transition: all 0.2s ease;
 }
@@ -827,6 +851,897 @@ body {
 	background: linear-gradient(135deg, rgba(59, 105, 192, 0.5), rgba(149, 220, 255, 0.25));
 	border-color: rgba(149, 220, 255, 0.4);
 	box-shadow: 0 0 20px rgba(149, 220, 255, 0.15);
+}
+
+.arkive-page {
+	position: relative;
+	isolation: isolate;
+	background:
+		radial-gradient(ellipse 65% 52% at 10% 28%, rgba(59, 42, 76, 0.48), transparent 64%),
+		radial-gradient(ellipse 54% 44% at 86% 42%, rgba(96, 76, 60, 0.34), transparent 60%),
+		radial-gradient(ellipse 68% 58% at 52% 88%, rgba(51, 65, 77, 0.7), transparent 64%),
+		linear-gradient(180deg, #09080d 0%, #171b27 48%, #33414d 100%);
+}
+
+.arkive-page::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	background:
+		radial-gradient(ellipse 560px 340px at 14% 32%, rgba(179, 156, 255, 0.1), transparent 70%),
+		radial-gradient(ellipse 520px 320px at 82% 45%, rgba(255, 183, 156, 0.1), transparent 70%),
+		radial-gradient(ellipse 620px 360px at 58% 74%, rgba(149, 220, 255, 0.08), transparent 72%);
+}
+
+.arkive-shell {
+	background: transparent !important;
+	color: #d8def1;
+}
+
+.arkive-topbar {
+	background:
+		radial-gradient(ellipse 320px 90px at 10% 0%, rgba(179, 156, 255, 0.1), transparent 72%),
+		radial-gradient(ellipse 280px 80px at 88% 0%, rgba(255, 183, 156, 0.08), transparent 72%),
+		linear-gradient(180deg, rgba(9, 8, 13, 0.86), rgba(13, 14, 20, 0.58));
+	border-bottom: 1px solid rgba(149, 220, 255, 0.12);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+}
+
+.arkive-tab {
+	border-radius: 9999px;
+	padding: 0.38rem 0.78rem !important;
+	color: #aab4ca !important;
+	border: 1px solid transparent;
+}
+
+.arkive-tab:hover {
+	color: #ffffff !important;
+	background: rgba(255, 255, 255, 0.055);
+	border-color: rgba(149, 220, 255, 0.16);
+}
+
+.arkive-tab[aria-current='page'],
+.arkive-tab.arkive-tab-active {
+	color: #ffffff !important;
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.2), rgba(179, 156, 255, 0.16)),
+		rgba(255, 255, 255, 0.055);
+	border-color: rgba(149, 220, 255, 0.34);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		0 0 24px rgba(149, 220, 255, 0.12);
+}
+
+.arkive-input-glass {
+	background:
+		linear-gradient(
+			135deg,
+			rgba(115, 126, 139, 0.28) 0%,
+			rgba(51, 65, 77, 0.28) 48%,
+			rgba(17, 17, 23, 0.44) 100%
+		),
+		rgba(13, 14, 20, 0.58) !important;
+	border-color: rgba(149, 220, 255, 0.38) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		0 18px 58px rgba(0, 0, 0, 0.34),
+		0 0 42px rgba(149, 220, 255, 0.08);
+}
+
+.arkive-input-glass:focus-within {
+	border-color: rgba(149, 220, 255, 0.72) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.14),
+		0 18px 58px rgba(0, 0, 0, 0.36),
+		0 0 0 1px rgba(140, 240, 201, 0.18),
+		0 0 48px rgba(255, 211, 146, 0.12);
+}
+
+.dark input:not([type='checkbox']),
+.dark textarea,
+.dark select {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03)),
+		rgba(30, 34, 48, 0.42) !important;
+	border-color: rgba(149, 220, 255, 0.18) !important;
+	color: #edf3ff !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.055),
+		0 1px 0 rgba(9, 8, 13, 0.18);
+	outline: none !important;
+}
+
+.dark input:not([type='checkbox'])::placeholder,
+.dark textarea::placeholder {
+	color: rgba(170, 180, 202, 0.46) !important;
+}
+
+.dark input:not([type='checkbox']):focus,
+.dark textarea:focus,
+.dark select:focus {
+	background:
+		linear-gradient(180deg, rgba(149, 220, 255, 0.075), rgba(255, 255, 255, 0.035)),
+		rgba(30, 34, 48, 0.5) !important;
+	border-color: rgba(149, 220, 255, 0.42) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.07),
+		0 0 0 1px rgba(149, 220, 255, 0.12),
+		0 0 20px rgba(149, 220, 255, 0.055) !important;
+	outline: none !important;
+}
+
+.dark input[type='number'] {
+	text-align: right;
+}
+
+.dark input[type='range'] {
+	background: transparent !important;
+	border-color: transparent !important;
+	box-shadow: none !important;
+}
+
+.dark select,
+.dark option {
+	background-color: #11151f !important;
+	color: #edf3ff !important;
+}
+
+.dark .app nav a[aria-current='page'] {
+	color: #ffffff !important;
+}
+
+.dark #sidebar {
+	background:
+		radial-gradient(ellipse 220px 300px at 8% 14%, rgba(179, 156, 255, 0.14), transparent 72%),
+		radial-gradient(ellipse 180px 260px at 92% 48%, rgba(149, 220, 255, 0.08), transparent 72%),
+		linear-gradient(180deg, rgba(9, 8, 13, 0.94), rgba(13, 14, 20, 0.9)), rgba(9, 8, 13, 0.82) !important;
+	border-color: rgba(149, 220, 255, 0.18) !important;
+	box-shadow:
+		inset -1px 0 0 rgba(149, 220, 255, 0.08),
+		18px 0 70px rgba(0, 0, 0, 0.22);
+	backdrop-filter: blur(22px);
+	-webkit-backdrop-filter: blur(22px);
+}
+
+.dark #sidebar .sidebar {
+	background: transparent !important;
+}
+
+.dark #sidebar-arkive-name {
+	color: #ffffff !important;
+	text-shadow: 0 0 18px rgba(149, 220, 255, 0.18);
+}
+
+.dark #sidebar a:hover,
+.dark #sidebar button:hover {
+	border-color: rgba(149, 220, 255, 0.18);
+}
+
+.dark #sidebar-new-chat-button,
+.dark #sidebar-search-button,
+.dark #sidebar-workspace-button {
+	border: 1px solid transparent;
+	color: #aab4ca !important;
+	transition:
+		background-color 0.16s ease,
+		border-color 0.16s ease,
+		color 0.16s ease,
+		box-shadow 0.16s ease;
+}
+
+.dark #sidebar-new-chat-button:hover,
+.dark #sidebar-search-button:hover,
+.dark #sidebar-workspace-button:hover {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.1), rgba(179, 156, 255, 0.08)),
+		rgba(255, 255, 255, 0.04) !important;
+	border-color: rgba(149, 220, 255, 0.18);
+}
+
+.dark #sidebar-new-chat-button {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.08), rgba(179, 156, 255, 0.06)),
+		rgba(255, 255, 255, 0.018) !important;
+}
+
+.dark #sidebar a[aria-current='page'],
+.dark #sidebar button[aria-current='page'] {
+	color: #ffffff !important;
+	background:
+		linear-gradient(
+			135deg,
+			rgba(149, 220, 255, 0.16),
+			rgba(140, 240, 201, 0.07) 48%,
+			rgba(255, 146, 177, 0.08)
+		),
+		rgba(255, 255, 255, 0.045) !important;
+	border-color: rgba(149, 220, 255, 0.26) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.1),
+		0 0 26px rgba(149, 220, 255, 0.08);
+}
+
+.dark #sidebar a[href*='/c/']:hover,
+.dark #sidebar a[href*='/channels/']:hover {
+	background: rgba(149, 220, 255, 0.06) !important;
+	color: #eef5ff !important;
+}
+
+.dark #sidebar-chat-item {
+	border: 1px solid transparent;
+	color: #9faac0 !important;
+}
+
+.dark #sidebar-chat-item:hover {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.07), rgba(179, 156, 255, 0.045)),
+		rgba(255, 255, 255, 0.025) !important;
+	border-color: rgba(149, 220, 255, 0.14);
+	color: #eef5ff !important;
+}
+
+.dark #sidebar-chat-item.selected {
+	background:
+		linear-gradient(
+			135deg,
+			rgba(149, 220, 255, 0.13),
+			rgba(140, 240, 201, 0.055) 52%,
+			rgba(255, 146, 177, 0.075)
+		),
+		rgba(255, 255, 255, 0.045) !important;
+	border-color: rgba(149, 220, 255, 0.22);
+	color: #ffffff !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.08),
+		0 0 22px rgba(149, 220, 255, 0.07);
+}
+
+.dark #sidebar-chat-item-menu {
+	background: transparent !important;
+	padding-left: 0.25rem !important;
+	color: #9faac0;
+}
+
+.dark #sidebar-chat-item-menu button {
+	background: transparent !important;
+	border-color: transparent !important;
+	box-shadow: none !important;
+	color: inherit;
+}
+
+.dark #sidebar-chat-item-menu button:hover {
+	color: #ffffff !important;
+}
+
+.dark #sidebar-models button,
+.dark #sidebar-channels button,
+.dark #sidebar-folders button,
+.dark #sidebar-chats button,
+.dark #sidebar-pinned-chats button {
+	color: #657188 !important;
+}
+
+.dark #sidebar-models button:hover,
+.dark #sidebar-channels button:hover,
+.dark #sidebar-folders button:hover,
+.dark #sidebar-chats button:hover,
+.dark #sidebar-pinned-chats button:hover {
+	color: #95dcff !important;
+}
+
+.dark #sidebar-user-menu,
+.dark #sidebar .user-menu {
+	background:
+		linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(149, 220, 255, 0.045)),
+		rgba(13, 14, 20, 0.72) !important;
+	border: 1px solid rgba(149, 220, 255, 0.16) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.08),
+		0 16px 46px rgba(0, 0, 0, 0.32);
+}
+
+.dark #sidebar-user-menu:hover {
+	border-color: rgba(149, 220, 255, 0.28) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.1),
+		0 18px 48px rgba(0, 0, 0, 0.36),
+		0 0 30px rgba(149, 220, 255, 0.08);
+}
+
+.dark #workspace-container > div,
+.dark .admin-content > div {
+	background: transparent !important;
+}
+
+.dark #workspace-container .bg-white,
+.dark #workspace-container .dark\:bg-gray-900,
+.dark #workspace-container .dark\:bg-gray-850,
+.dark .admin-content .bg-white,
+.dark .admin-content .dark\:bg-gray-900,
+.dark .admin-content .dark\:bg-gray-850 {
+	background: transparent !important;
+	border-color: rgba(149, 220, 255, 0.1) !important;
+	box-shadow: none !important;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+.dark #workspace-container .rounded-3xl,
+.dark .admin-content .rounded-3xl {
+	border-radius: 1.25rem !important;
+}
+
+.dark #workspace-container .rounded-2xl,
+.dark .admin-content .rounded-2xl {
+	border-radius: 0.875rem !important;
+}
+
+.dark #workspace-container a.rounded-2xl,
+.dark #workspace-container button.rounded-2xl,
+.dark #workspace-container div.rounded-2xl[id],
+.dark .admin-content a.rounded-2xl,
+.dark .admin-content button.rounded-2xl,
+.dark .admin-content div.rounded-2xl[id] {
+	background: transparent !important;
+	border: 1px solid transparent;
+	box-shadow: none;
+}
+
+.dark #workspace-container a.rounded-2xl:hover,
+.dark #workspace-container button.rounded-2xl:hover,
+.dark #workspace-container div.rounded-2xl[id]:hover,
+.dark .admin-content a.rounded-2xl:hover,
+.dark .admin-content button.rounded-2xl:hover,
+.dark .admin-content div.rounded-2xl[id]:hover {
+	background: rgba(149, 220, 255, 0.035) !important;
+	border-color: rgba(149, 220, 255, 0.1);
+	box-shadow: none;
+}
+
+.dark #workspace-container button,
+.dark #workspace-container a,
+.dark .admin-content button,
+.dark .admin-content a {
+	transition:
+		background-color 0.16s ease,
+		border-color 0.16s ease,
+		color 0.16s ease,
+		box-shadow 0.16s ease;
+}
+
+.dark #workspace-container button[class*='bg-black'],
+.dark #workspace-container a[class*='bg-black'],
+.dark #workspace-container button[class*='bg-white'],
+.dark #workspace-container a[class*='bg-white'],
+.dark .admin-content button[class*='bg-black'],
+.dark .admin-content a[class*='bg-black'],
+.dark .admin-content button[class*='bg-white'],
+.dark .admin-content a[class*='bg-white'] {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.98),
+		rgba(216, 222, 241, 0.92)
+	) !important;
+	color: #09080d !important;
+	border-color: rgba(255, 255, 255, 0.82) !important;
+	box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
+}
+
+.dark #workspace-container button[class*='bg-black']:hover,
+.dark #workspace-container a[class*='bg-black']:hover,
+.dark #workspace-container button[class*='bg-white']:hover,
+.dark #workspace-container a[class*='bg-white']:hover,
+.dark .admin-content button[class*='bg-black']:hover,
+.dark .admin-content a[class*='bg-black']:hover,
+.dark .admin-content button[class*='bg-white']:hover,
+.dark .admin-content a[class*='bg-white']:hover {
+	box-shadow:
+		0 14px 34px rgba(0, 0, 0, 0.26),
+		0 0 26px rgba(149, 220, 255, 0.16);
+	transform: translateY(-1px);
+}
+
+.dark #workspace-container button:not([class*='bg-black']):not([class*='bg-white']),
+.dark .admin-content button:not([class*='bg-black']):not([class*='bg-white']) {
+	border-color: rgba(149, 220, 255, 0.12);
+}
+
+.dark #workspace-container [class*='my-16'][class*='mb-24'] {
+	margin-top: 3.25rem !important;
+	margin-bottom: 3.75rem !important;
+	color: #d8def1;
+}
+
+.dark #workspace-container [class*='my-16'][class*='mb-24'] > div,
+.dark .admin-content [class*='my-16'][class*='mb-24'] > div {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+}
+
+.dark #workspace-container [class*='my-16'][class*='mb-24'] .text-3xl,
+.dark .admin-content [class*='my-16'][class*='mb-24'] .text-3xl {
+	filter: saturate(0.7);
+	opacity: 0.9;
+}
+
+.dark #workspace-container .text-gray-500,
+.dark .admin-content .text-gray-500 {
+	color: #69768e !important;
+}
+
+.dark #workspace-container input:not([type='checkbox']):not([type='range']),
+.dark #workspace-container textarea,
+.dark #workspace-container select,
+.dark .admin-content input:not([type='checkbox']):not([type='range']),
+.dark .admin-content textarea,
+.dark .admin-content select {
+	min-height: 2rem;
+	border-radius: 0.5rem;
+	border-width: 1px !important;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+		rgba(9, 8, 13, 0.14) !important;
+	border-color: rgba(149, 220, 255, 0.13) !important;
+	color: #edf3ff !important;
+	box-shadow: none !important;
+}
+
+.dark #workspace-container input:not([type='checkbox']):not([type='range']):hover,
+.dark #workspace-container textarea:hover,
+.dark #workspace-container select:hover,
+.dark .admin-content input:not([type='checkbox']):not([type='range']):hover,
+.dark .admin-content textarea:hover,
+.dark .admin-content select:hover {
+	border-color: rgba(149, 220, 255, 0.22) !important;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+		rgba(9, 8, 13, 0.16) !important;
+}
+
+.dark #workspace-container input:not([type='checkbox']):not([type='range']):focus,
+.dark #workspace-container textarea:focus,
+.dark #workspace-container select:focus,
+.dark .admin-content input:not([type='checkbox']):not([type='range']):focus,
+.dark .admin-content textarea:focus,
+.dark .admin-content select:focus {
+	border-color: rgba(149, 220, 255, 0.42) !important;
+	box-shadow: 0 0 0 1px rgba(149, 220, 255, 0.12) !important;
+}
+
+.dark #workspace-container input.border-b,
+.dark .admin-content input.border-b {
+	border-top: 1px solid rgba(149, 220, 255, 0.13) !important;
+	border-left: 1px solid rgba(149, 220, 255, 0.13) !important;
+	border-right: 1px solid rgba(149, 220, 255, 0.13) !important;
+}
+
+.dark #tab-general textarea,
+.dark [role='dialog'] textarea,
+.dark .modal textarea {
+	min-height: 4.75rem;
+	border-radius: 0.75rem !important;
+	padding: 0.75rem 0.875rem !important;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.035)),
+		rgba(30, 34, 48, 0.44) !important;
+	border: 1px solid rgba(149, 220, 255, 0.18) !important;
+	color: #edf3ff !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.06),
+		0 10px 28px rgba(0, 0, 0, 0.08) !important;
+}
+
+.dark #tab-general textarea:hover,
+.dark [role='dialog'] textarea:hover,
+.dark .modal textarea:hover {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.04)),
+		rgba(30, 34, 48, 0.5) !important;
+	border-color: rgba(149, 220, 255, 0.26) !important;
+}
+
+.dark #tab-general textarea:focus,
+.dark [role='dialog'] textarea:focus,
+.dark .modal textarea:focus {
+	border-color: rgba(149, 220, 255, 0.46) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.08),
+		0 0 0 1px rgba(149, 220, 255, 0.12),
+		0 0 24px rgba(149, 220, 255, 0.07) !important;
+}
+
+.dark #settings-search {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.028)),
+		rgba(30, 34, 48, 0.44) !important;
+	border: 1px solid rgba(149, 220, 255, 0.14);
+	border-radius: 0.75rem !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+	color: #9faac0;
+}
+
+.dark #settings-search:focus-within {
+	border-color: rgba(149, 220, 255, 0.36);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.07),
+		0 0 0 1px rgba(149, 220, 255, 0.1);
+}
+
+.dark #settings-search input {
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	min-height: 0;
+	padding-top: 0.375rem;
+	padding-bottom: 0.375rem;
+	color: #edf3ff !important;
+}
+
+.dark #settings-search input::placeholder {
+	color: rgba(170, 180, 202, 0.58) !important;
+}
+
+.dark #chat-search,
+.dark #workspace-container .flex:has(> input[placeholder^='Search']),
+.dark .admin-content .flex:has(> input[placeholder^='Search']) {
+	min-height: 2.35rem;
+	align-items: center;
+	border: 1px solid rgba(149, 220, 255, 0.14);
+	border-radius: 0.8rem;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+		rgba(30, 34, 48, 0.32) !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+	transition:
+		border-color 0.16s ease,
+		background-color 0.16s ease,
+		box-shadow 0.16s ease;
+}
+
+.dark #chat-search:focus-within,
+.dark #workspace-container .flex:has(> input[placeholder^='Search']):focus-within,
+.dark .admin-content .flex:has(> input[placeholder^='Search']):focus-within {
+	border-color: rgba(149, 220, 255, 0.34);
+	background:
+		linear-gradient(180deg, rgba(149, 220, 255, 0.055), rgba(255, 255, 255, 0.03)),
+		rgba(30, 34, 48, 0.4) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.06),
+		0 0 0 1px rgba(149, 220, 255, 0.08);
+}
+
+.dark #chat-search input,
+.dark #workspace-container input[placeholder^='Search'],
+.dark .admin-content input[placeholder^='Search'] {
+	min-height: 0 !important;
+	border: 0 !important;
+	background: transparent !important;
+	box-shadow: none !important;
+	color: #edf3ff !important;
+}
+
+.dark #chat-search input::placeholder,
+.dark #workspace-container input[placeholder^='Search']::placeholder,
+.dark .admin-content input[placeholder^='Search']::placeholder {
+	color: rgba(170, 180, 202, 0.58) !important;
+}
+
+.dark #arkive-search-modal button {
+	border: 1px solid transparent;
+}
+
+.dark #arkive-search-modal button:hover,
+.dark #arkive-search-modal button[data-arrow-selected='true'] {
+	background: rgba(149, 220, 255, 0.055) !important;
+	border-color: rgba(149, 220, 255, 0.12);
+	color: #eef5ff;
+}
+
+.arkive-about-card {
+	border-radius: 0.875rem;
+	border: 1px solid rgba(149, 220, 255, 0.12);
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+		rgba(30, 34, 48, 0.3);
+	padding: 0.875rem;
+}
+
+.dark #tab-account input:not([type='checkbox']):not([type='range']),
+.dark #tab-account textarea,
+.dark #tab-account select,
+.dark #tab-audio input:not([type='checkbox']):not([type='range']),
+.dark #tab-audio textarea,
+.dark #tab-audio select,
+.dark #tab-general input:not([type='checkbox']):not([type='range']),
+.dark #tab-general select {
+	min-height: 2.25rem;
+	border-radius: 0.625rem !important;
+	padding: 0.45rem 0.65rem !important;
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.032)),
+		rgba(30, 34, 48, 0.42) !important;
+	border: 1px solid rgba(149, 220, 255, 0.16) !important;
+	color: #edf3ff !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+}
+
+.dark #tab-account input:not([type='checkbox']):not([type='range']):focus,
+.dark #tab-account textarea:focus,
+.dark #tab-account select:focus,
+.dark #tab-audio input:not([type='checkbox']):not([type='range']):focus,
+.dark #tab-audio textarea:focus,
+.dark #tab-audio select:focus,
+.dark #tab-general input:not([type='checkbox']):not([type='range']):focus,
+.dark #tab-general select:focus {
+	border-color: rgba(149, 220, 255, 0.42) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.07),
+		0 0 0 1px rgba(149, 220, 255, 0.12),
+		0 0 20px rgba(149, 220, 255, 0.05) !important;
+}
+
+.dark #tab-account button,
+.dark #tab-audio button,
+.dark #tab-general button,
+.dark #tab-permissions button {
+	border-radius: 9999px !important;
+	border: 1px solid rgba(149, 220, 255, 0.14);
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.028)),
+		rgba(30, 34, 48, 0.34) !important;
+	color: #eef5ff !important;
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.dark #tab-account button:hover,
+.dark #tab-audio button:hover,
+.dark #tab-general button:hover,
+.dark #tab-permissions button:hover {
+	border-color: rgba(149, 220, 255, 0.28);
+	color: #ffffff !important;
+}
+
+.dark #tab-account button.text-xs,
+.dark #tab-audio button.text-xs,
+.dark #tab-general button.text-xs,
+.dark #tab-permissions button.text-xs {
+	min-height: 1.75rem;
+	padding: 0.25rem 0.625rem !important;
+	font-weight: 600;
+	line-height: 1rem;
+	text-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+}
+
+.dark #tab-account button[role='switch'],
+.dark #tab-audio button[role='switch'],
+.dark #tab-general button[role='switch'],
+.dark #tab-permissions button[role='switch'] {
+	display: inline-flex;
+	min-width: 3rem;
+	align-items: center;
+	justify-content: center;
+}
+
+.dark #tab-account button[role='switch'] span,
+.dark #tab-audio button[role='switch'] span,
+.dark #tab-general button[role='switch'] span,
+.dark #tab-permissions button[role='switch'] span {
+	margin-left: 0 !important;
+}
+
+.dark #tab-account button[type='submit'],
+.dark #tab-audio button[type='submit'],
+.dark #tab-general button[type='submit'] {
+	background: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.98),
+		rgba(216, 222, 241, 0.92)
+	) !important;
+	border-color: rgba(255, 255, 255, 0.82) !important;
+	color: #09080d !important;
+}
+
+.dark .arkive-model-selector-menu {
+	background:
+		radial-gradient(ellipse 240px 140px at 18% 0%, rgba(179, 156, 255, 0.055), transparent 72%),
+		linear-gradient(180deg, rgba(13, 14, 20, 0.96), rgba(9, 8, 13, 0.96)) !important;
+	border-color: rgba(149, 220, 255, 0.13) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.045),
+		0 18px 46px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .arkive-model-search {
+	height: 2.25rem;
+	background: rgba(255, 255, 255, 0.035) !important;
+	border-color: rgba(149, 220, 255, 0.12) !important;
+	box-shadow: none;
+}
+
+.dark .arkive-model-search:focus-within {
+	background: rgba(255, 255, 255, 0.05) !important;
+	border-color: rgba(149, 220, 255, 0.3) !important;
+	box-shadow: 0 0 0 1px rgba(149, 220, 255, 0.08);
+}
+
+.dark .arkive-model-search input {
+	min-height: 0;
+	background: transparent !important;
+	border: 0 !important;
+	box-shadow: none !important;
+	padding: 0 !important;
+	color: #edf3ff !important;
+}
+
+.dark .arkive-model-list {
+	background: transparent !important;
+	border-color: rgba(149, 220, 255, 0.08) !important;
+}
+
+.dark .arkive-model-option {
+	border: 1px solid transparent;
+	border-radius: 0.75rem !important;
+	color: #d8def1 !important;
+}
+
+.dark .arkive-model-option:hover {
+	background: rgba(149, 220, 255, 0.035) !important;
+	border-color: rgba(149, 220, 255, 0.08);
+}
+
+.dark .arkive-model-option-active {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.075), rgba(140, 240, 201, 0.04)),
+		rgba(255, 255, 255, 0.025) !important;
+	border-color: rgba(149, 220, 255, 0.14) !important;
+	box-shadow: none !important;
+}
+
+.dark .arkive-model-option[aria-selected='true'] {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.085), rgba(140, 240, 201, 0.045)),
+		rgba(255, 255, 255, 0.03) !important;
+	border-color: rgba(149, 220, 255, 0.16) !important;
+}
+
+.dark .arkive-model-selector-menu button[aria-pressed='true'] {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.15), rgba(179, 156, 255, 0.1)),
+		rgba(255, 255, 255, 0.055) !important;
+	color: #ffffff !important;
+}
+
+.dark .arkive-model-selector-menu button[aria-pressed='false'] {
+	color: #8591aa !important;
+}
+
+.dark .arkive-switch {
+	border: 1px solid rgba(149, 220, 255, 0.13);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.06),
+		0 0 0 1px rgba(9, 8, 13, 0.18);
+}
+
+.dark .arkive-switch[data-state='checked'] {
+	background: linear-gradient(135deg, #8cf0c9, #00966f 58%, #008464) !important;
+	border-color: rgba(140, 240, 201, 0.42);
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.22),
+		0 0 18px rgba(140, 240, 201, 0.12);
+}
+
+.dark .arkive-switch[data-state='unchecked'] {
+	background:
+		linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+		rgba(30, 34, 48, 0.42) !important;
+	border-color: rgba(149, 220, 255, 0.16);
+}
+
+.dark .arkive-switch[data-state='unchecked'] span {
+	background: #5f6b80 !important;
+}
+
+.dark .admin-content button[class*='bg-white'],
+.dark .admin-content button[class*='dark:bg-white'],
+.dark #workspace-container button[class*='bg-white'],
+.dark #workspace-container button[class*='dark:bg-white'] {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.18), rgba(179, 156, 255, 0.12)),
+		rgba(255, 255, 255, 0.08) !important;
+	border: 1px solid rgba(149, 220, 255, 0.28) !important;
+	color: #eef5ff !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.12),
+		0 10px 28px rgba(0, 0, 0, 0.18) !important;
+}
+
+.dark .admin-content button[class*='bg-white']:hover,
+.dark .admin-content button[class*='dark:bg-white']:hover,
+.dark #workspace-container button[class*='bg-white']:hover,
+.dark #workspace-container button[class*='dark:bg-white']:hover {
+	border-color: rgba(149, 220, 255, 0.42) !important;
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.14),
+		0 0 26px rgba(149, 220, 255, 0.12) !important;
+}
+
+.dark .admin-content button[aria-haspopup='dialog'] {
+	border: 1px solid transparent;
+	border-radius: 0.875rem !important;
+	padding: 0.75rem 0.875rem;
+}
+
+.dark .admin-content button[aria-haspopup='dialog']:hover {
+	background: rgba(149, 220, 255, 0.04) !important;
+	border-color: rgba(149, 220, 255, 0.13);
+}
+
+.dark .admin-content [aria-haspopup='dialog'] .dark\:bg-white\/10 {
+	background:
+		linear-gradient(135deg, rgba(149, 220, 255, 0.16), rgba(179, 156, 255, 0.1)),
+		rgba(255, 255, 255, 0.055) !important;
+}
+
+.dark #workspace-container table,
+.dark .admin-content table {
+	background: transparent !important;
+	border-color: rgba(149, 220, 255, 0.08);
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.dark #workspace-container thead,
+.dark .admin-content thead {
+	background: rgba(149, 220, 255, 0.035) !important;
+}
+
+.dark #workspace-container tr,
+.dark .admin-content tr {
+	border-color: rgba(149, 220, 255, 0.08) !important;
+}
+
+.dark #workspace-container tbody tr:hover,
+.dark .admin-content tbody tr:hover {
+	background: rgba(149, 220, 255, 0.045) !important;
+}
+
+.dark textarea {
+	scrollbar-width: thin;
+	scrollbar-color: rgba(149, 220, 255, 0.28) rgba(30, 34, 48, 0.32);
+}
+
+.dark textarea::-webkit-scrollbar {
+	width: 0.625rem;
+}
+
+.dark textarea::-webkit-scrollbar-track {
+	background: rgba(30, 34, 48, 0.32);
+	border-radius: 9999px;
+}
+
+.dark textarea::-webkit-scrollbar-thumb {
+	background:
+		linear-gradient(180deg, rgba(149, 220, 255, 0.44), rgba(179, 156, 255, 0.3)),
+		rgba(149, 220, 255, 0.26);
+	border: 2px solid rgba(30, 34, 48, 0.32);
+	border-radius: 9999px;
+}
+
+.dark .admin-content textarea {
+	min-height: 8rem;
+	resize: vertical;
+}
+
+.dark .bg-white,
+.dark .dark\:bg-gray-900,
+.dark .dark\:bg-gray-850,
+.dark .dark\:bg-gray-800 {
+	background-blend-mode: normal;
 }
 
 /* Position the handle relative to each LI */

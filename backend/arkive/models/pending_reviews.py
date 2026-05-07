@@ -90,12 +90,8 @@ class PendingReviewsTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[pending_reviews] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return PendingReviewModel.model_validate(record)
         except Exception as e:
             log.exception(f'[pending_reviews] insert failed: {e}')

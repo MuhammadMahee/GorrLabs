@@ -115,12 +115,8 @@ class DocumentClassificationsTable:
                                 }
                             ),
                         )
-                    except Exception as _anchor_err:
-                        import logging as _logging
-
-                        _logging.getLogger(__name__).warning(
-                            f'[document_classifications] solana anchor fire_and_forget failed: {_anchor_err}'
-                        )
+                    except Exception:
+                        pass
                 return result
             except Exception as e:
                 log.exception(f'Error upserting document classification: {e}')

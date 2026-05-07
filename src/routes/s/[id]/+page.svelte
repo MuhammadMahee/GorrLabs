@@ -147,7 +147,7 @@
 
 {#if loaded}
 	<div
-		class="h-screen max-h-[100dvh] w-full flex flex-col text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900"
+		class="arkive-page h-screen max-h-[100dvh] w-full flex flex-col text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900"
 	>
 		<div class="flex flex-col flex-auto justify-center relative">
 			<div class=" flex flex-col w-full flex-auto overflow-auto h-0" id="messages-container">
@@ -156,8 +156,8 @@
 						? 'max-w-full'
 						: 'max-w-5xl'} mx-auto"
 				>
-					<div class="px-3">
-						<h1 class=" text-2xl font-medium line-clamp-1 m-0">
+					<div class="arkive-glass mx-3 rounded-2xl px-4 py-3">
+						<h1 class="arkive-prism-text text-2xl font-medium line-clamp-1 m-0">
 							{title}
 						</h1>
 
@@ -190,11 +190,11 @@
 			</div>
 
 			<div
-				class="absolute bottom-0 right-0 left-0 flex justify-center w-full bg-linear-to-b from-transparent to-white dark:to-gray-900"
+				class="absolute bottom-0 right-0 left-0 flex justify-center w-full bg-linear-to-b from-transparent to-[#09080d]"
 			>
 				<div class="pb-5">
 					<button
-						class="px-3.5 py-1.5 text-sm font-medium bg-black hover:bg-gray-900 text-white dark:bg-white dark:text-black dark:hover:bg-gray-100 transition rounded-full"
+						class="arkive-glow-btn px-4 py-2 text-sm font-medium transition rounded-full"
 						on:click={cloneSharedChat}
 					>
 						{$i18n.t('Clone Chat')}

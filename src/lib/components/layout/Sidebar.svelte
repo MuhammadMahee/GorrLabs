@@ -769,7 +769,6 @@
 					</Tooltip>
 				</div>
 
-
 				{#if $user?.role === 'admin' || $user?.permissions?.workspace?.models || $user?.permissions?.workspace?.knowledge || $user?.permissions?.workspace?.prompts || $user?.permissions?.workspace?.tools || $user?.permissions?.workspace?.skills}
 					<div class="">
 						<Tooltip content={$i18n.t('Workspace')} placement="right">
@@ -876,7 +875,9 @@
 				? ''
 				: 'invisible'}"
 		>
-			<div class="sidebar sticky top-0 z-10 flex justify-between gap-1 px-3 pb-3 pt-3 text-gray-600 dark:text-gray-400">
+			<div
+				class="sidebar sticky top-0 z-10 flex justify-between gap-1 px-3 pb-3 pt-3 text-gray-600 dark:text-gray-400"
+			>
 				<a
 					class="flex size-9 items-center justify-center rounded-xl transition no-drag-region hover:bg-gray-100 dark:hover:bg-white/[0.06]"
 					href="/"
@@ -945,7 +946,9 @@
 							on:click={newChatHandler}
 							aria-label={$i18n.t('New Chat')}
 						>
-							<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
+							<div
+								class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400"
+							>
 								<PencilSquare className=" size-4.5" strokeWidth="2" />
 							</div>
 
@@ -967,7 +970,9 @@
 							draggable="false"
 							aria-label={$i18n.t('Search')}
 						>
-							<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
+							<div
+								class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400"
+							>
 								<Search strokeWidth="2" className="size-4.5" />
 							</div>
 
@@ -977,7 +982,6 @@
 							<HotkeyHint name="search" className=" group-hover:visible invisible" />
 						</button>
 					</div>
-
 
 					{#if $user?.role === 'admin' || $user?.permissions?.workspace?.models || $user?.permissions?.workspace?.knowledge || $user?.permissions?.workspace?.prompts || $user?.permissions?.workspace?.tools || $user?.permissions?.workspace?.skills}
 						<div class="flex justify-center text-gray-800 dark:text-gray-200">
@@ -989,7 +993,9 @@
 								draggable="false"
 								aria-label={$i18n.t('Workspace')}
 							>
-								<div class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400">
+								<div
+									class="flex size-5 shrink-0 items-center justify-center text-gray-500 dark:text-gray-400"
+								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										fill="none"
@@ -1007,7 +1013,9 @@
 								</div>
 
 								<div class="flex min-w-0 self-center">
-									<div class="truncate font-primary text-sm font-medium">{$i18n.t('Workspace')}</div>
+									<div class="truncate font-primary text-sm font-medium">
+										{$i18n.t('Workspace')}
+									</div>
 								</div>
 							</a>
 						</div>
@@ -1375,6 +1383,7 @@
 							}}
 						>
 							<div
+								id="sidebar-user-menu"
 								class="flex w-full items-center rounded-2xl border border-gray-200 bg-white/70 px-2.5 py-2.5 shadow-sm transition hover:bg-white dark:border-white/[0.07] dark:bg-white/[0.035] dark:shadow-black/20 dark:hover:bg-white/[0.06]"
 							>
 								<div class="relative mr-3 self-center">
@@ -1402,7 +1411,9 @@
 										{$user?.name}
 									</div>
 									{#if $config?.features?.enable_user_status}
-										<div class="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-gray-500">
+										<div
+											class="mt-0.5 flex items-center gap-1.5 text-[11px] font-medium text-gray-500 dark:text-gray-500"
+										>
 											<span class="size-1.5 rounded-full bg-green-500"></span>
 											<span>{$i18n.t('Active')}</span>
 										</div>

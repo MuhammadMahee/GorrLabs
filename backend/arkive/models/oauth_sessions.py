@@ -150,12 +150,8 @@ class OAuthSessionTable:
                                 }
                             ),
                         )
-                    except Exception as _anchor_err:
-                        import logging as _logging
-
-                        _logging.getLogger(__name__).warning(
-                            f'[oauth_sessions] solana anchor fire_and_forget failed: {_anchor_err}'
-                        )
+                    except Exception:
+                        pass
                     db.expunge(result)  # Detach so dict swap is never flushed
                     result.token = token  # Return decrypted token
                     return OAuthSessionModel.model_validate(result)

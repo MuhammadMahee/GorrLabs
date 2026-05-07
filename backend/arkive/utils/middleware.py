@@ -2648,6 +2648,7 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                 log.warning(f'[agentic_rag] history extraction failed: {_ch_err}')
                 _conv_history = []
 
+            _policy = getattr(request.state, 'policy', None)
             _agent_response = await run_agentic_rag(
                 query=user_message,
                 classification=request.state.query_classification,
@@ -2655,15 +2656,27 @@ async def process_chat_payload(request, form_data, user, metadata, model):
                 request=request,
                 collection_ids=_agent_collection_ids,
                 conversation_history=_conv_history,
+                routing=getattr(_policy, 'routing', 'local_only'),
+                redacted_query=getattr(_policy, 'redacted_query', user_message),
             )
 
             if not _agent_response.fell_back and _agent_response.answer:
-                _agent_context = (
-                    "The following answer was synthesized by the Arkive "
-                    "retrieval system using document sources: "
-                    f"{', '.join(_agent_response.sources) or 'knowledge base'}."
-                    f"\n\n{_agent_response.answer}"
+                _is_external = (
+                    _agent_response.metadata.get('answer_source') == 'external_general'
                 )
+                if _is_external:
+                    _agent_context = (
+                        "The following answer comes from general knowledge "
+                        "(no matching internal documents were found for this query)."
+                        f"\n\n{_agent_response.answer}"
+                    )
+                else:
+                    _agent_context = (
+                        "The following answer was synthesized by the Arkive "
+                        "retrieval system using document sources: "
+                        f"{', '.join(_agent_response.sources) or 'knowledge base'}."
+                        f"\n\n{_agent_response.answer}"
+                    )
                 form_data['messages'] = add_or_update_system_message(
                     _agent_context,
                     form_data['messages'],

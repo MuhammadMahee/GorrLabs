@@ -1,5 +1,5 @@
 # ============================
-# Arkive — .dockerignore
+# Arkive .dockerignore
 # ============================
 
 # Git
@@ -18,32 +18,52 @@ Thumbs.db
 node_modules
 /.svelte-kit
 /package
+/build
+/.npm
 
 # Python
-__pycache__
+**/__pycache__
+**/*.pyc
+**/*.pyo
 .venv
 venv
 *.egg-info
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Test files - never in prod image
+backend/test_*.py
+backend/**/test_*.py
 
 # Environment
 .env
 .env.*
 
 # Data & DB (don't bake into image)
+backend/data/*
 backend/arkive/data/*
+backend/**/*.db
 **/*.db
 **/*.db-journal
 chroma.sqlite3
 
 # Secrets
 .arkive_secret_key
+secrets
 
 # Build artifacts
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+coverage
 
 # Leftover / parked features
 _leftover
 
 # Misc
 .github
+docs
+backendstructure.md
+frontendstructure.md
+plans.md
+week*_missing.md

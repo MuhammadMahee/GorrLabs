@@ -2709,7 +2709,7 @@
 />
 
 <div
-	class="h-screen max-h-[100dvh] bg-[#08090f] text-gray-100 transition-width duration-200 ease-in-out {$showSidebar
+	class="arkive-page h-screen max-h-[100dvh] bg-[#08090f] text-gray-100 transition-width duration-200 ease-in-out {$showSidebar
 		? '  md:max-w-[calc(100%-var(--sidebar-width))]'
 		: ' '} w-full max-w-full flex flex-col"
 	id="chat-container"

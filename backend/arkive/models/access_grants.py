@@ -339,12 +339,8 @@ class AccessGrantsTable:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return AccessGrantModel.model_validate(grant)
 
     def revoke_access(
@@ -446,13 +442,8 @@ class AccessGrantsTable:
                             }
                         ),
                     )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
-
+            except Exception:
+                pass
             return [AccessGrantModel.model_validate(g) for g in results]
 
     def set_access_grants(
@@ -509,12 +500,8 @@ class AccessGrantsTable:
                             }
                         ),
                     )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[access_grants] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
+            except Exception:
+                pass
             return [AccessGrantModel.model_validate(g) for g in results]
 
     def get_access_control(

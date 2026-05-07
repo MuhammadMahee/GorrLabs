@@ -19,11 +19,11 @@
 </script>
 
 {#if loaded}
-	<div class="absolute w-full h-full flex z-50">
+	<div class="arkive-page absolute w-full h-full flex z-50 text-gray-100">
 		<div class="absolute rounded-xl w-full h-full backdrop-blur-sm flex justify-center">
 			<div class="m-auto pb-44 flex flex-col justify-center">
-				<div class="max-w-md">
-					<div class="text-center text-2xl font-medium z-50">
+				<div class="arkive-glass arkive-prism-ring max-w-md rounded-[28px] px-8 py-8">
+					<div class="arkive-prism-text text-center text-2xl font-medium z-50">
 						{$i18n.t('{{appName}} Backend Required', { appName: $ARKIVE_NAME })}
 					</div>
 
@@ -35,7 +35,7 @@
 
 					<div class=" mt-6 mx-auto relative group w-fit">
 						<button
-							class="relative z-20 flex px-5 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition font-medium text-sm text-black"
+							class="arkive-glow-btn relative z-20 flex px-5 py-2 rounded-full transition font-medium text-sm"
 							on:click={() => {
 								location.href = '/';
 							}}

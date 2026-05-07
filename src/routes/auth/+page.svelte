@@ -198,9 +198,9 @@
 	</title>
 </svelte:head>
 
-<div class="w-full h-screen max-h-[100dvh] text-white relative" id="auth-page">
+<div class="arkive-page w-full h-screen max-h-[100dvh] text-white relative" id="auth-page">
 	<!-- Arkive branded background: deep page color + subtle accent glows -->
-	<div class="w-full h-full absolute top-0 left-0 bg-gray-950"></div>
+	<div class="w-full h-full absolute top-0 left-0 bg-transparent"></div>
 	<div
 		class="w-full h-full absolute top-0 left-0 pointer-events-none opacity-60"
 		style="background:
@@ -234,7 +234,7 @@
 				{:else}
 					<div class="my-auto flex flex-col justify-center items-center">
 						<div
-							class="sm:max-w-md w-full my-auto pb-10 px-8 py-10 rounded-2xl bg-gray-850/80 border border-gray-700/60 shadow-2xl backdrop-blur-xl text-gray-100"
+							class="arkive-glass arkive-prism-ring sm:max-w-md w-full my-auto pb-10 px-8 py-10 rounded-[28px] text-gray-100"
 						>
 							<div class="flex justify-center mb-5">
 								<img
@@ -253,7 +253,7 @@
 								}}
 							>
 								<div class="mb-1 text-center">
-									<div class="text-2xl font-semibold text-gray-50">
+									<div class="arkive-prism-text text-2xl font-semibold text-gray-50">
 										{#if $config?.onboarding ?? false}
 											{$i18n.t(`Get started with {{ARKIVE_NAME}}`, { ARKIVE_NAME: $ARKIVE_NAME })}
 										{:else if mode === 'ldap'}
@@ -293,7 +293,7 @@
 													bind:value={name}
 													type="text"
 													id="name"
-													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-lg px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
+													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-xl px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
 													autocomplete="name"
 													placeholder={$i18n.t('Enter Your Full Name')}
 													required
@@ -311,7 +311,7 @@
 												<input
 													bind:value={ldapUsername}
 													type="text"
-													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-lg px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
+													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-xl px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
 													autocomplete="username"
 													name="username"
 													id="username"
@@ -330,7 +330,7 @@
 													bind:value={email}
 													type="email"
 													id="email"
-													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-lg px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
+													class="w-full text-sm bg-gray-900/70 border border-gray-700 focus:border-arkive-cyan focus:ring-2 focus:ring-arkive-cyan/20 rounded-xl px-3.5 py-2.5 outline-hidden placeholder:text-gray-500 transition"
 													autocomplete="email"
 													name="email"
 													placeholder={$i18n.t('Enter Your Email')}
@@ -349,7 +349,7 @@
 												bind:value={password}
 												type="password"
 												id="password"
-												outerClassName="flex flex-1 bg-gray-900/70 border border-gray-700 focus-within:border-arkive-cyan focus-within:ring-2 focus-within:ring-arkive-cyan/20 rounded-lg px-3.5 py-2.5 transition"
+												outerClassName="flex flex-1 bg-gray-900/70 border border-gray-700 focus-within:border-arkive-cyan focus-within:ring-2 focus-within:ring-arkive-cyan/20 rounded-xl px-3.5 py-2.5 transition"
 												inputClassName="w-full text-sm bg-transparent outline-hidden placeholder:text-gray-500"
 												showButtonClassName="pl-2 text-gray-400 hover:text-arkive-cyan transition bg-transparent"
 												placeholder={$i18n.t('Enter Your Password')}
@@ -370,7 +370,7 @@
 													bind:value={confirmPassword}
 													type="password"
 													id="confirm-password"
-													outerClassName="flex flex-1 bg-gray-900/70 border border-gray-700 focus-within:border-arkive-cyan focus-within:ring-2 focus-within:ring-arkive-cyan/20 rounded-lg px-3.5 py-2.5 transition"
+													outerClassName="flex flex-1 bg-gray-900/70 border border-gray-700 focus-within:border-arkive-cyan focus-within:ring-2 focus-within:ring-arkive-cyan/20 rounded-xl px-3.5 py-2.5 transition"
 													inputClassName="w-full text-sm bg-transparent outline-hidden placeholder:text-gray-500"
 													showButtonClassName="pl-2 text-gray-400 hover:text-arkive-cyan transition bg-transparent"
 													placeholder={$i18n.t('Confirm Your Password')}
@@ -385,14 +385,14 @@
 									{#if $config?.features.enable_login_form || $config?.features.enable_ldap || form}
 										{#if mode === 'ldap'}
 											<button
-												class="bg-linear-to-r from-arkive-blue to-arkive-cyan hover:brightness-110 text-white shadow-lg shadow-arkive-blue/30 transition w-full rounded-lg font-semibold text-sm py-2.5"
+												class="arkive-glow-btn bg-linear-to-r from-arkive-blue via-arkive-cyan to-arkive-emerald hover:brightness-110 text-white shadow-lg shadow-arkive-blue/30 transition w-full rounded-xl font-semibold text-sm py-2.5"
 												type="submit"
 											>
 												{$i18n.t('Authenticate')}
 											</button>
 										{:else}
 											<button
-												class="bg-linear-to-r from-arkive-blue to-arkive-cyan hover:brightness-110 text-white shadow-lg shadow-arkive-blue/30 transition w-full rounded-lg font-semibold text-sm py-2.5"
+												class="arkive-glow-btn bg-linear-to-r from-arkive-blue via-arkive-cyan to-arkive-emerald hover:brightness-110 text-white shadow-lg shadow-arkive-blue/30 transition w-full rounded-xl font-semibold text-sm py-2.5"
 												type="submit"
 											>
 												{mode === 'signin'

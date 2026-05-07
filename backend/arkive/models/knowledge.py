@@ -188,12 +188,8 @@ class KnowledgeTable:
                                 }
                             ),
                         )
-                    except Exception as _anchor_err:
-                        import logging as _logging
-
-                        _logging.getLogger(__name__).warning(
-                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
-                        )
+                    except Exception:
+                        pass
                     return self._to_knowledge_model(result, db=db)
                 else:
                     return None
@@ -586,12 +582,8 @@ class KnowledgeTable:
                                 }
                             ),
                         )
-                    except Exception as _anchor_err:
-                        import logging as _logging
-
-                        _logging.getLogger(__name__).warning(
-                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
-                        )
+                    except Exception:
+                        pass
                     return KnowledgeFileModel.model_validate(result)
                 else:
                     return None
@@ -631,12 +623,8 @@ class KnowledgeTable:
                                 }
                             ),
                         )
-                    except Exception as _anchor_err:
-                        import logging as _logging
-
-                        _logging.getLogger(__name__).warning(
-                            f'[knowledge] solana anchor fire_and_forget failed: {_anchor_err}'
-                        )
+                    except Exception:
+                        pass
                 return True
         except Exception:
             return False

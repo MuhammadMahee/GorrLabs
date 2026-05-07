@@ -998,15 +998,6 @@
 								/>
 							</div>
 						</div>
-
-						<div class="  mb-2.5 flex w-full justify-between">
-							<div class=" self-center text-xs font-medium">
-								{$i18n.t('Verify SSL Certificate')}
-							</div>
-							<div class="flex items-center relative">
-								<Switch bind:state={webConfig.ENABLE_WEB_LOADER_SSL_VERIFICATION} />
-							</div>
-						</div>
 					{:else if webConfig.WEB_LOADER_ENGINE === 'playwright'}
 						<div class="mb-2.5 flex w-full flex-col">
 							<div>
@@ -1152,36 +1143,6 @@
 							bind:value={webConfig.WEB_LOADER_CONCURRENT_REQUESTS}
 							required
 						/>
-					</div>
-
-					<div class="  mb-2.5 flex w-full justify-between">
-						<div class=" self-center text-xs font-medium">
-							{$i18n.t('Youtube Language')}
-						</div>
-						<div class="flex items-center relative">
-							<input
-								class="flex-1 w-full rounded-lg text-sm bg-transparent outline-hidden"
-								type="text"
-								placeholder={$i18n.t('Enter language codes')}
-								bind:value={webConfig.YOUTUBE_LOADER_LANGUAGE}
-								autocomplete="off"
-							/>
-						</div>
-					</div>
-
-					<div class="  mb-2.5 flex flex-col w-full justify-between">
-						<div class=" mb-1 text-xs font-medium">
-							{$i18n.t('Youtube Proxy URL')}
-						</div>
-						<div class="flex items-center relative">
-							<input
-								class="flex-1 w-full rounded-lg text-sm bg-transparent outline-hidden"
-								type="text"
-								placeholder={$i18n.t('Enter proxy URL (e.g. https://user:password@host:port)')}
-								bind:value={webConfig.YOUTUBE_LOADER_PROXY_URL}
-								autocomplete="off"
-							/>
-						</div>
 					</div>
 				</div>
 			</div>

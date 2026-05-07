@@ -113,12 +113,8 @@ class PolicyDecisionsTable:
                             "created_at": str(decision.created_at),
                         }),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-                    _logging.getLogger(__name__).warning(
-                        f"[policy_decisions] solana anchor "
-                        f"fire_and_forget failed: {_anchor_err}"
-                    )
+                except Exception:
+                    pass
                 return PolicyDecisionModel.model_validate(decision)
             except Exception as e:
                 log.exception(f'Error inserting policy decision: {e}')

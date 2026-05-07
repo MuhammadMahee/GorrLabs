@@ -307,12 +307,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return user
             else:
                 return None
@@ -591,12 +587,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -645,12 +637,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -682,12 +670,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return UserModel.model_validate(user)
         except Exception:
             return None
@@ -783,12 +767,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return UserModel.model_validate(user)
         except Exception as e:
             print(e)
@@ -893,13 +873,8 @@ class UsersTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[users] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
-
+                except Exception:
+                    pass
                 return True
 
         except Exception:

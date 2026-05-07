@@ -3,7 +3,6 @@
 	import type { i18n as i18nType } from 'i18next';
 	import { getContext } from 'svelte';
 	import { ARKIVE_NAME, showSidebar, mobile } from '$lib/stores';
-	import { page } from '$app/stores';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import Sidebar from '$lib/components/icons/Sidebar.svelte';
 
@@ -17,11 +16,11 @@
 </svelte:head>
 
 <div
-	class=" flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
+	class="arkive-page flex flex-col w-full h-screen max-h-[100dvh] transition-width duration-200 ease-in-out {$showSidebar
 		? 'md:max-w-[calc(100%-var(--sidebar-width))]'
 		: ''} max-w-full"
 >
-	<nav class="   px-2.5 pt-1.5 backdrop-blur-xl w-full drag-region">
+	<nav class="arkive-topbar px-2.5 pt-1.5 w-full drag-region">
 		<div class=" flex items-center">
 			{#if $mobile}
 				<div class="{$showSidebar ? 'md:hidden' : ''} flex flex-none items-center self-end mt-1.5">
@@ -43,20 +42,7 @@
 					</Tooltip>
 				</div>
 			{/if}
-
-			<div class=" flex w-full">
-				<div
-					class="flex gap-1 scrollbar-none overflow-x-auto w-fit text-center text-sm font-medium rounded-full bg-transparent pt-1"
-				>
-
-					<a
-						class="min-w-fit p-1.5 {$page.url.pathname.includes('/playground/calendar')
-							? ''
-							: 'text-gray-300 dark:text-gray-600 hover:text-gray-700 dark:hover:text-white'} transition"
-						href="/playground/completions">{$i18n.t('Calendar')}</a
-					>
-				</div>
-			</div>
+			<div class="flex w-full"></div>
 		</div>
 	</nav>
 

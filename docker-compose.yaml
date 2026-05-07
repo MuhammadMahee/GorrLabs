@@ -17,15 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  ollama:
-    volumes:
-      - ollama:/root/.ollama
-    container_name: ollama
-    pull_policy: always
-    tty: true
-    restart: unless-stopped
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
-
   arkive:
     image: ${ARKIVE_IMAGE:-}
     build:
@@ -42,12 +33,9 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      ollama:
-        condition: service_started
     ports:
       - ${ARKIVE_PORT-3000}:8080
     environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
       - 'ARKIVE_SECRET_KEY='
       - 'ARKIVE_NAME=Arkive'
       - 'DATABASE_URL=postgresql://${POSTGRES_USER:-arkive}:${POSTGRES_PASSWORD:-arkive}@postgres:5432/${POSTGRES_DB:-arkive}'
@@ -56,6 +44,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  ollama: {}
   arkive: {}
   postgres: {}

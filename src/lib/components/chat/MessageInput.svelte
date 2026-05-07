@@ -6,12 +6,6 @@
 
 	import { marked } from 'marked';
 	import { v4 as uuidv4 } from 'uuid';
-	import dayjs from '$lib/dayjs';
-	import duration from 'dayjs/plugin/duration';
-	import relativeTime from 'dayjs/plugin/relativeTime';
-
-	dayjs.extend(duration);
-	dayjs.extend(relativeTime);
 
 	import { onMount, tick, getContext, createEventDispatcher } from 'svelte';
 
@@ -61,10 +55,13 @@
 	import { getSessionUser } from '$lib/apis/auths';
 	import { getTools } from '$lib/apis/tools';
 
-	import { ARKIVE_BASE_URL, ARKIVE_API_BASE_URL, PASTED_TEXT_CHARACTER_LIMIT } from '$lib/constants';
+	import {
+		ARKIVE_BASE_URL,
+		ARKIVE_API_BASE_URL,
+		PASTED_TEXT_CHARACTER_LIMIT
+	} from '$lib/constants';
 	import { getOAuthClientAuthorizationUrl } from '$lib/apis/configs';
 
-	import { createNoteHandler } from '../notes/utils';
 	import { getSuggestionRenderer } from '../common/RichTextInput/suggestions';
 
 	import InputMenu from './MessageInput/InputMenu.svelte';
@@ -96,8 +93,6 @@
 	import CommandSuggestionList from './MessageInput/CommandSuggestionList.svelte';
 	import Knobs from '../icons/Knobs.svelte';
 	import ValvesModal from '../workspace/common/ValvesModal.svelte';
-	import Note from '../icons/Note.svelte';
-	import { goto } from '$app/navigation';
 	import InputModal from '../common/InputModal.svelte';
 	import Expand from '../icons/Expand.svelte';
 	import QueuedMessageItem from './MessageInput/QueuedMessageItem.svelte';
@@ -756,7 +751,7 @@
 
 					// Do the compression if required
 					if (width || height) {
-							return (await compressImage(imageUrl, width, height)) as string;
+						return (await compressImage(imageUrl, width, height)) as string;
 					}
 					return imageUrl;
 				};
@@ -793,25 +788,6 @@
 				uploadFileHandler(file);
 			}
 		});
-	};
-
-	const createNote = async () => {
-		if (inputContent?.md.trim() === '' && inputContent?.html.trim() === '') {
-			toast.error($i18n.t('Cannot create an empty note.'));
-			return;
-		}
-
-		const res = await createNoteHandler(
-			dayjs().format('YYYY-MM-DD'),
-			inputContent?.md,
-			inputContent?.html
-		);
-
-		if (res) {
-			// Clear the input content saved in session storage.
-			sessionStorage.removeItem('chat-input');
-			goto(`/notes/${res.id}`);
-		}
 	};
 
 	const onDragOver = (e: DragEvent) => {
@@ -1248,7 +1224,7 @@
 
 						<div
 							id="message-input-container"
-							class="relative flex w-full flex-1 flex-col rounded-3xl border px-1 shadow-2xl shadow-black/25 backdrop-blur-xl transition {$temporaryChatEnabled
+							class="arkive-input-glass arkive-prism-ring relative flex w-full flex-1 flex-col rounded-[28px] border px-1 shadow-2xl shadow-black/25 backdrop-blur-xl transition {$temporaryChatEnabled
 								? 'border-dashed border-white/[0.12] hover:border-white/[0.18] focus-within:border-cyan-400/35'
 								: 'border-white/[0.075] hover:border-white/[0.12] focus-within:border-cyan-400/35'} bg-[#101118]/92 text-gray-100"
 							dir={$settings?.chatDirection ?? 'auto'}
@@ -1505,8 +1481,10 @@
 																// either when Enter is pressed or when Ctrl+Enter is pressed.
 																const enterPressed =
 																	($settings?.ctrlEnterToSend ?? false)
-																		? (e.key === 'Enter' || (e as any).keyCode === 13) && isCtrlPressed
-																		: (e.key === 'Enter' || (e as any).keyCode === 13) && !(e as KeyboardEvent).shiftKey;
+																		? (e.key === 'Enter' || (e as any).keyCode === 13) &&
+																			isCtrlPressed
+																		: (e.key === 'Enter' || (e as any).keyCode === 13) &&
+																			!(e as KeyboardEvent).shiftKey;
 
 																if (enterPressed) {
 																	e.preventDefault();
@@ -1532,7 +1510,8 @@
 														e = e.detail.event;
 														console.log(e);
 
-														const clipboardData = (e as ClipboardEvent).clipboardData || window.clipboardData;
+														const clipboardData =
+															(e as ClipboardEvent).clipboardData || window.clipboardData;
 
 														if (clipboardData && clipboardData.items) {
 															for (const item of clipboardData.items) {
@@ -1584,9 +1563,10 @@
 										}}
 										uploadGoogleDriveHandler={async () => {
 											try {
-													const fileData = (await createPicker()) as
-														| { blob: Blob; name: string }
-														| null;
+												const fileData = (await createPicker()) as {
+													blob: Blob;
+													name: string;
+												} | null;
 												if (fileData) {
 													const file = new File([fileData.blob], fileData.name, {
 														type: fileData.blob.type
@@ -1867,23 +1847,6 @@
 											</Tooltip>
 										</div>
 									{:else}
-										{#if prompt !== '' && !history?.currentId && !$selectedTerminalId && ($config?.features?.enable_notes ?? false) && ($_user?.role === 'admin' || ($_user?.permissions?.features?.notes ?? true))}
-											<!-- {$i18n.t('Create Note')}  -->
-											<Tooltip content={$i18n.t('Create note')} className=" flex items-center">
-												<button
-													id="create-note-button"
-														class="-mr-1 self-center rounded-xl p-1.5 text-gray-500 transition hover:bg-white/[0.06] hover:text-gray-200"
-													type="button"
-													disabled={prompt === '' && files.length === 0}
-													on:click={() => {
-														createNote();
-													}}
-												>
-													<Note className="size-4.5 translate-y-[0.5px]" />
-												</button>
-											</Tooltip>
-										{/if}
-
 										{#if !history?.currentId || history.messages[history.currentId]?.done == true}
 											<!-- Terminal Server Selector -->
 											{#if ($terminalServers ?? []).length > 0 || ($settings?.terminalServers ?? []).some((s) => s.url)}
@@ -1980,9 +1943,9 @@
 																	// If the user has not initialized the TTS worker, initialize it
 																	if (!$TTSWorker) {
 																		await TTSWorker.set(
-																				new KokoroWorker(
-																					$settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
-																				)
+																			new KokoroWorker(
+																				$settings.audio?.tts?.engineConfig?.dtype ?? 'fp32'
+																			)
 																		);
 
 																		await $TTSWorker.init();
@@ -2049,7 +2012,7 @@
 								{@html DOMPurify.sanitize(marked($config?.license_metadata?.input_footer))}
 							</div>
 						{:else}
-							<div class="mb-1" ></div>
+							<div class="mb-1"></div>
 						{/if}
 					</form>
 				</div>

@@ -48,9 +48,9 @@
 	role="option"
 	aria-selected={value === item.value}
 	aria-label={$i18n.t('Select {{modelName}} model', { modelName: item.label })}
-	class="flex group/item w-full h-[42px] text-left font-medium line-clamp-1 select-none items-center rounded-button py-1.5 pl-2 pr-2 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-100 hover:bg-white dark:hover:bg-white/[0.045] rounded-lg cursor-pointer data-highlighted:bg-muted {index ===
+	class="arkive-model-option flex group/item w-full h-[42px] text-left font-medium line-clamp-1 select-none items-center rounded-button py-1.5 pl-2 pr-2 text-sm text-gray-700 dark:text-gray-100 outline-hidden transition-all duration-100 hover:bg-white dark:hover:bg-white/[0.045] rounded-lg cursor-pointer data-highlighted:bg-muted {index ===
 	selectedModelIdx
-		? 'bg-white dark:bg-white/[0.065] shadow-sm shadow-black/5 dark:shadow-none group-hover:bg-white dark:group-hover:bg-white/[0.065]'
+		? 'arkive-model-option-active bg-white dark:bg-white/[0.065] shadow-sm shadow-black/5 dark:shadow-none group-hover:bg-white dark:group-hover:bg-white/[0.065]'
 		: ''}"
 	data-arrow-selected={index === selectedModelIdx}
 	data-value={item.value}
@@ -76,23 +76,25 @@
 		{/if} -->
 
 		<div class="flex items-center min-w-fit">
-				<Tooltip content={$user?.role === 'admin' ? (item?.value ?? '') : ''} placement="top-start">
-					<img
-						src={`${ARKIVE_API_BASE_URL}/models/model/profile/image?id=${item.model.id}&lang=${$i18n.language}`}
-						alt={$i18n.t('{{modelName}} profile image', { modelName: item.label })}
-						class="rounded-md size-7 flex items-center bg-gray-100 dark:bg-white/10 object-cover"
-						loading="lazy"
-						on:error={(e) => {
-							(e.currentTarget as HTMLImageElement).src = '/favicon.png';
-						}}
-					/>
-				</Tooltip>
-			</div>
+			<Tooltip content={$user?.role === 'admin' ? (item?.value ?? '') : ''} placement="top-start">
+				<img
+					src={`${ARKIVE_API_BASE_URL}/models/model/profile/image?id=${item.model.id}&lang=${$i18n.language}`}
+					alt={$i18n.t('{{modelName}} profile image', { modelName: item.label })}
+					class="rounded-md size-7 flex items-center bg-gray-100 dark:bg-white/10 object-cover"
+					loading="lazy"
+					on:error={(e) => {
+						(e.currentTarget as HTMLImageElement).src = '/favicon.png';
+					}}
+				/>
+			</Tooltip>
+		</div>
 
 		<div class="flex min-w-0 flex-1 items-center gap-2">
 			<div class="min-w-0">
 				<Tooltip content={`${item.label} (${item.value})`} placement="top-start">
-					<div class="line-clamp-1 text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-normal">
+					<div
+						class="line-clamp-1 text-sm font-semibold text-gray-900 dark:text-gray-100 tracking-normal"
+					>
 						{item.label}
 					</div>
 				</Tooltip>
@@ -114,7 +116,8 @@
 								}`}
 								className="self-end"
 							>
-								<span class="text-[0.7rem] font-medium text-gray-500 dark:text-gray-500 line-clamp-1"
+								<span
+									class="text-[0.7rem] font-medium text-gray-500 dark:text-gray-500 line-clamp-1"
 									>{item.model.ollama?.details?.parameter_size ?? ''}</span
 								>
 							</Tooltip>
@@ -133,7 +136,7 @@
 										<span
 											class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
 										></span>
-										<span class="relative inline-flex rounded-full size-2 bg-green-500" ></span>
+										<span class="relative inline-flex rounded-full size-2 bg-green-500"></span>
 									</span>
 								</div>
 							</Tooltip>
@@ -274,7 +277,9 @@
 		</ModelItemMenu>
 
 		{#if value === item.value}
-			<div class="flex size-5 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300">
+			<div
+				class="flex size-5 items-center justify-center rounded-full bg-cyan-400/10 text-cyan-300"
+			>
 				<Check className="size-3" />
 			</div>
 		{/if}

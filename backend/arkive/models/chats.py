@@ -337,13 +337,8 @@ class ChatTable:
                         }
                     ),
                 )
-            except Exception as _anchor_err:
-                import logging as _logging
-
-                _logging.getLogger(__name__).warning(
-                    f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
-                )
-
+            except Exception:
+                pass
             return ChatModel.model_validate(chat_item) if chat_item else None
 
     def _chat_import_form_to_chat_model(self, user_id: str, form_data: ChatImportForm) -> ChatModel:
@@ -427,13 +422,8 @@ class ChatTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
-
+                except Exception:
+                    pass
                 return ChatModel.model_validate(chat_item)
         except Exception:
             return None
@@ -623,12 +613,8 @@ class ChatTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
             return shared_chat if (shared_result and result) else None
 
     def update_shared_chat_by_chat_id(self, chat_id: str, db: Optional[Session] = None) -> Optional[ChatModel]:
@@ -716,12 +702,8 @@ class ChatTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return ChatModel.model_validate(chat)
         except Exception:
             return None
@@ -753,12 +735,8 @@ class ChatTable:
                             }
                         ),
                     )
-                except Exception as _anchor_err:
-                    import logging as _logging
-
-                    _logging.getLogger(__name__).warning(
-                        f'[chats] solana anchor fire_and_forget failed: {_anchor_err}'
-                    )
+                except Exception:
+                    pass
                 return ChatModel.model_validate(chat)
         except Exception:
             return None

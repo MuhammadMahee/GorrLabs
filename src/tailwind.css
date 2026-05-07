@@ -7,18 +7,18 @@
 	/* These replace the default neutral grays so every existing
 	   dark:bg-gray-* / dark:text-gray-* automatically picks up
 	   the Arkive blue-tinted dark surface colors. */
-	--color-gray-50: #f0f2f8;   /* lightest — rarely used in dark mode */
-	--color-gray-100: #d8def1;  /* V1 text-primary */
-	--color-gray-200: #aab4ca;  /* V1 text-main */
-	--color-gray-300: #7e8aa3;  /* V1 text-muted */
-	--color-gray-400: #586171;  /* V1 text-faint */
-	--color-gray-500: #3d4659;  /* mid-tone */
-	--color-gray-600: #2a3040;  /* borders / subtle fills */
-	--color-gray-700: #1e2230;  /* elevated surface */
-	--color-gray-800: #171b27;  /* V1 surface-1 */
-	--color-gray-850: #111117;  /* V1 surface-0 — main panels */
-	--color-gray-900: #0d0e14;  /* V1 bg-deep */
-	--color-gray-950: #09080d;  /* V1 page background */
+	--color-gray-50: #f0f2f8; /* lightest — rarely used in dark mode */
+	--color-gray-100: #d8def1; /* V1 text-primary */
+	--color-gray-200: #aab4ca; /* V1 text-main */
+	--color-gray-300: #7e8aa3; /* V1 text-muted */
+	--color-gray-400: #586171; /* V1 text-faint */
+	--color-gray-500: #3d4659; /* mid-tone */
+	--color-gray-600: #2a3040; /* borders / subtle fills */
+	--color-gray-700: #1e2230; /* elevated surface */
+	--color-gray-800: #171b27; /* V1 surface-1 */
+	--color-gray-850: #111117; /* V1 surface-0 — main panels */
+	--color-gray-900: #0d0e14; /* V1 bg-deep */
+	--color-gray-950: #09080d; /* V1 page background */
 
 	/* Arkive accent tokens */
 	--color-arkive-cyan: #95dcff;
@@ -27,7 +27,7 @@
 	--color-arkive-emerald: #8cf0c9;
 	--color-arkive-peach: #ffb79c;
 	--color-arkive-rose: #ff92b1;
-	--color-arkive-amber: #f59e0b;
+	--color-arkive-amber: #ffd392;
 }
 
 /*

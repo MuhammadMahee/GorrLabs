@@ -142,6 +142,38 @@ async def _evaluate_sufficiency(
 
 
 
+# ── Part 3a — External fallback ──────────────────────────────────────────────
+
+async def _call_external_fallback(redacted_query: str) -> str:
+    """
+    Called only when local RAG completely fell back (fell_back=True) AND
+    routing == 'hybrid_allowed' (no sensitive entities detected).
+
+    Sends the already-redacted query to the LLM with NO document context —
+    the model answers from general knowledge only. The caller labels this
+    answer clearly so it is never mistaken for an internal-document answer.
+
+    Returns "" on any failure (caller treats as fell_back=True still).
+    """
+    prompt = (
+        "You are a helpful assistant answering from your general knowledge.\n\n"
+        "The user's question relates to a topic that is not covered by the "
+        "organization's internal documents. Answer accurately and concisely "
+        "from general knowledge only.\n\n"
+        "Important rules:\n"
+        "1. Do NOT invent internal company policies, figures, or facts.\n"
+        "2. If the question is clearly company-specific (e.g. 'our leave policy'), "
+        "say you do not have access to internal documents on that topic.\n"
+        "3. Keep the answer focused and factual.\n\n"
+        f"Question: {redacted_query}\n\n"
+        "Answer:"
+    )
+    answer = await _llm_call(prompt, max_tokens=800, timeout=SUPERVISOR_TIMEOUT)
+    if not answer:
+        log.warning("[supervisor._call_external_fallback] LLM returned empty")
+    return answer
+
+
 # ── Part 3b — Answer synthesizer ─────────────────────────────────────────────
 
 async def _synthesize_answer(
@@ -363,6 +395,8 @@ async def run_supervisor(
     request,                 # FastAPI Request
     collection_ids: list[str] | None = None,
     conversation_history: list[str] | None = None,
+    routing: str = "local_only",
+    redacted_query: str = "",
 ) -> AgentResponse:
     """
     Main agentic RAG loop. Selects tools, calls them in sequence,
@@ -598,9 +632,49 @@ async def run_supervisor(
         fell_back = not accumulated_context
 
         if fell_back:
+            # ── Arbitration: Scenario 2 — local_only boundary ────────────
+            # Sensitivity was detected upstream. Never call external.
+            if routing != "hybrid_allowed":
+                log.info(
+                    f"[supervisor] complete tools={tools_used} iterations={iteration} "
+                    f"fell_back=True routing={routing} — sovereign boundary held"
+                )
+                return AgentResponse(
+                    answer="",
+                    tools_used=tools_used,
+                    sources=all_sources,
+                    iterations=iteration,
+                    fell_back=True,
+                )
+
+            # ── Arbitration: Scenario 3 — hybrid_allowed fallback ────────
+            # Query is clean, local docs just don't cover this topic.
+            # Call external with the already-redacted query.
+            _safe_query = redacted_query.strip() or original_query
+            log.info(
+                f"[supervisor] fell_back=True routing=hybrid_allowed — "
+                f"calling external fallback query={_safe_query[:60]!r}"
+            )
+            external_answer = await _call_external_fallback(_safe_query)
+            if external_answer:
+                log.info("[supervisor] external fallback succeeded")
+                return AgentResponse(
+                    answer=external_answer,
+                    tools_used=tools_used,
+                    sources=[],
+                    iterations=iteration,
+                    fell_back=False,
+                    metadata={
+                        "query_type": classification.query_type.value,
+                        "confidence": classification.confidence,
+                        "answer_source": "external_general",
+                    },
+                )
+
+            # External also failed — genuine no-answer
             log.info(
                 f"[supervisor] complete tools={tools_used} iterations={iteration} "
-                f"fell_back=True — all tools returned empty or error"
+                f"fell_back=True — external fallback also empty"
             )
             return AgentResponse(
                 answer="",
@@ -674,6 +748,8 @@ async def run_agentic_rag(
     request,                 # FastAPI Request
     collection_ids: list[str] | None = None,
     conversation_history: list[str] | None = None,
+    routing: str = "local_only",
+    redacted_query: str = "",
 ) -> AgentResponse:
     """
     Public entry point. Wraps run_supervisor with top-level error handling.
@@ -688,6 +764,8 @@ async def run_agentic_rag(
             request=request,
             collection_ids=collection_ids,
             conversation_history=conversation_history or [],
+            routing=routing,
+            redacted_query=redacted_query,
         )
     except Exception as exc:
         log.exception(f"[supervisor.run_agentic_rag] unexpected error: {exc}")

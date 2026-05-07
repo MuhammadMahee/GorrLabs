@@ -101,7 +101,6 @@ from arkive.routers import (
     terminals,
 )
 from arkive.routers import policy as policy_router
-from arkive.routers import audit_viewer as audit_viewer_router
 
 from arkive.routers.retrieval import (
     get_embedding_function,
@@ -625,30 +624,6 @@ https://github.com/Abduttayyeb07/ArkiveV2IA
         )
 
 
-async def _solana_retry_sweep():
-    """
-    Background sweep that retries unanchored
-    audit rows. Runs every 10 minutes.
-    Rows have tx_id IS NULL when Solana was
-    unreachable at insert time.
-    Never raises — failures are logged only.
-    """
-    import asyncio
-    from arkive.solana.tasks import retry_unanchored
-    import logging
-    _sweep_log = logging.getLogger(__name__)
-
-    await asyncio.sleep(60)
-
-    while True:
-        try:
-            await retry_unanchored(limit=100)
-        except Exception as exc:
-            _sweep_log.warning(
-                f"[solana_retry_sweep] sweep failed: {exc}"
-            )
-        await asyncio.sleep(600)
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -766,8 +741,6 @@ async def lifespan(app: FastAPI):
 
     # Mark application as ready to accept traffic from a startup perspective.
     app.state.startup_complete = True
-
-    asyncio.create_task(_solana_retry_sweep())
 
     yield
 
@@ -1655,7 +1628,6 @@ if ENABLE_ADMIN_ANALYTICS:
 app.include_router(utils.router, prefix='/api/v1/utils', tags=['utils'])
 app.include_router(terminals.router, prefix='/api/v1/terminals', tags=['terminals'])
 app.include_router(policy_router.router, prefix='/api/v1/policy', tags=['policy'])
-app.include_router(audit_viewer_router.router, prefix='/api/v1/audit', tags=['audit'])
 
 # SCIM 2.0 API for identity management
 if ENABLE_SCIM:
