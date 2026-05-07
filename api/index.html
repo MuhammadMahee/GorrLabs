@@ -1200,25 +1200,17 @@ function updateThemeAssets(isLight){
   }
 
   /* LOGOS */
-  document.querySelectorAll(
-    '.logo-img, .hero-logo-core img, .a-core img, .ft-logo-img, #introLogo img'
-  ).forEach(img=>{
+document.querySelectorAll('img.logo-img, #mainIntroLogo, .hero-logo-core img, .a-core img, .ft-logo-img')
+.forEach(img=>{
 
-    img.src = isLight
-      ? '/static/Black_Logo.png'
-      : '/static/logo.png';
+  const darkSrc = '/static/logo.png';
+  const lightSrc = '/static/Black_Logo.png';
 
-    /* LIGHT MODE */
-    if(isLight){
-      img.style.filter='none';
-    }
+  img.src = isLight ? lightSrc : darkSrc;
 
-    /* DARK MODE */
-    else{
-      img.style.filter='brightness(0) invert(1)';
-    }
-
-  });
+  // optional: only apply filter in dark mode if needed
+  img.style.filter = isLight ? 'none' : 'brightness(0) invert(1)';
+});
 }
 
 /* TOGGLE */
