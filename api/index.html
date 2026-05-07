@@ -259,6 +259,20 @@ section{scroll-snap-align:start;scroll-snap-stop:normal}
 /* PARALLAX SECTIONS */
 .parallax-section{will-change:transform;transition:transform .1s linear}
 
+/* FULLSCREEN CLICK CATCHER */
+#fsCatcher{position:fixed;inset:0;z-index:99990;cursor:pointer;
+  background:transparent;transition:opacity .5s ease}
+#fsCatcher.scroll-blocked{background:transparent}
+#fsCatcher .fs-hint{position:absolute;bottom:80px;left:50%;transform:translateX(-50%);
+  font-family:var(--fu);font-size:.78rem;letter-spacing:3px;text-transform:uppercase;
+  color:var(--orange);opacity:0;animation:fsHintIn 1s ease .3s forwards;
+  text-align:center;pointer-events:none;white-space:nowrap;
+  display:flex;flex-direction:column;align-items:center;gap:12px}
+#fsCatcher .fs-hint i{font-size:1.4rem;animation:scrollBounce 1.5s ease-in-out infinite}
+@keyframes fsHintIn{0%{opacity:0;transform:translateX(-50%) translateY(15px)}
+  100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:.6}50%{transform:translateY(8px);opacity:1}}
+
 /* LIVING CANVAS */
 #liveCanvas{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6}
 
@@ -763,6 +777,11 @@ section{scroll-snap-align:start;scroll-snap-stop:normal}
 </head>
 <body>
 
+<!-- FULLSCREEN CATCHER — blocks scroll, first tap/click triggers fullscreen -->
+<div id="fsCatcher" onclick="triggerFS()">
+  <div class="fs-hint"><i class="fas fa-chevron-down"></i>Tap to begin</div>
+</div>
+
 <!-- SCROLL PROGRESS -->
 <div class="scroll-progress" id="scrollProg"></div>
 
@@ -1028,25 +1047,70 @@ section{scroll-snap-align:start;scroll-snap-stop:normal}
 
 <script>
 /* ============================================
-   AUTO FULLSCREEN ON FIRST INTERACTION
+   AUTO FULLSCREEN — SCROLL-TO-CLICK JUGAAD
+   Scroll is blocked initially. When user tries to scroll,
+   we flash the hint. They tap/click → fullscreen + scroll unlocks.
+   Feels like scroll triggered it.
    ============================================ */
 let fsTriggered=false;
-function triggerFS(){
+
+// Block scroll until fullscreen
+document.body.style.overflow='hidden';
+
+// When they try to scroll, pulse the hint
+let scrollAttempts=0;
+function onScrollAttempt(e){
+  if(fsTriggered)return;
+  scrollAttempts++;
+  const hint=document.querySelector('#fsCatcher .fs-hint');
+  if(hint){
+    hint.style.opacity='1';
+    hint.style.color='#FF2D2D';
+    setTimeout(()=>{hint.style.color='var(--orange)'},300);
+  }
+}
+window.addEventListener('wheel',onScrollAttempt,{passive:true});
+window.addEventListener('touchmove',onScrollAttempt,{passive:true});
+
+function triggerFS(e){
   if(fsTriggered)return;
   fsTriggered=true;
+  
+  // Go fullscreen
   const el=document.documentElement;
   const rfs=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-  if(rfs)rfs.call(el).catch(()=>{});
-  // Remove listeners after first trigger
-  document.removeEventListener('click',triggerFS);
+  if(rfs){
+    rfs.call(el).catch(()=>{});
+  }
+  
+  // Unlock scroll
+  document.body.style.overflow='';
+  
+  // Remove catcher
+  const catcher=document.getElementById('fsCatcher');
+  if(catcher){
+    catcher.style.opacity='0';
+    setTimeout(()=>catcher.remove(),500);
+  }
+  
+  // Clean up listeners
+  window.removeEventListener('wheel',onScrollAttempt);
+  window.removeEventListener('touchmove',onScrollAttempt);
   document.removeEventListener('keydown',triggerFS);
-  document.removeEventListener('scroll',triggerFS);
-  document.removeEventListener('touchstart',triggerFS);
 }
-document.addEventListener('click',triggerFS,{once:true});
+
+// Keypress also works
 document.addEventListener('keydown',triggerFS,{once:true});
-document.addEventListener('scroll',triggerFS,{once:true});
-document.addEventListener('touchstart',triggerFS,{once:true});
+
+// Safety: auto-unlock after 6s if they somehow don't click
+setTimeout(()=>{
+  if(!fsTriggered){
+    fsTriggered=true;
+    document.body.style.overflow='';
+    const catcher=document.getElementById('fsCatcher');
+    if(catcher){catcher.style.opacity='0';setTimeout(()=>catcher.remove(),500)}
+  }
+},6000);
 
 /* ============================================
    LIVING PARTICLE CANVAS
