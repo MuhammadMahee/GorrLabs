@@ -9,15 +9,331 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <style>
 :root{
-  --black:#060608;--card:#0d0d11;
-  --red:#FF2D2D;--orange:#FF6B00;--amber:#FFAA00;--yellow:#FFD60A;--white:#F5F5F7;
-  --muted:rgba(245,245,247,.5);--dim:rgba(245,245,247,.25);
-  --glow-o:0 0 30px rgba(255,107,0,.4),0 0 80px rgba(255,107,0,.12);
-  --fire:linear-gradient(135deg,#FF2D2D,#FF6B00 50%,#FFD60A);
-  --fd:'Orbitron',monospace;--fu:'Rajdhani',sans-serif;
-  --fs:'Syne',sans-serif;--fm:'Space Mono',monospace;
+  /* DARK THEME — FIRE */
+  --black:#060608;
+  --card:#0d0d11;
+
+  --red:#FF2D2D;
+  --orange:#FF6B00;
+  --amber:#FFAA00;
+  --yellow:#FFD60A;
+
+  --primary:#FF6B00;
+  --secondary:#FF2D2D;
+  --accent:#FFD60A;
+
+  --white:#F5F5F7;
+  --muted:rgba(245,245,247,.5);
+  --dim:rgba(245,245,247,.25);
+
+  --glow-o:0 0 30px rgba(255,107,0,.4),
+            0 0 80px rgba(255,107,0,.12);
+
+  --fire:linear-gradient(
+    135deg,
+    #FF2D2D,
+    #FF6B00 50%,
+    #FFD60A
+  );
+
+  --gradient-main:var(--fire);
+
+  --fd:'Orbitron',monospace;
+  --fu:'Rajdhani',sans-serif;
+  --fs:'Syne',sans-serif;
+  --fm:'Space Mono',monospace;
+
   --radius-lg:22px;
 }
+
+/* ═══════════════════════════════ */
+/* LIGHT THEME — OCEAN / CYBER */
+/* ═══════════════════════════════ */
+
+body.light{
+
+  --black:#F2F8FA;
+  --card:#FFFFFF;
+
+  --white:#09131A;
+
+  --muted:rgba(9,19,26,.55);
+  --dim:rgba(9,19,26,.3);
+
+  /* NEW COLORS */
+  --red:#00B7FF;
+  --orange:#00D4FF;
+  --amber:#14E7B2;
+  --yellow:#2EF2C3;
+
+  --primary:#00D4FF;
+  --secondary:#00B7FF;
+  --accent:#14E7B2;
+
+  /* GLOW */
+  --glow-o:
+    0 0 30px rgba(0,212,255,.35),
+    0 0 80px rgba(20,231,178,.12);
+
+  /* MAIN GRADIENT */
+  --fire:linear-gradient(
+    135deg,
+    #00B7FF,
+    #00D4FF 50%,
+    #14E7B2
+  );
+
+  --gradient-main:var(--fire);
+}
+
+body.light{
+  background:var(--black);
+  color:var(--white);
+}
+
+/* NAV */
+body.light .nav{
+  background:rgba(242,248,250,.55);
+  border-bottom-color:rgba(0,212,255,.12);
+}
+
+body.light .nav.scrolled{
+  background:rgba(242,248,250,.95);
+}
+
+/* MOBILE MENU */
+body.light .mob{
+  background:rgba(242,248,250,.98);
+}
+
+/* CARDS */
+body.light .svc-card,
+body.light .why-card,
+body.light .port-card,
+body.light .cont-form{
+  background:var(--card);
+  border-color:rgba(0,0,0,.06);
+  box-shadow:0 2px 20px rgba(0,0,0,.04);
+}
+
+/* INPUTS */
+body.light .fg input,
+body.light .fg textarea{
+  background:rgba(0,0,0,.03);
+  border-color:rgba(0,0,0,.08);
+  color:var(--white);
+}
+
+body.light .fg input::placeholder,
+body.light .fg textarea::placeholder{
+  color:rgba(0,0,0,.3);
+}
+
+body.light .fg input:focus,
+body.light .fg textarea:focus{
+  background:rgba(0,212,255,.05);
+  border-color:rgba(0,212,255,.4);
+}
+
+/* FOOTER */
+body.light .footer{
+  border-top-color:rgba(0,0,0,.06);
+}
+
+body.light .ft-bottom{
+  border-top-color:rgba(0,0,0,.06);
+}
+
+/* DIVIDER */
+body.light .divider{
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(0,212,255,.18),
+      rgba(20,231,178,.18),
+      transparent
+    );
+}
+
+/* FAQ */
+body.light .faq-item{
+  border-bottom-color:rgba(0,0,0,.06);
+}
+
+/* HERO */
+body.light .hero-logo-core{
+  background:rgba(0,212,255,.08);
+  border-color:rgba(0,212,255,.22);
+}
+
+body.light .hero-ring{
+  border-color:rgba(0,212,255,.14);
+}
+
+body.light .a-core{
+  background:rgba(0,212,255,.08);
+  border-color:rgba(0,212,255,.25);
+}
+
+body.light .step-icon{
+  background:var(--black);
+  border-color:rgba(0,212,255,.25);
+}
+
+body.light .step:not(:last-child)::after{
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,212,255,.25),
+      rgba(20,231,178,.06)
+    );
+}
+
+/* LOGOS */
+body.light .logo-img,
+body.light .hero-logo-core img,
+body.light .ft-logo-img{
+  filter:none;
+}
+
+body.light .a-core img{
+  filter:drop-shadow(0 0 8px rgba(0,212,255,.35));
+}
+
+/* FILM */
+body.light .film-border.left,
+body.light .film-border.right{
+  opacity:.22;
+}
+
+body.light .scene-num{
+  opacity:.025;
+}
+
+body.light::before{
+  opacity:.015;
+}
+
+/* SCROLLBAR */
+body.light ::-webkit-scrollbar-track{
+  background:#F2F8FA;
+}
+
+/* PORT */
+body.light .port-visual{
+  background:rgba(0,212,255,.04);
+}
+
+/* TOP BORDER */
+body.light .svc-card::before{
+  background:var(--fire);
+}
+
+/* TAGS */
+body.light .tag,
+body.light .port-tag{
+  background:rgba(0,212,255,.08);
+  border-color:rgba(0,212,255,.2);
+  color:var(--primary);
+}
+
+/* CONTACT ICONS */
+body.light .cont-ico{
+  background:rgba(0,212,255,.08);
+  border-color:rgba(0,212,255,.18);
+}
+
+/* SOCIAL */
+body.light .soc-a{
+  border-color:rgba(0,0,0,.08);
+}
+
+/* NAV LINKS */
+body.light .nav-links a{
+  color:rgba(9,19,26,.45);
+}
+
+body.light .nav-links a:hover,
+body.light .nav-links a.act{
+  color:var(--white);
+}
+
+/* MOBILE LINKS */
+body.light .mob a{
+  color:rgba(9,19,26,.5);
+  border-bottom-color:rgba(0,0,0,.04);
+}
+
+/* DOTS */
+body.light .scene-dot{
+  border-color:rgba(0,212,255,.3);
+}
+
+body.light .scene-dot.active{
+  background:var(--primary);
+  border-color:var(--primary);
+  box-shadow:0 0 15px rgba(0,212,255,.5);
+}
+
+/* ═══ THEME TOGGLE ═══ */
+.theme-toggle{position:relative;width:52px;height:28px;border-radius:50px;border:none;
+  cursor:pointer;background:rgba(255,107,0,.15);border:1.5px solid rgba(255,107,0,.3);
+  display:flex;align-items:center;padding:0 3px;transition:all .5s cubic-bezier(.22,.61,.36,1);
+  flex-shrink:0;outline:none;overflow:hidden}
+.theme-toggle .toggle-knob{width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .5s cubic-bezier(.22,.61,.36,1);position:relative;z-index:2;font-size:.7rem}
+/* Dark mode (default) — moon on left, orange */
+/* DARK MODE — knob on LEFT */
+.theme-toggle .toggle-knob{
+  background:var(--orange);
+  color:var(--black);
+  transform:translateX(0);
+  box-shadow:0 0 15px rgba(255,107,0,.5);
+}
+
+/* LIGHT MODE — knob on RIGHT */
+body.light .theme-toggle .toggle-knob{
+  background:var(--primary);
+  color:#fff;
+  transform:translateX(22px);
+  box-shadow:
+    0 0 20px rgba(0,212,255,.55),
+    0 0 40px rgba(20,231,178,.18);
+}
+.theme-toggle .moon-face{font-size:.65rem}
+
+/* Light mode — sun on right, yellow */
+/* Light mode — cyber cyan */
+body.light .theme-toggle{
+  background:rgba(0,212,255,.12);
+  border-color:rgba(0,212,255,.35);
+}
+
+/* Horror moon decorations */
+.toggle-crater{position:absolute;border-radius:50%;background:rgba(0,0,0,.15)}
+.toggle-crater.c1{width:5px;height:5px;top:4px;right:4px}
+.toggle-crater.c2{width:3px;height:3px;bottom:5px;left:5px}
+.toggle-crater.c3{width:4px;height:4px;top:9px;left:3px}
+body.light .toggle-crater{display:none}
+
+/* Sun rays */
+.sun-rays{display:none;position:absolute;inset:-4px;animation:spinSlow 8s linear infinite}
+body.light .sun-rays{display:block}
+.sun-ray{
+  position:absolute;
+  width:2px;
+  height:6px;
+  background:var(--primary);
+  left:50%;top:-3px;transform-origin:50% calc(50% + 14px)}
+@keyframes spinSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* Mobile theme toggle */
+.mob-theme-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.03)}
+.mob-theme-label{font-family:var(--fm);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+body.light .mob-theme-row{border-bottom-color:rgba(0,0,0,.04)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{overflow-x:hidden}
 body{background:var(--black);color:var(--white);font-family:var(--fu);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
@@ -438,15 +754,31 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
   <a href="/" class="logo-wrap"><img class="logo-img" src="/static/logo.png" alt="Gorr Labs"/><span class="logo-txt">GORR LABS</span></a>
   <ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#how">Process</a></li><li><a href="#portfolio">Work</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul>
   <a href="#contact" class="nav-cta">Get Started</a>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <div class="toggle-knob">
+      <span class="moon-face">🌙</span>
+      <div class="toggle-crater c1"></div><div class="toggle-crater c2"></div><div class="toggle-crater c3"></div>
+      <div class="sun-rays"><div class="sun-ray" style="transform:rotate(0deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(45deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(90deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(135deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(180deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(225deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(270deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(315deg) translateY(-14px)"></div></div>
+    </div>
+  </button>
   <button class="hbg" id="hbg" aria-label="Menu"><span></span><span></span><span></span></button>
 </nav>
-<div class="mob" id="mob"><a href="#about" onclick="cMob()">About</a><a href="#services" onclick="cMob()">Services</a><a href="#how" onclick="cMob()">Process</a><a href="#portfolio" onclick="cMob()">Work</a><a href="#faq" onclick="cMob()">FAQ</a><a href="#contact" onclick="cMob()">Contact</a></div>
+<div class="mob" id="mob"><a href="#about" onclick="cMob()">About</a><a href="#services" onclick="cMob()">Services</a><a href="#how" onclick="cMob()">Process</a><a href="#portfolio" onclick="cMob()">Work</a><a href="#faq" onclick="cMob()">FAQ</a><a href="#contact" onclick="cMob()">Contact</a>
+  <div class="mob-theme-row"><span class="mob-theme-label">Theme</span>
+    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+      <div class="toggle-knob"><span class="moon-face">🌙</span>
+        <div class="toggle-crater c1"></div><div class="toggle-crater c2"></div><div class="toggle-crater c3"></div>
+        <div class="sun-rays"><div class="sun-ray" style="transform:rotate(0deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(45deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(90deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(135deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(180deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(225deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(270deg) translateY(-14px)"></div><div class="sun-ray" style="transform:rotate(315deg) translateY(-14px)"></div></div>
+      </div>
+    </button>
+  </div>
+</div>
 
 <section class="hero scene in-view" id="hero" data-scene="Hero">
   <div class="hero-inner">
     <div class="hero-badge"><span class="pulse"></span> AI-Powered Digital Solutions</div>
     <div class="hero-logo"><div class="hero-ring hero-ring-3"></div><div class="hero-ring hero-ring-2"></div><div class="hero-ring hero-ring-1"></div><div class="hero-logo-core"><img src="/static/logo.png" alt="Gorr Labs"/></div></div>
-    <h1><span class="fire-t">Gorr Labs</span>Automate. Analyze. Accelerate.</h1>
+    <h1><span class="fire-t">Gorr Labs</span> — Automate. Analyze. Accelerate.</h1>
     <p>Gorr Labs builds AI-powered automation, dashboards, and scalable digital systems for modern businesses that refuse to stay average.</p>
     <div class="hero-btns"><a href="#contact" class="btn-fire"><i class="fas fa-rocket"></i> Free Consultation</a><a href="#services" class="btn-ghost"><i class="fas fa-compass"></i> Explore Services</a></div>
   </div>
@@ -756,6 +1088,25 @@ window.addEventListener('scroll',()=>{
     num.style.transform='translateY(calc(-50% + '+(-p*80)+'px))';
   });
 },{passive:true});
+
+// ═══ THEME TOGGLE ═══
+function toggleTheme(){
+  document.body.classList.toggle('light');
+  const isLight=document.body.classList.contains('light');
+  document.querySelectorAll('.moon-face').forEach(el=>{el.textContent=isLight?'☀️':'🌙'});
+  const liveC=document.getElementById('liveCanvas');if(liveC)liveC.style.opacity=isLight?'.15':'.5';
+  const trailC=document.getElementById('trailCanvas');if(trailC)trailC.style.opacity=isLight?'.25':'.7';
+  localStorage.setItem('gorr-theme',isLight?'light':'dark');
+}
+(function(){
+  const saved=localStorage.getItem('gorr-theme');
+  if(saved==='light'){
+    document.body.classList.add('light');
+    document.querySelectorAll('.moon-face').forEach(el=>{el.textContent='☀️'});
+    const liveC=document.getElementById('liveCanvas');if(liveC)liveC.style.opacity='.15';
+    const trailC=document.getElementById('trailCanvas');if(trailC)trailC.style.opacity='.25';
+  }
+})();
 </script>
 </body>
 </html>
