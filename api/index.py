@@ -1,13 +1,8 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-from flask import send_from_directory
-
-@app.route('/sitemap.xml')
-def sitemap():
-    return send_from_directory(app.root_path, 'sitemap.xml')
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -15,6 +10,10 @@ app = Flask(__name__,
             template_folder=BASE_DIR,
             static_folder=BASE_DIR,
             static_url_path="/static")
+
+@app.route('/sitemap.xml')
+def sitemap():
+    return send_from_directory(BASE_DIR, 'sitemap.xml')
 
 SMTP_SERVER   = "smtp.gmail.com"
 SMTP_PORT     = 587
