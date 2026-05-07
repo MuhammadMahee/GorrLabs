@@ -1048,9 +1048,6 @@ document.addEventListener('keydown',triggerFS,{once:true});
 document.addEventListener('scroll',triggerFS,{once:true});
 document.addEventListener('touchstart',triggerFS,{once:true});
 
-// Start experience immediately — no overlay
-startExperience();
-
 /* ============================================
    LIVING PARTICLE CANVAS
    ============================================ */
@@ -1478,6 +1475,9 @@ function startExperience(){
   // Trigger hero animations
   document.querySelector('.hero').style.opacity='1';
 }
+
+// Initialize everything now that all functions and variables are defined
+startExperience();
 
 </script>
 </body>
