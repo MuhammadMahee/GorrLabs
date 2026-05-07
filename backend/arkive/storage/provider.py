@@ -27,8 +27,6 @@ from arkive.config import (
     STORAGE_PROVIDER,
     UPLOAD_DIR,
 )
-from google.cloud import storage
-from google.cloud.exceptions import GoogleCloudError, NotFound
 from arkive.constants import ERROR_MESSAGES
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient
@@ -207,17 +205,18 @@ class S3StorageProvider(StorageProvider):
 
 class GCSStorageProvider(StorageProvider):
     def __init__(self):
+        from google.cloud import storage as _gcs
+        from google.cloud.exceptions import GoogleCloudError, NotFound
+        self._GoogleCloudError = GoogleCloudError
+        self._NotFound = NotFound
         self.bucket_name = GCS_BUCKET_NAME
 
         if GOOGLE_APPLICATION_CREDENTIALS_JSON:
-            self.gcs_client = storage.Client.from_service_account_info(
+            self.gcs_client = _gcs.Client.from_service_account_info(
                 info=json.loads(GOOGLE_APPLICATION_CREDENTIALS_JSON)
             )
         else:
-            # if no credentials json is provided, credentials will be picked up from the environment
-            # if running on local environment, credentials would be user credentials
-            # if running on a Compute Engine instance, credentials would be from Google Metadata server
-            self.gcs_client = storage.Client()
+            self.gcs_client = _gcs.Client()
         self.bucket = self.gcs_client.bucket(GCS_BUCKET_NAME)
 
     def upload_file(self, file: BinaryIO, filename: str, tags: Dict[str, str]) -> Tuple[bytes, str]:
@@ -227,7 +226,7 @@ class GCSStorageProvider(StorageProvider):
             blob = self.bucket.blob(filename)
             blob.upload_from_filename(file_path)
             return contents, 'gs://' + self.bucket_name + '/' + filename
-        except GoogleCloudError as e:
+        except Exception as e:
             raise RuntimeError(f'Error uploading file to GCS: {e}')
 
     def get_file(self, file_path: str) -> str:
@@ -239,7 +238,7 @@ class GCSStorageProvider(StorageProvider):
             blob.download_to_filename(local_file_path)
 
             return local_file_path
-        except NotFound as e:
+        except Exception as e:
             raise RuntimeError(f'Error downloading file from GCS: {e}')
 
     def delete_file(self, file_path: str) -> None:
@@ -248,7 +247,7 @@ class GCSStorageProvider(StorageProvider):
             filename = file_path.removeprefix('gs://').split('/')[1]
             blob = self.bucket.get_blob(filename)
             blob.delete()
-        except NotFound as e:
+        except Exception as e:
             raise RuntimeError(f'Error deleting file from GCS: {e}')
 
         # Always delete from local storage
@@ -262,7 +261,7 @@ class GCSStorageProvider(StorageProvider):
             for blob in blobs:
                 blob.delete()
 
-        except NotFound as e:
+        except Exception as e:
             raise RuntimeError(f'Error deleting all files from GCS: {e}')
 
         # Always delete from local storage

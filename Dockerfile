@@ -77,22 +77,23 @@ RUN echo -n 00000000-0000-0000-0000-000000000000 > $HOME/.cache/chroma/telemetry
 
 RUN chown -R $UID:$GID /app $HOME
 
-# Install system dependencies
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    build-essential gcc curl jq \
-    python3-dev \
-    ffmpeg \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY --chown=$UID:$GID ./backend/requirements.txt ./requirements.txt
 
-RUN set -e; \
-    pip3 install --no-cache-dir uv; \
-    pip3 install 'torch<=2.9.1' --index-url https://download.pytorch.org/whl/cpu --no-cache-dir; \
-    uv pip install --system -r requirements.txt --no-cache-dir; \
-    mkdir -p /app/backend/data; chown -R $UID:$GID /app/backend/data/; \
-    rm -rf /var/lib/apt/lists/*;
+# Install build deps, compile Python packages, then purge build tools — all in one
+# layer so the compiler/headers don't appear in the final image.
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        build-essential gcc python3-dev \
+        curl jq ffmpeg \
+    && pip3 install --no-cache-dir uv \
+    && pip3 install 'torch<=2.9.1' --index-url https://download.pytorch.org/whl/cpu --no-cache-dir \
+    && uv pip install --system -r requirements.txt --no-cache-dir \
+    && apt-get purge -y build-essential gcc python3-dev \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && mkdir -p /app/backend/data \
+    && chown -R $UID:$GID /app/backend/data/
 
 # copy built frontend files
 COPY --chown=$UID:$GID --from=build /app/build /app/build

@@ -30,6 +30,7 @@ services:
       - .env
     volumes:
       - arkive:/app/backend/data
+      - arkive-models:/app/backend/data/cache/embedding/models
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,10 +40,13 @@ services:
       - 'ARKIVE_SECRET_KEY='
       - 'ARKIVE_NAME=Arkive'
       - 'DATABASE_URL=postgresql://${POSTGRES_USER:-arkive}:${POSTGRES_PASSWORD:-arkive}@postgres:5432/${POSTGRES_DB:-arkive}'
+      - 'RAG_EMBEDDING_MODEL=BAAI/bge-large-en-v1.5'
+      - 'RAG_RERANKING_MODEL=BAAI/bge-reranker-v2-m3'
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
 
 volumes:
   arkive: {}
+  arkive-models: {}
   postgres: {}

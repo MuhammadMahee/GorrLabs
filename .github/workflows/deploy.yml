@@ -60,6 +60,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: |
+            USE_SLIM=true
             USE_EMBEDDING_MODEL=BAAI/bge-large-en-v1.5
             USE_RERANKING_MODEL=BAAI/bge-reranker-v2-m3
           cache-from: type=registry,ref=ghcr.io/${{ steps.repo.outputs.name }}:buildcache
