@@ -841,7 +841,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
 <div class="scene-counter" id="sceneDots"></div>
 
 <nav class="nav" id="nav">
-  <a href="/" class="logo-wrap"><img class="logo-img" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/><span class="logo-txt">GORR LABS</span></a>
+  <a href="/" class="logo-wrap"><img class="logo-img theme-logo" src="/static/logo.png" alt="Gorr Labs"/><span class="logo-txt">GORR LABS</span></a>
   <ul class="nav-links"><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#how">Process</a></li><li><a href="#portfolio">Work</a></li><li><a href="#faq">FAQ</a></li><li><a href="#contact">Contact</a></li></ul>
   <a href="#contact" class="nav-cta">Get Started</a>
   <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -958,7 +958,7 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
     <div class="f-status" id="fStatus"></div></div>
 </div></section><div class="divider"></div>
 
-<footer class="footer"><div class="ft-grid"><div class="ft-brand"><a href="/" class="ft-logo-wrap"><img class="ft-logo-img" src="/static/logo.png" class="theme-logo" alt="Gorr Labs"/><span class="ft-logo-txt">GORR LABS</span></a><p>Building the intelligent systems that power tomorrow's businesses.</p>
+<footer class="footer"><div class="ft-grid"><div class="ft-brand"><a href="/" class="ft-logo-wrap"><img class="ft-logo-img theme-logo" src="/static/logo.png" alt="Gorr Labs"/><span class="ft-logo-txt">GORR LABS</span></a><p>Building the intelligent systems that power tomorrow's businesses.</p>
   <div class="soc-row" style="margin-top:1rem"><a href="https://www.facebook.com/people/Gorr-Labs/61570799826502/" class="soc-a" target="_blank"><i class="fab fa-facebook-f"></i></a><a href="https://www.instagram.com/gorrlabs/" class="soc-a" target="_blank"><i class="fab fa-instagram"></i></a><a href="https://www.linkedin.com/company/gorr-labs" class="soc-a" target="_blank"><i class="fab fa-linkedin-in"></i></a></div></div>
   <div class="ft-col"><h5>Services</h5><ul><li><a href="#services">Website Development</a></li><li><a href="#services">ERP / CRM Systems</a></li><li><a href="#services">AI Chatbots</a></li><li><a href="#services">Workflow Automation</a></li><li><a href="#services">Data Dashboards</a></li></ul></div>
   <div class="ft-col"><h5>Company</h5><ul><li><a href="#about">About Us</a></li><li><a href="#portfolio">Portfolio</a></li><li><a href="#how">Our Process</a></li><li><a href="#faq">FAQ</a></li></ul></div>
@@ -1200,7 +1200,7 @@ function updateThemeAssets(isLight){
   }
 
   /* LOGOS */
-document.querySelectorAll('img.logo-img, #mainIntroLogo, .hero-logo-core img, .a-core img, .ft-logo-img')
+document.querySelectorAll('img.logo-img, img.theme-logo, #mainIntroLogo, .hero-logo-core img, .a-core img, .ft-logo-img')
 .forEach(img=>{
 
   const darkSrc = '/static/logo.png';
