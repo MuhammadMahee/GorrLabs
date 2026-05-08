@@ -3,34 +3,45 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
+import json
+from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-app = Flask(__name__,
-            template_folder=BASE_DIR,
-            static_folder=BASE_DIR,
-            static_url_path="/static")
+app = Flask(
+    __name__,
+    template_folder=BASE_DIR,
+    static_folder=BASE_DIR,
+    static_url_path="/static"
+)
 
+# ----------------------------
+# Sitemap
+# ----------------------------
 @app.route('/sitemap.xml')
 def sitemap():
     return send_from_directory(BASE_DIR, 'sitemap.xml')
 
-SMTP_SERVER   = "smtp.gmail.com"
-SMTP_PORT     = 587
-SMTP_USER     = "gorrlabs@gmail.com"
-SMTP_PASSWORD = "oyxt vvxv rmvw hsvg"  # ⚠️ replace this
-RECIPIENT     = "gorrlabs@gmail.com"
+
+# ----------------------------
+# EMAIL CONFIG
+# ----------------------------
+SMTP_SERVER = "smtp.gmail.com"
+SMTP_PORT = 587
+SMTP_USER = "gorrlabs@gmail.com"
+SMTP_PASSWORD = "oyxt vvxv rmvw hsvg"  # ⚠️ move to env in production
+RECIPIENT = "gorrlabs@gmail.com"
 
 
 def send_email(name, email, message):
     msg = MIMEMultipart("alternative")
-    
+
     msg["Subject"] = "Gorr Labs — We received your message"
     msg["From"] = SMTP_USER
-    msg["To"] = email                  # ✅ user gets email
-    msg["Cc"] = RECIPIENT              # ✅ you get CC
+    msg["To"] = email
+    msg["Cc"] = RECIPIENT
 
-    recipients = [email, RECIPIENT]    # ✅ must include both
+    recipients = [email, RECIPIENT]
 
     html = f"""
     <html>
@@ -38,7 +49,6 @@ def send_email(name, email, message):
       <div style="max-width:600px;margin:auto;background:#111;border:1px solid #FF7A00;
                   border-radius:12px;padding:30px;text-align:center;">
 
-        <!-- LOGO -->
         <img src="https://gorrlabs.vercel.app/static/logo.png"
              alt="Gorr Labs"
              style="width:120px;margin-bottom:20px;">
@@ -80,6 +90,9 @@ def send_email(name, email, message):
         s.sendmail(SMTP_USER, recipients, msg.as_string())
 
 
+# ----------------------------
+# ROUTES
+# ----------------------------
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -89,14 +102,15 @@ def home():
 def contact():
     return render_template("contact.html")
 
+
 @app.route("/feedback")
 def feedback():
     return render_template("feedback.html")
 
-import json
-from datetime import datetime
 
-
+# ----------------------------
+# FEEDBACK API (FIXED)
+# ----------------------------
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
 
@@ -111,56 +125,79 @@ def submit_feedback():
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
 
+        # validate
         if not feedback["name"] or not feedback["message"]:
-            return jsonify({"success": False, "error": "Missing fields"}), 400
+            return jsonify({
+                "success": False,
+                "error": "Name and message are required."
+            }), 400
 
-            file_path = os.path.join(BASE_DIR, "feedback.json")
-            
-            # ensure file exists
-            if not os.path.exists(file_path):
-                with open(file_path, "w") as f:
-                    json.dump([], f)
-            
-            # safe read
-            try:
-                with open(file_path, "r") as f:
-                    feedbacks = json.load(f)
-            except:
-                feedbacks = []
-            
-            feedbacks.append(feedback)
-            
-            # safe write
+        file_path = os.path.join(BASE_DIR, "feedback.json")
+
+        # ensure file exists
+        if not os.path.exists(file_path):
             with open(file_path, "w") as f:
-                json.dump(feedbacks, f, indent=2)
-            
-            return jsonify({"success": True})
+                json.dump([], f)
+
+        # safe read
+        try:
+            with open(file_path, "r") as f:
+                feedbacks = json.load(f)
+        except:
+            feedbacks = []
+
+        # append new feedback
+        feedbacks.append(feedback)
+
+        # save
+        with open(file_path, "w") as f:
+            json.dump(feedbacks, f, indent=2)
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("FEEDBACK ERROR:", e)
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 
+# ----------------------------
+# CONTACT MESSAGE API
+# ----------------------------
 @app.route("/send-message", methods=["POST"])
 def send_message():
-    data = request.get_json() or {}
+
+    data = request.get_json(silent=True) or {}
 
     name = data.get("name", "").strip()
     email = data.get("email", "").strip()
     message = data.get("message", "").strip()
 
     if not name or not email or not message:
-        return jsonify({"success": False, "error": "All fields are required."}), 400
+        return jsonify({
+            "success": False,
+            "error": "All fields are required."
+        }), 400
 
     try:
         send_email(name, email, message)
         return jsonify({
             "success": True,
-            "message": "Message sent! We'll get back to you within 24 hours."
+            "message": "Message sent successfully!"
         })
+
     except Exception as e:
         print("Email error:", e)
         return jsonify({
             "success": True,
-            "message": "Message received! We'll be in touch soon."
+            "message": "Message received (email fallback)."
         })
 
 
+# ----------------------------
+# RUN APP
+# ----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
