@@ -3,7 +3,6 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,12 +12,6 @@ app = Flask(
     static_folder=BASE_DIR,
     static_url_path="/static"
 )
-
-# ----------------------------
-# IN-MEMORY STORAGE (Vercel SAFE)
-# ----------------------------
-feedbacks = []
-
 
 # ----------------------------
 # SITEMAP
@@ -106,56 +99,8 @@ def contact():
     return render_template("contact.html")
 
 
-@app.route("/feedback")
-def feedback():
-    return render_template("feedback.html")
-
-
-@app.route("/view-feedback")
-def view_feedback():
-    return render_template("view-feedback.html")
-
-
 # ----------------------------
-# SUBMIT FEEDBACK (FIXED)
-# ----------------------------
-@app.route('/submit-feedback', methods=['POST'])
-def submit_feedback():
-
-    data = request.get_json(silent=True) or {}
-
-    feedback = {
-        "name": data.get("name", "").strip(),
-        "role": data.get("role", "N/A").strip(),
-        "rating": data.get("rating", "5"),
-        "message": data.get("message", "").strip(),
-        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
-
-    if not feedback["name"] or not feedback["message"]:
-        return jsonify({
-            "success": False,
-            "error": "Name and message are required."
-        }), 400
-
-    feedbacks.append(feedback)
-
-    return jsonify({"success": True})
-
-
-# ----------------------------
-# GET FEEDBACK DATA (VIEW PAGE)
-# ----------------------------
-@app.route("/feedback-data")
-def feedback_data():
-    return jsonify({
-        "success": True,
-        "data": feedbacks[::-1]  # newest first
-    })
-
-
-# ----------------------------
-# CONTACT MESSAGE API
+# CONTACT API
 # ----------------------------
 @app.route("/send-message", methods=["POST"])
 def send_message():
