@@ -108,59 +108,24 @@ def feedback():
     return render_template("feedback.html")
 
 
-# ----------------------------
-# FEEDBACK API (FIXED)
-# ----------------------------
+feedbacks = []
+
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
 
-    try:
-        data = request.get_json(silent=True) or {}
+    data = request.get_json(silent=True) or {}
 
-        feedback = {
-            "name": data.get("name", "").strip(),
-            "role": data.get("role", "").strip() if data.get("role") else "N/A",
-            "rating": data.get("rating", "5"),
-            "message": data.get("message", "").strip(),
-            "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        }
+    feedback = {
+        "name": data.get("name", ""),
+        "role": data.get("role", "N/A"),
+        "rating": data.get("rating", "5"),
+        "message": data.get("message", ""),
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
-        # validate
-        if not feedback["name"] or not feedback["message"]:
-            return jsonify({
-                "success": False,
-                "error": "Name and message are required."
-            }), 400
+    feedbacks.append(feedback)
 
-        file_path = os.path.join(BASE_DIR, "feedback.json")
-
-        # ensure file exists
-        if not os.path.exists(file_path):
-            with open(file_path, "w") as f:
-                json.dump([], f)
-
-        # safe read
-        try:
-            with open(file_path, "r") as f:
-                feedbacks = json.load(f)
-        except:
-            feedbacks = []
-
-        # append new feedback
-        feedbacks.append(feedback)
-
-        # save
-        with open(file_path, "w") as f:
-            json.dump(feedbacks, f, indent=2)
-
-        return jsonify({"success": True})
-
-    except Exception as e:
-        print("FEEDBACK ERROR:", e)
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
+    return jsonify({"success": True})
 
 
 # ----------------------------
