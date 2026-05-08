@@ -14,6 +14,7 @@
 
 <style>
 
+/* ---------------- THEME VARIABLES ---------------- */
 :root{
   --black:#060608;
   --card:#101014;
@@ -24,38 +25,14 @@
   --orange:#FF6B00;
   --yellow:#FFD60A;
 
-  --fire:linear-gradient(
-    135deg,
-    #FF2D2D,
-    #FF6B00 50%,
-    #FFD60A
-  );
+  --fire:linear-gradient(135deg,#FF2D2D,#FF6B00 50%,#FFD60A);
 
   --fd:'Orbitron',monospace;
   --fu:'Rajdhani',sans-serif;
   --fb:'Inter',sans-serif;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  background:var(--black);
-  color:var(--white);
-  font-family:var(--fb);
-  overflow-x:hidden;
-  transition:background .35s,color .35s;
-}
-
 /* LIGHT MODE */
-
 body.light{
   --black:#F4F8FB;
   --card:#FFFFFF;
@@ -66,77 +43,41 @@ body.light{
   --orange:#00D4FF;
   --yellow:#14E7B2;
 
-  --fire:linear-gradient(
-    135deg,
-    #00B7FF,
-    #00D4FF 50%,
-    #14E7B2
-  );
+  --fire:linear-gradient(135deg,#00B7FF,#00D4FF 50%,#14E7B2);
+}
+
+/* ---------------- BASE ---------------- */
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  background:var(--black);
+  color:var(--white);
+  font-family:var(--fb);
+  transition:background .35s,color .35s;
 }
 
 /* BACKGROUND */
-
-.orb{
-  position:fixed;
-  border-radius:50%;
-  filter:blur(100px);
-  opacity:.08;
-  pointer-events:none;
-}
-
-.orb.a{
-  width:600px;
-  height:600px;
-  background:radial-gradient(var(--red),transparent);
-  top:-250px;
-  left:-180px;
-}
-
-.orb.b{
-  width:500px;
-  height:500px;
-  background:radial-gradient(var(--orange),transparent);
-  bottom:-150px;
-  right:-150px;
-}
+.orb{position:fixed;border-radius:50%;filter:blur(100px);opacity:.08;pointer-events:none;}
+.orb.a{width:600px;height:600px;background:radial-gradient(var(--red),transparent);top:-250px;left:-180px;}
+.orb.b{width:500px;height:500px;background:radial-gradient(var(--orange),transparent);bottom:-150px;right:-150px;}
 
 .grid{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-
+  position:fixed;inset:0;pointer-events:none;
   background-image:
     linear-gradient(rgba(255,107,0,.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,107,0,.025) 1px, transparent 1px);
-
   background-size:60px 60px;
 }
 
 /* NAV */
-
 .nav{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-
-  height:72px;
-
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
+  position:fixed;top:0;left:0;right:0;height:72px;
+  display:flex;justify-content:space-between;align-items:center;
   padding:0 5%;
-
   background:rgba(10,10,10,.72);
-
   backdrop-filter:blur(18px);
-
   border-bottom:1px solid rgba(255,255,255,.05);
-
   z-index:1000;
-
-  transition:.35s;
 }
 
 body.light .nav{
@@ -145,361 +86,126 @@ body.light .nav{
 }
 
 .logo{
-  display:flex;
-  align-items:center;
-  gap:12px;
-
-  text-decoration:none;
+  display:flex;align-items:center;gap:12px;text-decoration:none;
 }
 
 .logo img{
-  width:38px;
-  height:38px;
-  object-fit:contain;
+  width:38px;height:38px;object-fit:contain;
   filter:brightness(0) invert(1);
 }
 
-body.light .logo img{
-  filter:none;
-}
+body.light .logo img{filter:none;}
 
 .logo span{
   font-family:var(--fd);
   letter-spacing:4px;
-  font-size:1.1rem;
-  font-weight:700;
-
   background:var(--fire);
-
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
-.nav-right{
-  display:flex;
-  align-items:center;
-}
-
 /* THEME TOGGLE */
-
 .theme-toggle{
-  width:52px;
-  height:28px;
-
+  width:52px;height:28px;
   border-radius:50px;
-
   border:none;
-
   background:rgba(255,107,0,.12);
-
   border:1px solid rgba(255,107,0,.25);
-
-  display:flex;
-  align-items:center;
-
+  display:flex;align-items:center;
   padding:0 3px;
-
   cursor:pointer;
-
-  transition:.35s;
 }
 
 .toggle-knob{
-  width:22px;
-  height:22px;
-
+  width:22px;height:22px;
   border-radius:50%;
-
   background:var(--orange);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
+  display:flex;align-items:center;justify-content:center;
   font-size:.7rem;
-
-  transition:.35s;
-}
-
-body.light .toggle-knob{
-  transform:translateX(22px);
+  transition:.3s;
 }
 
 /* PAGE */
-
 .page{
-  position:relative;
-  z-index:1;
-
   max-width:900px;
   margin:auto;
-
   padding:130px 5% 80px;
 }
 
 /* HERO */
-
-.hero{
-  text-align:center;
-  margin-bottom:3rem;
-}
-
-.hero h1{
-  font-family:var(--fd);
-  font-size:clamp(2rem,5vw,4rem);
-
-  margin-bottom:1rem;
-}
-
-.fire{
-  background:var(--fire);
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.hero p{
-  color:var(--muted);
-
-  line-height:1.8;
-}
+.hero{text-align:center;margin-bottom:3rem;}
+.hero h1{font-family:var(--fd);font-size:clamp(2rem,5vw,4rem);}
+.fire{-webkit-background-clip:text;-webkit-text-fill-color:transparent;background:var(--fire);}
+.hero p{color:var(--muted);line-height:1.8;}
 
 /* FORM */
-
 .form-box{
   background:var(--card);
-
   border:1px solid rgba(255,255,255,.06);
-
   border-radius:24px;
-
   padding:2.5rem;
-
-  transition:.35s;
 }
 
-body.light .form-box{
-  border-color:rgba(0,0,0,.08);
+.row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
 
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.05);
-}
-
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:1rem;
-}
-
-.fg{
-  margin-bottom:1.2rem;
-}
+.fg{margin-bottom:1.2rem;}
 
 .fg label{
   display:block;
-
   margin-bottom:.6rem;
-
   color:var(--muted);
-
   font-size:.78rem;
-
-  text-transform:uppercase;
-
   letter-spacing:2px;
-
-  font-family:var(--fu);
 }
 
-.fg input,
-.fg textarea{
+.fg input,.fg textarea,.fg select{
   width:100%;
-
   padding:14px 16px;
-
   border-radius:14px;
-
   border:1px solid rgba(255,255,255,.08);
-
   background:rgba(255,255,255,.03);
-
   color:var(--white);
-
   outline:none;
-
-  font-family:var(--fb);
-
-  transition:.3s;
 }
 
-body.light .fg input,
-body.light .fg textarea{
-  background:rgba(0,0,0,.03);
-  border-color:rgba(0,0,0,.08);
-}
-
-.fg textarea{
-  min-height:160px;
-  resize:vertical;
-}
-
-.fg input:focus,
-.fg textarea:focus{
-  border-color:rgba(255,107,0,.4);
-
-  box-shadow:
-    0 0 0 4px rgba(255,107,0,.08);
-}
-
-/* MODERN SELECT */
-
-.fg select{
-  width:100%;
-
-  padding:14px 16px;
-
-  border-radius:14px;
-
-  border:1px solid rgba(255,255,255,.08);
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.04),
-      rgba(255,255,255,.02)
-    );
-
-  color:var(--white);
-
-  outline:none;
-
-  font-family:var(--fb);
-
-  appearance:none;
-  -webkit-appearance:none;
-  -moz-appearance:none;
-
-  cursor:pointer;
-
-  transition:.3s;
-
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--orange) 50%),
-    linear-gradient(135deg, var(--orange) 50%, transparent 50%);
-
-  background-position:
-    calc(100% - 18px) calc(50% - 3px),
-    calc(100% - 12px) calc(50% - 3px);
-
-  background-size:6px 6px, 6px 6px;
-  background-repeat:no-repeat;
-}
-
-body.light .fg select{
-  background-color:rgba(0,0,0,.03);
-  border-color:rgba(0,0,0,.08);
-}
-
-.fg select:hover{
-  border-color:rgba(255,107,0,.35);
-}
-
-.fg select:focus{
-  border-color:rgba(255,107,0,.45);
-
-  box-shadow:
-    0 0 0 4px rgba(255,107,0,.08);
-}
-
-.fg select option{
-  background:#101014;
-}
-
-body.light .fg select option{
-  background:#fff;
-  color:#09131A;
-}
-
-/* BUTTON */
+.fg textarea{min-height:160px;resize:vertical;}
 
 .btn{
   width:100%;
-
   padding:15px;
-
   border:none;
-
   border-radius:14px;
-
   background:var(--fire);
-
   color:#fff;
-
-  font-family:var(--fu);
-
-  font-size:1rem;
   font-weight:700;
-
-  letter-spacing:1px;
-
   cursor:pointer;
-
-  transition:.25s;
-}
-
-.btn:hover{
-  transform:translateY(-1px);
-
-  box-shadow:
-    0 10px 30px rgba(255,107,0,.25);
 }
 
 /* STATUS */
-
 .status{
   margin-top:1rem;
-
   text-align:center;
-
   display:none;
-
   padding:14px;
-
   border-radius:12px;
 }
 
 .status.ok{
   display:block;
-
   background:rgba(0,200,100,.08);
-
   border:1px solid rgba(0,200,100,.25);
-
   color:#00d26a;
 }
 
 .status.err{
   display:block;
-
   background:rgba(255,45,45,.08);
-
   border:1px solid rgba(255,45,45,.25);
-
   color:#ff4b4b;
 }
 
-/* MOBILE */
-
 @media(max-width:768px){
-
-  .row{
-    grid-template-columns:1fr;
-  }
-
-  .form-box{
-    padding:1.5rem;
-  }
-
+  .row{grid-template-columns:1fr;}
 }
 
 </style>
@@ -511,57 +217,42 @@ body.light .fg select option{
 <div class="orb b"></div>
 <div class="grid"></div>
 
+<!-- NAV -->
 <nav class="nav">
-
   <a href="/" class="logo">
-    <img id="mainLogo" src="/static/logo.png" alt="Gorr Labs">
+    <img id="mainLogo" src="/static/logo.png">
     <span>GORR LABS</span>
   </a>
 
-  <div class="nav-right">
-
-    <button class="theme-toggle" onclick="toggleTheme()">
-      <div class="toggle-knob">🌙</div>
-    </button>
-
-  </div>
-
+  <button class="theme-toggle" onclick="toggleTheme()">
+    <div class="toggle-knob" id="toggleIcon">🌙</div>
+  </button>
 </nav>
 
+<!-- PAGE -->
 <div class="page">
 
   <div class="hero">
-
-    <h1>
-      Share Your <span class="fire">Experience</span>
-    </h1>
-
-    <p>
-      We'd love to hear your feedback about working with Gorr Labs.
-    </p>
-
+    <h1>Share Your <span class="fire">Experience</span></h1>
+    <p>We'd love to hear your feedback about working with Gorr Labs.</p>
   </div>
 
   <div class="form-box">
 
     <div class="row">
-
       <div class="fg">
         <label>Full Name</label>
-        <input type="text" id="name" placeholder="John Smith">
+        <input id="name" type="text">
       </div>
 
       <div class="fg">
         <label>Company / Role</label>
-        <input type="text" id="role" placeholder="Startup Founder">
+        <input id="role" type="text">
       </div>
-
     </div>
 
     <div class="fg">
-
       <label>Rating</label>
-
       <select id="rating">
         <option value="5">★★★★★ Excellent</option>
         <option value="4">★★★★☆ Very Good</option>
@@ -569,23 +260,14 @@ body.light .fg select option{
         <option value="2">★★☆☆☆ Fair</option>
         <option value="1">★☆☆☆☆ Poor</option>
       </select>
-
     </div>
 
     <div class="fg">
-
-      <label>Your Feedback</label>
-
-      <textarea
-        id="message"
-        placeholder="Tell us about your experience..."
-      ></textarea>
-
+      <label>Message</label>
+      <textarea id="message"></textarea>
     </div>
 
-    <button class="btn" onclick="submitFeedback()">
-      Submit Feedback
-    </button>
+    <button class="btn" onclick="submitFeedback()">Submit Feedback</button>
 
     <div class="status" id="status"></div>
 
@@ -595,106 +277,80 @@ body.light .fg select option{
 
 <script>
 
-/* THEME */
-
+/* ---------------- THEME ---------------- */
 function applyTheme(mode){
 
   const body=document.body;
   const logo=document.getElementById('mainLogo');
+  const icon=document.getElementById('toggleIcon');
 
   if(mode==='light'){
-
     body.classList.add('light');
-
     logo.src='/static/Black_Logo.png';
-
+    icon.textContent='☀️';
   }else{
-
     body.classList.remove('light');
-
     logo.src='/static/logo.png';
-
+    icon.textContent='🌙';
   }
-
 }
 
 function toggleTheme(){
-
-  const isLight=document.body.classList.contains('light');
-
-  const next=isLight ? 'dark' : 'light';
-
+  const next = document.body.classList.contains('light') ? 'dark' : 'light';
   localStorage.setItem('theme',next);
-
   applyTheme(next);
-
 }
 
-applyTheme(localStorage.getItem('theme') || 'dark');
+document.addEventListener("DOMContentLoaded",()=>{
+  applyTheme(localStorage.getItem('theme')||'dark');
+});
 
-/* FEEDBACK */
 
+/* ---------------- FEEDBACK ---------------- */
 async function submitFeedback(){
 
   const name=document.getElementById('name').value.trim();
   const role=document.getElementById('role').value.trim();
   const rating=document.getElementById('rating').value;
   const message=document.getElementById('message').value.trim();
-
   const status=document.getElementById('status');
 
-  status.className='status';
+  status.style.display='block';
 
   if(!name || !message){
-
     status.className='status err';
     status.textContent='Please fill required fields.';
-
     return;
   }
 
   try{
 
-    const r=await fetch('/submit-feedback',{
-
+    const res = await fetch('/submit-feedback',{
       method:'POST',
-
-      headers:{
-        'Content-Type':'application/json'
-      },
-
-      body:JSON.stringify({
-        name,
-        role,
-        rating,
-        message
-      })
-
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,role,rating,message})
     });
 
-    const d=await r.json();
+    let d;
+    try{ d = await res.json(); }
+    catch{ d = {success:false,error:"Invalid response"}; }
 
     if(d.success){
-
       status.className='status ok';
       status.textContent='Thank you for your feedback!';
 
-      ['name','role','message'].forEach(id=>{
-        document.getElementById(id).value='';
-      });
+      name.value='';
+      role.value='';
+      message.value='';
+    }else{
+      status.className='status err';
+      status.textContent=d.error || 'Something went wrong.';
+    }
 
-  else{
-    status.className='status err';
-    status.textContent = d.error || 'Something went wrong.';
-  }
-
-  }catch{
-
+  }catch(err){
     status.className='status err';
     status.textContent='Network error.';
-
   }
-
 }
 
 </script>
