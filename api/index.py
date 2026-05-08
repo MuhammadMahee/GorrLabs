@@ -89,6 +89,10 @@ def home():
 def contact():
     return render_template("contact.html")
 
+@app.route("/feedback")
+def feedback():
+    return render_template("feedback.html")
+
 
 @app.route("/send-message", methods=["POST"])
 def send_message():
