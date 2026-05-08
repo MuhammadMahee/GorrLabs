@@ -1,39 +1,80 @@
-# feedback.html
-
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
 <title>Share Your Experience — Gorr Labs</title>
+
 <link rel="icon" type="image/png" href="/static/logo.png"/>
+
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <style>
+
 :root{
   --black:#060608;
   --card:#101014;
   --white:#F5F5F7;
   --muted:rgba(255,255,255,.6);
+
   --red:#FF2D2D;
   --orange:#FF6B00;
   --yellow:#FFD60A;
-  --fire:linear-gradient(135deg,#FF2D2D,#FF6B00 50%,#FFD60A);
+
+  --fire:linear-gradient(
+    135deg,
+    #FF2D2D,
+    #FF6B00 50%,
+    #FFD60A
+  );
+
   --fd:'Orbitron',monospace;
   --fu:'Rajdhani',sans-serif;
   --fb:'Inter',sans-serif;
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
 
 body{
   background:var(--black);
   color:var(--white);
   font-family:var(--fb);
   overflow-x:hidden;
+  transition:background .35s,color .35s;
 }
+
+/* LIGHT MODE */
+
+body.light{
+  --black:#F4F8FB;
+  --card:#FFFFFF;
+  --white:#09131A;
+  --muted:rgba(9,19,26,.65);
+
+  --red:#00B7FF;
+  --orange:#00D4FF;
+  --yellow:#14E7B2;
+
+  --fire:linear-gradient(
+    135deg,
+    #00B7FF,
+    #00D4FF 50%,
+    #14E7B2
+  );
+}
+
+/* BACKGROUND */
 
 .orb{
   position:fixed;
@@ -63,32 +104,51 @@ body{
   position:fixed;
   inset:0;
   pointer-events:none;
+
   background-image:
     linear-gradient(rgba(255,107,0,.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,107,0,.025) 1px, transparent 1px);
+
   background-size:60px 60px;
 }
+
+/* NAV */
 
 .nav{
   position:fixed;
   top:0;
   left:0;
   right:0;
+
   height:72px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
+
   padding:0 5%;
+
   background:rgba(10,10,10,.72);
+
   backdrop-filter:blur(18px);
+
   border-bottom:1px solid rgba(255,255,255,.05);
+
   z-index:1000;
+
+  transition:.35s;
+}
+
+body.light .nav{
+  background:rgba(244,248,251,.75);
+  border-bottom:1px solid rgba(0,0,0,.06);
 }
 
 .logo{
   display:flex;
   align-items:center;
   gap:12px;
+
   text-decoration:none;
 }
 
@@ -99,48 +159,130 @@ body{
   filter:brightness(0) invert(1);
 }
 
+body.light .logo img{
+  filter:none;
+}
+
 .logo span{
   font-family:var(--fd);
   letter-spacing:4px;
   font-size:1.1rem;
   font-weight:700;
+
   background:var(--fire);
+
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
+.nav-right{
+  display:flex;
+  align-items:center;
+}
+
+/* THEME TOGGLE */
+
+.theme-toggle{
+  width:52px;
+  height:28px;
+
+  border-radius:50px;
+
+  border:none;
+
+  background:rgba(255,107,0,.12);
+
+  border:1px solid rgba(255,107,0,.25);
+
+  display:flex;
+  align-items:center;
+
+  padding:0 3px;
+
+  cursor:pointer;
+
+  transition:.35s;
+}
+
+.toggle-knob{
+  width:22px;
+  height:22px;
+
+  border-radius:50%;
+
+  background:var(--orange);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:.7rem;
+
+  transition:.35s;
+}
+
+body.light .toggle-knob{
+  transform:translateX(22px);
+}
+
+/* PAGE */
+
 .page{
   position:relative;
   z-index:1;
+
   max-width:900px;
   margin:auto;
+
   padding:130px 5% 80px;
 }
 
-.hero{text-align:center;margin-bottom:3rem}
+/* HERO */
+
+.hero{
+  text-align:center;
+  margin-bottom:3rem;
+}
 
 .hero h1{
   font-family:var(--fd);
   font-size:clamp(2rem,5vw,4rem);
+
   margin-bottom:1rem;
 }
 
 .fire{
   background:var(--fire);
+
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
 .hero p{
   color:var(--muted);
+
   line-height:1.8;
 }
 
+/* FORM */
+
 .form-box{
   background:var(--card);
+
   border:1px solid rgba(255,255,255,.06);
+
   border-radius:24px;
+
   padding:2.5rem;
+
+  transition:.35s;
+}
+
+body.light .form-box{
+  border-color:rgba(0,0,0,.08);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.05);
 }
 
 .row{
@@ -149,29 +291,51 @@ body{
   gap:1rem;
 }
 
-.fg{margin-bottom:1.2rem}
+.fg{
+  margin-bottom:1.2rem;
+}
 
 .fg label{
   display:block;
+
   margin-bottom:.6rem;
+
   color:var(--muted);
+
   font-size:.78rem;
+
   text-transform:uppercase;
+
   letter-spacing:2px;
+
   font-family:var(--fu);
 }
 
 .fg input,
-.fg textarea,
-.fg select{
+.fg textarea{
   width:100%;
+
   padding:14px 16px;
-  border-radius:12px;
+
+  border-radius:14px;
+
   border:1px solid rgba(255,255,255,.08);
+
   background:rgba(255,255,255,.03);
+
   color:var(--white);
+
   outline:none;
+
   font-family:var(--fb);
+
+  transition:.3s;
+}
+
+body.light .fg input,
+body.light .fg textarea{
+  background:rgba(0,0,0,.03);
+  border-color:rgba(0,0,0,.08);
 }
 
 .fg textarea{
@@ -180,53 +344,167 @@ body{
 }
 
 .fg input:focus,
-.fg textarea:focus,
-.fg select:focus{
+.fg textarea:focus{
+  border-color:rgba(255,107,0,.4);
+
+  box-shadow:
+    0 0 0 4px rgba(255,107,0,.08);
+}
+
+/* MODERN SELECT */
+
+.fg select{
+  width:100%;
+
+  padding:14px 16px;
+
+  border-radius:14px;
+
+  border:1px solid rgba(255,255,255,.08);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.04),
+      rgba(255,255,255,.02)
+    );
+
+  color:var(--white);
+
+  outline:none;
+
+  font-family:var(--fb);
+
+  appearance:none;
+  -webkit-appearance:none;
+  -moz-appearance:none;
+
+  cursor:pointer;
+
+  transition:.3s;
+
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--orange) 50%),
+    linear-gradient(135deg, var(--orange) 50%, transparent 50%);
+
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+
+  background-size:6px 6px, 6px 6px;
+  background-repeat:no-repeat;
+}
+
+body.light .fg select{
+  background-color:rgba(0,0,0,.03);
+  border-color:rgba(0,0,0,.08);
+}
+
+.fg select:hover{
   border-color:rgba(255,107,0,.35);
 }
 
+.fg select:focus{
+  border-color:rgba(255,107,0,.45);
+
+  box-shadow:
+    0 0 0 4px rgba(255,107,0,.08);
+}
+
+.fg select option{
+  background:#101014;
+}
+
+body.light .fg select option{
+  background:#fff;
+  color:#09131A;
+}
+
+/* BUTTON */
+
 .btn{
   width:100%;
+
   padding:15px;
+
   border:none;
-  border-radius:12px;
+
+  border-radius:14px;
+
   background:var(--fire);
+
   color:#fff;
+
   font-family:var(--fu);
-  font-weight:700;
+
   font-size:1rem;
+  font-weight:700;
+
   letter-spacing:1px;
+
   cursor:pointer;
+
+  transition:.25s;
 }
+
+.btn:hover{
+  transform:translateY(-1px);
+
+  box-shadow:
+    0 10px 30px rgba(255,107,0,.25);
+}
+
+/* STATUS */
 
 .status{
   margin-top:1rem;
+
   text-align:center;
+
   display:none;
+
   padding:14px;
+
   border-radius:12px;
 }
 
 .status.ok{
   display:block;
+
   background:rgba(0,200,100,.08);
+
   border:1px solid rgba(0,200,100,.25);
+
   color:#00d26a;
 }
 
 .status.err{
   display:block;
+
   background:rgba(255,45,45,.08);
+
   border:1px solid rgba(255,45,45,.25);
+
   color:#ff4b4b;
 }
 
+/* MOBILE */
+
 @media(max-width:768px){
-  .row{grid-template-columns:1fr}
-  .form-box{padding:1.5rem}
+
+  .row{
+    grid-template-columns:1fr;
+  }
+
+  .form-box{
+    padding:1.5rem;
+  }
+
 }
+
 </style>
 </head>
+
 <body>
 
 <div class="orb a"></div>
@@ -234,19 +512,34 @@ body{
 <div class="grid"></div>
 
 <nav class="nav">
+
   <a href="/" class="logo">
-    <img src="/static/logo.png" alt="Gorr Labs">
+    <img id="mainLogo" src="/static/logo.png" alt="Gorr Labs">
     <span>GORR LABS</span>
   </a>
+
+  <div class="nav-right">
+
+    <button class="theme-toggle" onclick="toggleTheme()">
+      <div class="toggle-knob">🌙</div>
+    </button>
+
+  </div>
+
 </nav>
 
 <div class="page">
 
   <div class="hero">
-    <h1>Share Your <span class="fire">Experience</span></h1>
+
+    <h1>
+      Share Your <span class="fire">Experience</span>
+    </h1>
+
     <p>
       We'd love to hear your feedback about working with Gorr Labs.
     </p>
+
   </div>
 
   <div class="form-box">
@@ -266,6 +559,7 @@ body{
     </div>
 
     <div class="fg">
+
       <label>Rating</label>
 
       <select id="rating">
@@ -275,11 +569,18 @@ body{
         <option value="2">★★☆☆☆ Fair</option>
         <option value="1">★☆☆☆☆ Poor</option>
       </select>
+
     </div>
 
     <div class="fg">
+
       <label>Your Feedback</label>
-      <textarea id="message" placeholder="Tell us about your experience..."></textarea>
+
+      <textarea
+        id="message"
+        placeholder="Tell us about your experience..."
+      ></textarea>
+
     </div>
 
     <button class="btn" onclick="submitFeedback()">
@@ -293,6 +594,46 @@ body{
 </div>
 
 <script>
+
+/* THEME */
+
+function applyTheme(mode){
+
+  const body=document.body;
+  const logo=document.getElementById('mainLogo');
+
+  if(mode==='light'){
+
+    body.classList.add('light');
+
+    logo.src='/static/Black_Logo.png';
+
+  }else{
+
+    body.classList.remove('light');
+
+    logo.src='/static/logo.png';
+
+  }
+
+}
+
+function toggleTheme(){
+
+  const isLight=document.body.classList.contains('light');
+
+  const next=isLight ? 'dark' : 'light';
+
+  localStorage.setItem('theme',next);
+
+  applyTheme(next);
+
+}
+
+applyTheme(localStorage.getItem('theme') || 'dark');
+
+/* FEEDBACK */
+
 async function submitFeedback(){
 
   const name=document.getElementById('name').value.trim();
@@ -305,24 +646,30 @@ async function submitFeedback(){
   status.className='status';
 
   if(!name || !message){
+
     status.className='status err';
     status.textContent='Please fill required fields.';
+
     return;
   }
 
   try{
 
     const r=await fetch('/submit-feedback',{
+
       method:'POST',
+
       headers:{
         'Content-Type':'application/json'
       },
+
       body:JSON.stringify({
         name,
         role,
         rating,
         message
       })
+
     });
 
     const d=await r.json();
@@ -337,101 +684,22 @@ async function submitFeedback(){
       });
 
     }else{
+
       status.className='status err';
       status.textContent='Something went wrong.';
+
     }
 
   }catch{
+
     status.className='status err';
     status.textContent='Network error.';
+
   }
+
 }
+
 </script>
 
 </body>
 </html>
-```
-
----
-
-# ADD THIS TO YOUR FLASK APP
-
-Paste these imports near the top:
-
-```python
-import json
-from datetime import datetime
-```
-
----
-
-Add this route BELOW `/contact`:
-
-```python
-@app.route('/feedback')
-def feedback():
-    return render_template('feedback.html')
-```
-
----
-
-Add this route BELOW `/send-message`:
-
-```python
-@app.route('/submit-feedback', methods=['POST'])
-def submit_feedback():
-
-    data = request.get_json() or {}
-
-    feedback = {
-        'name': data.get('name', '').strip(),
-        'role': data.get('role', '').strip(),
-        'rating': data.get('rating', '5'),
-        'message': data.get('message', '').strip(),
-        'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    }
-
-    if not feedback['name'] or not feedback['message']:
-        return jsonify({'success': False}), 400
-
-    feedback_file = os.path.join(BASE_DIR, 'feedback.json')
-
-    try:
-        if os.path.exists(feedback_file):
-            with open(feedback_file, 'r') as f:
-                feedbacks = json.load(f)
-        else:
-            feedbacks = []
-
-        feedbacks.append(feedback)
-
-        with open(feedback_file, 'w') as f:
-            json.dump(feedbacks, f, indent=2)
-
-        return jsonify({'success': True})
-
-    except Exception as e:
-        print('Feedback Error:', e)
-        return jsonify({'success': False}), 500
-```
-
----
-
-# WHAT THIS DOES
-
-* `/feedback` becomes your hidden customer review page
-* Customers can submit feedback
-* Feedback is automatically saved into:
-
-```plaintext
-feedback.json
-```
-
-* Later you can display those reviews dynamically on `index.html`
-* Nothing is connected publicly unless you share the URL
-
-Your hidden page URL will be:
-
-```plaintext
-https://www.gorrlabs.co.uk/feedback
-```
