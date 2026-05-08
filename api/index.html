@@ -495,12 +495,51 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
   background-size:128px 128px}
 
 /* CURSOR */
-.cur{width:10px;height:10px;border-radius:50%;background:var(--orange);
-  position:fixed;top:0;left:0;pointer-events:none;z-index:999999;mix-blend-mode:difference;
-  box-shadow:0 0 20px var(--orange);transition:width .25s,height .25s,background .2s}
-.cur-t{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,107,0,.3);
-  position:fixed;top:0;left:0;pointer-events:none;z-index:999998;
-  transition:width .35s cubic-bezier(.22,.61,.36,1),height .35s,border-color .3s}
+/* CURSOR */
+
+.cur{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:var(--orange);
+
+  position:fixed;
+  top:0;
+  left:0;
+
+  pointer-events:none;
+
+  z-index:999999;
+
+  mix-blend-mode:difference;
+
+  box-shadow:0 0 20px var(--orange);
+
+  transition:background .18s ease;
+
+  transform:translate(-50%,-50%);
+}
+
+.cur-t{
+  width:40px;
+  height:40px;
+
+  border-radius:50%;
+
+  border:1.5px solid rgba(255,107,0,.3);
+
+  position:fixed;
+  top:0;
+  left:0;
+
+  pointer-events:none;
+
+  z-index:999998;
+
+  transition:border-color .2s ease;
+
+  transform:translate(-50%,-50%);
+}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:3px}
@@ -1092,7 +1131,8 @@ animCanvas();
 
 // CURSOR
 const cur=document.getElementById('cur'),curT=document.getElementById('curT');let mx=0,my=0,tx=0,ty=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;pmx=mx;pmy=my;cur.style.transform='translate('+(mx-5)+'px,'+(my-5)+'px)'});
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;pmx=mx;pmy=my;cur.style.left=e.clientX+'px';
+cur.style.top=e.clientY+'px';
 (function tick(){tx+=(mx-tx)*.07;ty+=(my-ty)*.07;curT.style.transform='translate('+(tx-20)+'px,'+(ty-20)+'px)';requestAnimationFrame(tick)})();
 document.querySelectorAll('a,button,.svc-card,.port-card,.why-card,.faq-q,.tag,.soc-a,.scene-dot').forEach(el=>{
   el.addEventListener('mouseenter',()=>{cur.style.width='16px';cur.style.height='16px';cur.style.background='var(--red)';curT.style.width='52px';curT.style.height='52px';curT.style.borderColor='rgba(255,45,45,.4)'});
