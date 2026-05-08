@@ -1086,8 +1086,7 @@ animCanvas();
 
 // CURSOR
 const cur=document.getElementById('cur'),curT=document.getElementById('curT');let mx=0,my=0,tx=0,ty=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;pmx=mx;pmy=my;cur.style.left=e.clientX+'px';
-cur.style.top=e.clientY+'px';
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;pmx=mx;pmy=mycur.style.transform=`translate(${e.clientX-5}px,${e.clientY-5}px)`
 (function tick(){tx+=(mx-tx)*.07;ty+=(my-ty)*.07;curT.style.transform='translate('+(tx-20)+'px,'+(ty-20)+'px)';requestAnimationFrame(tick)})();
 document.querySelectorAll('a,button,.svc-card,.port-card,.why-card,.faq-q,.tag,.soc-a,.scene-dot').forEach(el=>{
   el.addEventListener('mouseenter',()=>{cur.style.width='16px';cur.style.height='16px';cur.style.background='var(--red)';curT.style.width='52px';curT.style.height='52px';curT.style.borderColor='rgba(255,45,45,.4)'});
