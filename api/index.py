@@ -101,7 +101,7 @@ from datetime import datetime
 def submit_feedback():
 
     try:
-        data = request.get_json(force=True)
+        data = request.get_json(silent=True) or {}
 
         feedback = {
             "name": data.get("name", "").strip(),
@@ -114,27 +114,27 @@ def submit_feedback():
         if not feedback["name"] or not feedback["message"]:
             return jsonify({"success": False, "error": "Missing fields"}), 400
 
-        file_path = os.path.join(BASE_DIR, "feedback.json")
-
-        try:
-            if os.path.exists(file_path):
+            file_path = os.path.join(BASE_DIR, "feedback.json")
+            
+            # ensure file exists
+            if not os.path.exists(file_path):
+                with open(file_path, "w") as f:
+                    json.dump([], f)
+            
+            # safe read
+            try:
                 with open(file_path, "r") as f:
                     feedbacks = json.load(f)
-            else:
+            except:
                 feedbacks = []
-        except:
-            feedbacks = []
-
-        feedbacks.append(feedback)
-
-        with open(file_path, "w") as f:
-            json.dump(feedbacks, f, indent=2)
-
-        return jsonify({"success": True})
-
-    except Exception as e:
-        print("FEEDBACK ERROR:", e)
-        return jsonify({"success": False, "error": str(e)}), 500
+            
+            feedbacks.append(feedback)
+            
+            # safe write
+            with open(file_path, "w") as f:
+                json.dump(feedbacks, f, indent=2)
+            
+            return jsonify({"success": True})
 
 
 @app.route("/send-message", methods=["POST"])
