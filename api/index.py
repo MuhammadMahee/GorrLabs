@@ -3,8 +3,9 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import os
-import json
 from datetime import datetime
+
+from openpyxl import Workbook, load_workbook
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -16,7 +17,24 @@ app = Flask(
 )
 
 # ----------------------------
-# Sitemap
+# FILE PATH (EXCEL)
+# ----------------------------
+EXCEL_FILE = os.path.join(BASE_DIR, "feedback.xlsx")
+
+
+def init_excel():
+    """Create Excel file if it doesn't exist"""
+    if not os.path.exists(EXCEL_FILE):
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["Name", "Role", "Rating", "Message", "Time"])
+        wb.save(EXCEL_FILE)
+
+
+init_excel()
+
+# ----------------------------
+# SITEMAP
 # ----------------------------
 @app.route('/sitemap.xml')
 def sitemap():
@@ -29,7 +47,7 @@ def sitemap():
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
 SMTP_USER = "gorrlabs@gmail.com"
-SMTP_PASSWORD = "oyxt vvxv rmvw hsvg"  # ⚠️ move to env in production
+SMTP_PASSWORD = "oyxt vvxv rmvw hsvg"
 RECIPIENT = "gorrlabs@gmail.com"
 
 
@@ -50,7 +68,6 @@ def send_email(name, email, message):
                   border-radius:12px;padding:30px;text-align:center;">
 
         <img src="https://gorrlabs.vercel.app/static/logo.png"
-             alt="Gorr Labs"
              style="width:120px;margin-bottom:20px;">
 
         <h2 style="color:#FF7A00;">Gorr Labs</h2>
@@ -66,15 +83,14 @@ def send_email(name, email, message):
         <p style="text-align:left;"><strong>Your Message:</strong></p>
 
         <p style="background:#1a1a1a;padding:16px;border-left:3px solid #FF2D2D;
-                  border-radius:6px;line-height:1.7;text-align:left;">
+                  border-radius:6px;text-align:left;">
           {message}
         </p>
 
         <hr style="border-color:#333;margin:20px 0;">
 
         <p style="font-size:12px;color:#777;text-align:left;">
-          Submitted Email: {email}<br>
-          This is an automated confirmation from Gorr Labs.
+          Submitted Email: {email}
         </p>
 
       </div>
@@ -107,36 +123,68 @@ def contact():
 def feedback():
     return render_template("feedback.html")
 
+
 @app.route("/view-feedback")
 def view_feedback():
     return render_template("view-feedback.html")
 
-@app.route("/feedback-data")
-def feedback_data():
-    return jsonify({
-        "success": True,
-        "data": feedbacks[::-1]  # newest first
-    })
 
-
-feedbacks = []
-
+# ----------------------------
+# FEEDBACK SAVE (EXCEL)
+# ----------------------------
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
 
     data = request.get_json(silent=True) or {}
 
-    feedback = {
-        "name": data.get("name", ""),
-        "role": data.get("role", "N/A"),
-        "rating": data.get("rating", "5"),
-        "message": data.get("message", ""),
-        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    }
+    row = [
+        data.get("name", ""),
+        data.get("role", "N/A"),
+        data.get("rating", "5"),
+        data.get("message", ""),
+        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    ]
 
-    feedbacks.append(feedback)
+    try:
+        wb = load_workbook(EXCEL_FILE)
+        ws = wb.active
 
-    return jsonify({"success": True})
+        ws.append(row)
+        wb.save(EXCEL_FILE)
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("Excel Error:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+# ----------------------------
+# FEEDBACK READ (EXCEL)
+# ----------------------------
+@app.route("/feedback-data")
+def feedback_data():
+
+    wb = load_workbook(EXCEL_FILE)
+    ws = wb.active
+
+    rows = list(ws.iter_rows(values_only=True))
+
+    data = []
+
+    for r in rows[1:]:  # skip header
+        data.append({
+            "name": r[0],
+            "role": r[1],
+            "rating": r[2],
+            "message": r[3],
+            "time": r[4]
+        })
+
+    return jsonify({
+        "success": True,
+        "data": data[::-1]
+    })
 
 
 # ----------------------------
@@ -173,7 +221,7 @@ def send_message():
 
 
 # ----------------------------
-# RUN APP
+# RUN
 # ----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
