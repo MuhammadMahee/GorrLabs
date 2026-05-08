@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Feedback - Gorr Labs</title>
+
+<style>
+
+body{
+  background:#0a0a0a;
+  color:white;
+  font-family:Arial;
+  padding:30px;
+}
+
+.container{
+  max-width:800px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.card{
+  background:#111;
+  padding:15px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border-left:3px solid #FF6B00;
+}
+
+small{
+  color:#888;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>All Feedback</h1>
+
+<div id="list">Loading...</div>
+
+</div>
+
+<script>
+
+async function load(){
+
+  const res = await fetch("/feedback-data");
+  const data = await res.json();
+
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  data.data.forEach(f => {
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <b>${f.name}</b> (${f.role})<br>
+      ⭐ ${f.rating}<br><br>
+      ${f.message}<br><br>
+      <small>${f.time}</small>
+    `;
+
+    list.appendChild(div);
+  });
+
+}
+
+load();
+
+</script>
+
+</body>
+</html>
