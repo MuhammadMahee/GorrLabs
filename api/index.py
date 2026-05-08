@@ -107,6 +107,10 @@ def contact():
 def feedback():
     return render_template("feedback.html")
 
+@app.route("/view-feedback")
+def view_feedback():
+    return render_template("view-feedback.html")
+
 
 feedbacks = []
 
