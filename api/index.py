@@ -5,8 +5,6 @@ from email.mime.multipart import MIMEMultipart
 import os
 from datetime import datetime
 
-from openpyxl import Workbook, load_workbook
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(
@@ -17,21 +15,10 @@ app = Flask(
 )
 
 # ----------------------------
-# FILE PATH (EXCEL)
+# IN-MEMORY STORAGE (Vercel SAFE)
 # ----------------------------
-EXCEL_FILE = os.path.join(BASE_DIR, "feedback.xlsx")
+feedbacks = []
 
-
-def init_excel():
-    """Create Excel file if it doesn't exist"""
-    if not os.path.exists(EXCEL_FILE):
-        wb = Workbook()
-        ws = wb.active
-        ws.append(["Name", "Role", "Rating", "Message", "Time"])
-        wb.save(EXCEL_FILE)
-
-
-init_excel()
 
 # ----------------------------
 # SITEMAP
@@ -129,75 +116,41 @@ def view_feedback():
     return render_template("view-feedback.html")
 
 
-from openpyxl import Workbook, load_workbook
-
-EXCEL_FILE = os.path.join(BASE_DIR, "feedback.xlsx")
-
-
-def safe_load_workbook():
-    try:
-        return load_workbook(EXCEL_FILE)
-    except:
-        # recreate file if broken
-        wb = Workbook()
-        ws = wb.active
-        ws.append(["Name", "Role", "Rating", "Message", "Time"])
-        wb.save(EXCEL_FILE)
-        return wb
-
-
+# ----------------------------
+# SUBMIT FEEDBACK (FIXED)
+# ----------------------------
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
 
     data = request.get_json(silent=True) or {}
 
-    row = [
-        data.get("name", ""),
-        data.get("role", "N/A"),
-        data.get("rating", "5"),
-        data.get("message", ""),
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    ]
+    feedback = {
+        "name": data.get("name", "").strip(),
+        "role": data.get("role", "N/A").strip(),
+        "rating": data.get("rating", "5"),
+        "message": data.get("message", "").strip(),
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
 
-    try:
-        wb = safe_load_workbook()
-        ws = wb.active
+    if not feedback["name"] or not feedback["message"]:
+        return jsonify({
+            "success": False,
+            "error": "Name and message are required."
+        }), 400
 
-        ws.append(row)
-        wb.save(EXCEL_FILE)
+    feedbacks.append(feedback)
 
-        return jsonify({"success": True})
-
-    except Exception as e:
-        print("Excel Error:", e)
-        return jsonify({"success": False, "error": str(e)}), 500
+    return jsonify({"success": True})
 
 
 # ----------------------------
-# FEEDBACK READ (EXCEL)
+# GET FEEDBACK DATA (VIEW PAGE)
 # ----------------------------
 @app.route("/feedback-data")
 def feedback_data():
-
-    wb = load_workbook(EXCEL_FILE)
-    ws = wb.active
-
-    rows = list(ws.iter_rows(values_only=True))
-
-    data = []
-
-    for r in rows[1:]:  # skip header
-        data.append({
-            "name": r[0],
-            "role": r[1],
-            "rating": r[2],
-            "message": r[3],
-            "time": r[4]
-        })
-
     return jsonify({
         "success": True,
-        "data": data[::-1]
+        "data": feedbacks[::-1]  # newest first
     })
 
 
@@ -235,7 +188,7 @@ def send_message():
 
 
 # ----------------------------
-# RUN
+# RUN APP
 # ----------------------------
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
