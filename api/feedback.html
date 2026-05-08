@@ -683,12 +683,10 @@ async function submitFeedback(){
         document.getElementById(id).value='';
       });
 
-    }else{
-
-      status.className='status err';
-      status.textContent='Something went wrong.';
-
-    }
+  else{
+    status.className='status err';
+    status.textContent = d.error || 'Something went wrong.';
+  }
 
   }catch{
 
