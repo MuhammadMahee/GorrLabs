@@ -129,9 +129,23 @@ def view_feedback():
     return render_template("view-feedback.html")
 
 
-# ----------------------------
-# FEEDBACK SAVE (EXCEL)
-# ----------------------------
+from openpyxl import Workbook, load_workbook
+
+EXCEL_FILE = os.path.join(BASE_DIR, "feedback.xlsx")
+
+
+def safe_load_workbook():
+    try:
+        return load_workbook(EXCEL_FILE)
+    except:
+        # recreate file if broken
+        wb = Workbook()
+        ws = wb.active
+        ws.append(["Name", "Role", "Rating", "Message", "Time"])
+        wb.save(EXCEL_FILE)
+        return wb
+
+
 @app.route('/submit-feedback', methods=['POST'])
 def submit_feedback():
 
@@ -146,7 +160,7 @@ def submit_feedback():
     ]
 
     try:
-        wb = load_workbook(EXCEL_FILE)
+        wb = safe_load_workbook()
         ws = wb.active
 
         ws.append(row)
