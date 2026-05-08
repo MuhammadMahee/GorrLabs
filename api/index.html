@@ -494,53 +494,8 @@ body::before{content:'';position:fixed;inset:0;z-index:99990;pointer-events:none
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:128px 128px}
 
-/* CURSOR */
-/* CURSOR */
-
-.cur{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:var(--orange);
-
-  position:fixed;
-  top:0;
-  left:0;
-
-  pointer-events:none;
-
-  z-index:999999;
-
-  mix-blend-mode:difference;
-
-  box-shadow:0 0 20px var(--orange);
-
-  transition:background .18s ease;
-
-  transform:translate(-50%,-50%);
-}
-
-.cur-t{
-  width:40px;
-  height:40px;
-
-  border-radius:50%;
-
-  border:1.5px solid rgba(255,107,0,.3);
-
-  position:fixed;
-  top:0;
-  left:0;
-
-  pointer-events:none;
-
-  z-index:999998;
-
-  transition:border-color .2s ease;
-
-  transform:translate(-50%,-50%);
-}
-
+/* CURSOR */ .cur{width:10px;height:10px;border-radius:50%;background:var(--orange); position:fixed;top:0;left:0;pointer-events:none;z-index:999999;mix-blend-mode:difference; box-shadow:0 0 20px var(--orange);transition:width .25s,height .25s,background .2s} .cur-t{width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(255,107,0,.3); position:fixed;top:0;left:0;pointer-events:none;z-index:999998; transition:width .35s cubic-bezier(.22,.61,.36,1),height .35s,border-color .3s}
+  
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-track{background:var(--black)}
