@@ -111,6 +111,13 @@ def feedback():
 def view_feedback():
     return render_template("view-feedback.html")
 
+@app.route("/feedback-data")
+def feedback_data():
+    return jsonify({
+        "success": True,
+        "data": feedbacks[::-1]  # newest first
+    })
+
 
 feedbacks = []
 
