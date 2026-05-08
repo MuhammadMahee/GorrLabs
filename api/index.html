@@ -57,8 +57,8 @@ body.light{
 
   --white:#09131A;
 
-  --muted:rgba(9,19,26,.55);
-  --dim:rgba(9,19,26,.3);
+  --muted:rgba(9,19,26,.72);
+  --dim:rgba(9,19,26,.48);
 
   /* NEW COLORS */
   --red:#00B7FF;
@@ -112,21 +112,21 @@ body.light .why-card,
 body.light .port-card,
 body.light .cont-form{
   background:var(--card);
-  border-color:rgba(0,0,0,.06);
-  box-shadow:0 2px 20px rgba(0,0,0,.04);
+  border-color:rgba(0,0,0,.14);
+  box-shadow:0 2px 20px rgba(0,0,0,.10);
 }
 
 /* INPUTS */
 body.light .fg input,
 body.light .fg textarea{
   background:rgba(0,0,0,.03);
-  border-color:rgba(0,0,0,.08);
+  border-color:rgba(0,0,0,.12);
   color:var(--white);
 }
 
 body.light .fg input::placeholder,
 body.light .fg textarea::placeholder{
-  color:rgba(0,0,0,.3);
+  color:rgba(0,0,0,.45);
 }
 
 body.light .fg input:focus,
@@ -137,11 +137,11 @@ body.light .fg textarea:focus{
 
 /* FOOTER */
 body.light .footer{
-  border-top-color:rgba(0,0,0,.06);
+  border-top-color:rgba(0,0,0,.14);
 }
 
 body.light .ft-bottom{
-  border-top-color:rgba(0,0,0,.06);
+  border-top-color:rgba(0,0,0,.14);
 }
 
 /* DIVIDER */
@@ -158,7 +158,7 @@ body.light .divider{
 
 /* FAQ */
 body.light .faq-item{
-  border-bottom-color:rgba(0,0,0,.06);
+  border-bottom-color:rgba(0,0,0,.14);
 }
 
 /* HERO */
@@ -234,8 +234,8 @@ body.light .svc-card::before{
 /* TAGS */
 body.light .tag,
 body.light .port-tag{
-  background:rgba(0,212,255,.08);
-  border-color:rgba(0,212,255,.2);
+  background:rgba(0,212,255,.12);
+  border-color:rgba(0,212,255,.30);
   color:var(--primary);
 }
 
@@ -247,12 +247,12 @@ body.light .cont-ico{
 
 /* SOCIAL */
 body.light .soc-a{
-  border-color:rgba(0,0,0,.08);
+  border-color:rgba(0,0,0,.15);
 }
 
 /* NAV LINKS */
 body.light .nav-links a{
-  color:rgba(9,19,26,.45);
+  color:rgba(9,19,26,.60);
 }
 
 body.light .nav-links a:hover,
@@ -262,8 +262,8 @@ body.light .nav-links a.act{
 
 /* MOBILE LINKS */
 body.light .mob a{
-  color:rgba(9,19,26,.5);
-  border-bottom-color:rgba(0,0,0,.04);
+  color:rgba(9,19,26,.65);
+  border-bottom-color:rgba(0,0,0,.06);
 }
 
 /* DOTS */
@@ -275,6 +275,67 @@ body.light .scene-dot.active{
   background:var(--primary);
   border-color:var(--primary);
   box-shadow:0 0 15px rgba(0,212,255,.5);
+}
+
+/* ═══════════════════════════════════════ */
+/* LIGHT MODE — EXTRA FONT & CARD BOOST  */
+/* ═══════════════════════════════════════ */
+
+/* Force card headings fully dark */
+body.light .svc-card h3,
+body.light .why-card h4,
+body.light .port-info h4,
+body.light .step-body h4,
+body.light .faq-q{
+  color:#09131A;
+}
+
+/* Card / section paragraphs */
+body.light .svc-card p,
+body.light .why-card p,
+body.light .port-info p,
+body.light .step-body p,
+body.light .faq-a p,
+body.light .about-text p,
+body.light .cont-info,
+body.light .cont-info > p{
+  color:rgba(9,19,26,.72);
+}
+
+/* Sub-headings */
+body.light .scene-sub{
+  color:rgba(9,19,26,.70);
+}
+
+/* Labels & small text */
+body.light .fg label,
+body.light .cont-txt span,
+body.light .stat-l{
+  color:rgba(9,19,26,.50);
+}
+
+/* Footer links */
+body.light .ft-col a{
+  color:rgba(9,19,26,.60);
+}
+
+body.light .ft-brand p{
+  color:rgba(9,19,26,.65);
+}
+
+body.light .ft-bottom p{
+  color:rgba(9,19,26,.48);
+}
+
+/* Mobile menu label */
+body.light .mob-theme-label{
+  color:rgba(9,19,26,.50);
+}
+
+/* Force white text on gradient buttons */
+body.light .btn-fire,
+body.light .nav-cta{
+  color:#fff;
 }
 
 /* ═══ THEME TOGGLE ═══ */
@@ -423,8 +484,7 @@ body.light .sun-rays{
 /* Mobile theme toggle */
 .mob-theme-row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;
   border-bottom:1px solid rgba(255,255,255,.03)}
-.mob-theme-label{font-family:var(--fm);font-size:.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
-body.light .mob-theme-row{border-bottom-color:rgba(0,0,0,.04)}
+body.light .mob-theme-row{border-bottom-color:rgba(0,0,0,.06)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{overflow-x:hidden}
 body{background:var(--black);color:var(--white);font-family:var(--fu);overflow-x:hidden;cursor:none;-webkit-font-smoothing:antialiased}
