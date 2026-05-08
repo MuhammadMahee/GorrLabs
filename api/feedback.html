@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Customer Experience — Gorr Labs</title>
+
+<link rel="icon" type="image/png" href="/static/logo.png"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+<style>
+
+:root{
+  --black:#060608;
+  --card:#101014;
+  --white:#F5F5F7;
+  --muted:rgba(255,255,255,.6);
+
+  --red:#FF2D2D;
+  --orange:#FF6B00;
+  --yellow:#FFD60A;
+
+  --fire:linear-gradient(
+    135deg,
+    #FF2D2D,
+    #FF6B00 50%,
+    #FFD60A
+  );
+
+  --fd:'Orbitron',monospace;
+  --fu:'Rajdhani',sans-serif;
+  --fb:'Inter',sans-serif;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:var(--black);
+  color:var(--white);
+  font-family:var(--fb);
+  overflow-x:hidden;
+}
+
+/* BACKGROUND */
+
+.orb{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(100px);
+  opacity:.08;
+  pointer-events:none;
+}
+
+.orb.a{
+  width:600px;
+  height:600px;
+  background:radial-gradient(var(--red),transparent);
+  top:-250px;
+  left:-180px;
+}
+
+.orb.b{
+  width:500px;
+  height:500px;
+  background:radial-gradient(var(--orange),transparent);
+  bottom:-150px;
+  right:-150px;
+}
+
+.grid{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+
+  background-image:
+    linear-gradient(rgba(255,107,0,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,107,0,.025) 1px, transparent 1px);
+
+  background-size:60px 60px;
+}
+
+/* NAV */
+
+.nav{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:72px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 5%;
+
+  background:rgba(10,10,10,.72);
+  backdrop-filter:blur(18px);
+
+  border-bottom:1px solid rgba(255,255,255,.05);
+
+  z-index:1000;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  text-decoration:none;
+}
+
+.logo img{
+  width:38px;
+  height:38px;
+  object-fit:contain;
+  filter:brightness(0) invert(1);
+}
+
+.logo span{
+  font-family:var(--fd);
+  letter-spacing:4px;
+  font-size:1.1rem;
+  font-weight:700;
+
+  background:var(--fire);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.back{
+  color:var(--muted);
+  text-decoration:none;
+  font-family:var(--fu);
+  letter-spacing:1px;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  transition:.3s;
+}
+
+.back:hover{
+  color:var(--orange);
+}
+
+/* PAGE */
+
+.page{
+  position:relative;
+  z-index:1;
+
+  max-width:1200px;
+  margin:auto;
+
+  padding:130px 5% 80px;
+}
+
+/* HERO */
+
+.hero{
+  text-align:center;
+  margin-bottom:4rem;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+
+  padding:8px 22px;
+
+  border-radius:50px;
+
+  border:1px solid rgba(255,107,0,.18);
+
+  background:rgba(255,107,0,.05);
+
+  color:var(--orange);
+
+  font-family:var(--fu);
+  font-size:.8rem;
+  letter-spacing:2px;
+  text-transform:uppercase;
+
+  margin-bottom:1.5rem;
+}
+
+.dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--orange);
+}
+
+.hero h1{
+  font-family:var(--fd);
+  font-size:clamp(2.2rem,5vw,4.5rem);
+  font-weight:900;
+
+  margin-bottom:1rem;
+}
+
+.fire{
+  background:var(--fire);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.hero p{
+  max-width:700px;
+  margin:auto;
+
+  color:var(--muted);
+
+  line-height:1.8;
+  font-size:1rem;
+}
+
+/* GRID */
+
+.grid-wrap{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+  gap:1.5rem;
+}
+
+/* CARD */
+
+.card{
+  background:var(--card);
+
+  border:1px solid rgba(255,255,255,.06);
+
+  border-radius:22px;
+
+  padding:2rem;
+
+  position:relative;
+  overflow:hidden;
+
+  transition:.35s;
+}
+
+.card:hover{
+  transform:translateY(-5px);
+
+  border-color:rgba(255,107,0,.18);
+
+  box-shadow:
+    0 10px 40px rgba(255,107,0,.12);
+}
+
+.card::before{
+  content:'';
+
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,107,0,.04),
+      transparent 40%
+    );
+
+  pointer-events:none;
+}
+
+.top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+
+  margin-bottom:1.5rem;
+}
+
+.avatar{
+  width:58px;
+  height:58px;
+
+  border-radius:50%;
+
+  background:var(--fire);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-family:var(--fd);
+  font-size:1.1rem;
+  font-weight:700;
+}
+
+.meta h3{
+  font-size:1rem;
+  margin-bottom:4px;
+}
+
+.meta span{
+  color:var(--muted);
+  font-size:.9rem;
+}
+
+.stars{
+  margin-bottom:1.2rem;
+  color:#FFD60A;
+  display:flex;
+  gap:4px;
+}
+
+.msg{
+  color:rgba(255,255,255,.75);
+  line-height:1.8;
+  font-size:.96rem;
+}
+
+/* FOOTER */
+
+.ft{
+  margin-top:5rem;
+  text-align:center;
+
+  color:var(--muted);
+  font-size:.92rem;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:768px){
+
+  .page{
+    padding-top:110px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="orb a"></div>
+<div class="orb b"></div>
+<div class="grid"></div>
+
+<nav class="nav">
+
+  <a href="/" class="logo">
+    <img src="/static/logo.png" alt="Gorr Labs"/>
+    <span>GORR LABS</span>
+  </a>
+
+  <a href="/" class="back">
+    <i class="fas fa-arrow-left"></i>
+    Back to Home
+  </a>
+
+</nav>
+
+<div class="page">
+
+  <div class="hero">
+
+    <div class="badge">
+      <span class="dot"></span>
+      Client Experiences
+    </div>
+
+    <h1>
+      Customer <span class="fire">Feedback</span>
+    </h1>
+
+    <p>
+      Real experiences from businesses and founders who trusted Gorr Labs to build modern digital systems, automation workflows, AI integrations, and scalable platforms.
+    </p>
+
+  </div>
+
+  <div class="grid-wrap">
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">A</div>
+
+        <div class="meta">
+          <h3>Ahmed Raza</h3>
+          <span>Startup Founder</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        Gorr Labs completely transformed our workflow. The automation system they built reduced our manual work by almost 70%.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">S</div>
+
+        <div class="meta">
+          <h3>Sarah Khan</h3>
+          <span>E-Commerce Brand</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        The website quality, speed, and overall design exceeded expectations. Everything feels premium and modern.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">M</div>
+
+        <div class="meta">
+          <h3>Michael James</h3>
+          <span>Agency Owner</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        Their AI assistant integration helped us automate lead qualification and client onboarding seamlessly.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">H</div>
+
+        <div class="meta">
+          <h3>Hassan Ali</h3>
+          <span>Operations Manager</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        Professional communication, fast delivery, and excellent attention to detail. Highly recommended.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">Z</div>
+
+        <div class="meta">
+          <h3>Zainab Noor</h3>
+          <span>Marketing Director</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        Their dashboard and reporting system gave us real-time visibility into our operations and performance.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="top">
+
+        <div class="avatar">R</div>
+
+        <div class="meta">
+          <h3>Ryan Cooper</h3>
+          <span>Tech Consultant</span>
+        </div>
+
+      </div>
+
+      <div class="stars">
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+        <i class="fas fa-star"></i>
+      </div>
+
+      <div class="msg">
+        One of the cleanest and most organized development teams we've worked with. Excellent execution throughout the project.
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="ft">
+    © 2026 Gorr Labs — Customer Experiences
+  </div>
+
+</div>
+
+</body>
+</html>
