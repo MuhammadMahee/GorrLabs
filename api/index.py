@@ -101,11 +101,11 @@ from datetime import datetime
 def submit_feedback():
 
     try:
-        data = request.get_json() or {}
+        data = request.get_json(force=True)
 
         feedback = {
             "name": data.get("name", "").strip(),
-            "role": data.get("role", "").strip(),
+            "role": data.get("role", "").strip() if data.get("role") else "N/A",
             "rating": data.get("rating", "5"),
             "message": data.get("message", "").strip(),
             "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -116,16 +116,17 @@ def submit_feedback():
 
         file_path = os.path.join(BASE_DIR, "feedback.json")
 
-        # load existing
-        if os.path.exists(file_path):
-            with open(file_path, "r") as f:
-                feedbacks = json.load(f)
-        else:
+        try:
+            if os.path.exists(file_path):
+                with open(file_path, "r") as f:
+                    feedbacks = json.load(f)
+            else:
+                feedbacks = []
+        except:
             feedbacks = []
 
         feedbacks.append(feedback)
 
-        # save
         with open(file_path, "w") as f:
             json.dump(feedbacks, f, indent=2)
 
@@ -133,7 +134,7 @@ def submit_feedback():
 
     except Exception as e:
         print("FEEDBACK ERROR:", e)
-        return jsonify({"success": False, "error": "Server error"}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/send-message", methods=["POST"])
