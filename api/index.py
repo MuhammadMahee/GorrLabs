@@ -93,6 +93,48 @@ def contact():
 def feedback():
     return render_template("feedback.html")
 
+import json
+from datetime import datetime
+
+
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+
+    try:
+        data = request.get_json() or {}
+
+        feedback = {
+            "name": data.get("name", "").strip(),
+            "role": data.get("role", "").strip(),
+            "rating": data.get("rating", "5"),
+            "message": data.get("message", "").strip(),
+            "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        if not feedback["name"] or not feedback["message"]:
+            return jsonify({"success": False, "error": "Missing fields"}), 400
+
+        file_path = os.path.join(BASE_DIR, "feedback.json")
+
+        # load existing
+        if os.path.exists(file_path):
+            with open(file_path, "r") as f:
+                feedbacks = json.load(f)
+        else:
+            feedbacks = []
+
+        feedbacks.append(feedback)
+
+        # save
+        with open(file_path, "w") as f:
+            json.dump(feedbacks, f, indent=2)
+
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("FEEDBACK ERROR:", e)
+        return jsonify({"success": False, "error": "Server error"}), 500
+
 
 @app.route("/send-message", methods=["POST"])
 def send_message():
