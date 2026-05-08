@@ -1,46 +1,32 @@
+# feedback.html
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Customer Experience — Gorr Labs</title>
-
+<title>Share Your Experience — Gorr Labs</title>
 <link rel="icon" type="image/png" href="/static/logo.png"/>
-
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
 <style>
-
 :root{
   --black:#060608;
   --card:#101014;
   --white:#F5F5F7;
   --muted:rgba(255,255,255,.6);
-
   --red:#FF2D2D;
   --orange:#FF6B00;
   --yellow:#FFD60A;
-
-  --fire:linear-gradient(
-    135deg,
-    #FF2D2D,
-    #FF6B00 50%,
-    #FFD60A
-  );
-
+  --fire:linear-gradient(135deg,#FF2D2D,#FF6B00 50%,#FFD60A);
   --fd:'Orbitron',monospace;
   --fu:'Rajdhani',sans-serif;
   --fb:'Inter',sans-serif;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
   background:var(--black);
@@ -48,8 +34,6 @@ body{
   font-family:var(--fb);
   overflow-x:hidden;
 }
-
-/* BACKGROUND */
 
 .orb{
   position:fixed;
@@ -79,15 +63,11 @@ body{
   position:fixed;
   inset:0;
   pointer-events:none;
-
   background-image:
     linear-gradient(rgba(255,107,0,.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,107,0,.025) 1px, transparent 1px);
-
   background-size:60px 60px;
 }
-
-/* NAV */
 
 .nav{
   position:fixed;
@@ -95,18 +75,13 @@ body{
   left:0;
   right:0;
   height:72px;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
-
   padding:0 5%;
-
   background:rgba(10,10,10,.72);
   backdrop-filter:blur(18px);
-
   border-bottom:1px solid rgba(255,255,255,.05);
-
   z-index:1000;
 }
 
@@ -114,7 +89,6 @@ body{
   display:flex;
   align-items:center;
   gap:12px;
-
   text-decoration:none;
 }
 
@@ -130,83 +104,24 @@ body{
   letter-spacing:4px;
   font-size:1.1rem;
   font-weight:700;
-
   background:var(--fire);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
 
-.back{
-  color:var(--muted);
-  text-decoration:none;
-  font-family:var(--fu);
-  letter-spacing:1px;
-
-  display:flex;
-  align-items:center;
-  gap:8px;
-
-  transition:.3s;
-}
-
-.back:hover{
-  color:var(--orange);
-}
-
-/* PAGE */
-
 .page{
   position:relative;
   z-index:1;
-
-  max-width:1200px;
+  max-width:900px;
   margin:auto;
-
   padding:130px 5% 80px;
 }
 
-/* HERO */
-
-.hero{
-  text-align:center;
-  margin-bottom:4rem;
-}
-
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-
-  padding:8px 22px;
-
-  border-radius:50px;
-
-  border:1px solid rgba(255,107,0,.18);
-
-  background:rgba(255,107,0,.05);
-
-  color:var(--orange);
-
-  font-family:var(--fu);
-  font-size:.8rem;
-  letter-spacing:2px;
-  text-transform:uppercase;
-
-  margin-bottom:1.5rem;
-}
-
-.dot{
-  width:6px;
-  height:6px;
-  border-radius:50%;
-  background:var(--orange);
-}
+.hero{text-align:center;margin-bottom:3rem}
 
 .hero h1{
   font-family:var(--fd);
-  font-size:clamp(2.2rem,5vw,4.5rem);
-  font-weight:900;
-
+  font-size:clamp(2rem,5vw,4rem);
   margin-bottom:1rem;
 }
 
@@ -217,136 +132,101 @@ body{
 }
 
 .hero p{
-  max-width:700px;
-  margin:auto;
-
   color:var(--muted);
-
   line-height:1.8;
-  font-size:1rem;
 }
 
-/* GRID */
-
-.grid-wrap{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:1.5rem;
-}
-
-/* CARD */
-
-.card{
+.form-box{
   background:var(--card);
-
   border:1px solid rgba(255,255,255,.06);
-
-  border-radius:22px;
-
-  padding:2rem;
-
-  position:relative;
-  overflow:hidden;
-
-  transition:.35s;
+  border-radius:24px;
+  padding:2.5rem;
 }
 
-.card:hover{
-  transform:translateY(-5px);
-
-  border-color:rgba(255,107,0,.18);
-
-  box-shadow:
-    0 10px 40px rgba(255,107,0,.12);
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
 }
 
-.card::before{
-  content:'';
+.fg{margin-bottom:1.2rem}
 
-  position:absolute;
-  inset:0;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,107,0,.04),
-      transparent 40%
-    );
-
-  pointer-events:none;
+.fg label{
+  display:block;
+  margin-bottom:.6rem;
+  color:var(--muted);
+  font-size:.78rem;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-family:var(--fu);
 }
 
-.top{
-  display:flex;
-  align-items:center;
-  gap:14px;
-
-  margin-bottom:1.5rem;
+.fg input,
+.fg textarea,
+.fg select{
+  width:100%;
+  padding:14px 16px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:var(--white);
+  outline:none;
+  font-family:var(--fb);
 }
 
-.avatar{
-  width:58px;
-  height:58px;
+.fg textarea{
+  min-height:160px;
+  resize:vertical;
+}
 
-  border-radius:50%;
+.fg input:focus,
+.fg textarea:focus,
+.fg select:focus{
+  border-color:rgba(255,107,0,.35);
+}
 
+.btn{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:12px;
   background:var(--fire);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-family:var(--fd);
-  font-size:1.1rem;
+  color:#fff;
+  font-family:var(--fu);
   font-weight:700;
-}
-
-.meta h3{
   font-size:1rem;
-  margin-bottom:4px;
+  letter-spacing:1px;
+  cursor:pointer;
 }
 
-.meta span{
-  color:var(--muted);
-  font-size:.9rem;
-}
-
-.stars{
-  margin-bottom:1.2rem;
-  color:#FFD60A;
-  display:flex;
-  gap:4px;
-}
-
-.msg{
-  color:rgba(255,255,255,.75);
-  line-height:1.8;
-  font-size:.96rem;
-}
-
-/* FOOTER */
-
-.ft{
-  margin-top:5rem;
+.status{
+  margin-top:1rem;
   text-align:center;
-
-  color:var(--muted);
-  font-size:.92rem;
+  display:none;
+  padding:14px;
+  border-radius:12px;
 }
 
-/* RESPONSIVE */
+.status.ok{
+  display:block;
+  background:rgba(0,200,100,.08);
+  border:1px solid rgba(0,200,100,.25);
+  color:#00d26a;
+}
+
+.status.err{
+  display:block;
+  background:rgba(255,45,45,.08);
+  border:1px solid rgba(255,45,45,.25);
+  color:#ff4b4b;
+}
 
 @media(max-width:768px){
-
-  .page{
-    padding-top:110px;
-  }
-
+  .row{grid-template-columns:1fr}
+  .form-box{padding:1.5rem}
 }
-
 </style>
 </head>
-
 <body>
 
 <div class="orb a"></div>
@@ -354,209 +234,204 @@ body{
 <div class="grid"></div>
 
 <nav class="nav">
-
   <a href="/" class="logo">
-    <img src="/static/logo.png" alt="Gorr Labs"/>
+    <img src="/static/logo.png" alt="Gorr Labs">
     <span>GORR LABS</span>
   </a>
-
-  <a href="/" class="back">
-    <i class="fas fa-arrow-left"></i>
-    Back to Home
-  </a>
-
 </nav>
 
 <div class="page">
 
   <div class="hero">
-
-    <div class="badge">
-      <span class="dot"></span>
-      Client Experiences
-    </div>
-
-    <h1>
-      Customer <span class="fire">Feedback</span>
-    </h1>
-
+    <h1>Share Your <span class="fire">Experience</span></h1>
     <p>
-      Real experiences from businesses and founders who trusted Gorr Labs to build modern digital systems, automation workflows, AI integrations, and scalable platforms.
+      We'd love to hear your feedback about working with Gorr Labs.
     </p>
-
   </div>
 
-  <div class="grid-wrap">
+  <div class="form-box">
 
-    <div class="card">
+    <div class="row">
 
-      <div class="top">
-
-        <div class="avatar">A</div>
-
-        <div class="meta">
-          <h3>Ahmed Raza</h3>
-          <span>Startup Founder</span>
-        </div>
-
+      <div class="fg">
+        <label>Full Name</label>
+        <input type="text" id="name" placeholder="John Smith">
       </div>
 
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        Gorr Labs completely transformed our workflow. The automation system they built reduced our manual work by almost 70%.
+      <div class="fg">
+        <label>Company / Role</label>
+        <input type="text" id="role" placeholder="Startup Founder">
       </div>
 
     </div>
 
-    <div class="card">
+    <div class="fg">
+      <label>Rating</label>
 
-      <div class="top">
-
-        <div class="avatar">S</div>
-
-        <div class="meta">
-          <h3>Sarah Khan</h3>
-          <span>E-Commerce Brand</span>
-        </div>
-
-      </div>
-
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        The website quality, speed, and overall design exceeded expectations. Everything feels premium and modern.
-      </div>
-
+      <select id="rating">
+        <option value="5">★★★★★ Excellent</option>
+        <option value="4">★★★★☆ Very Good</option>
+        <option value="3">★★★☆☆ Good</option>
+        <option value="2">★★☆☆☆ Fair</option>
+        <option value="1">★☆☆☆☆ Poor</option>
+      </select>
     </div>
 
-    <div class="card">
-
-      <div class="top">
-
-        <div class="avatar">M</div>
-
-        <div class="meta">
-          <h3>Michael James</h3>
-          <span>Agency Owner</span>
-        </div>
-
-      </div>
-
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        Their AI assistant integration helped us automate lead qualification and client onboarding seamlessly.
-      </div>
-
+    <div class="fg">
+      <label>Your Feedback</label>
+      <textarea id="message" placeholder="Tell us about your experience..."></textarea>
     </div>
 
-    <div class="card">
+    <button class="btn" onclick="submitFeedback()">
+      Submit Feedback
+    </button>
 
-      <div class="top">
+    <div class="status" id="status"></div>
 
-        <div class="avatar">H</div>
-
-        <div class="meta">
-          <h3>Hassan Ali</h3>
-          <span>Operations Manager</span>
-        </div>
-
-      </div>
-
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        Professional communication, fast delivery, and excellent attention to detail. Highly recommended.
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <div class="top">
-
-        <div class="avatar">Z</div>
-
-        <div class="meta">
-          <h3>Zainab Noor</h3>
-          <span>Marketing Director</span>
-        </div>
-
-      </div>
-
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        Their dashboard and reporting system gave us real-time visibility into our operations and performance.
-      </div>
-
-    </div>
-
-    <div class="card">
-
-      <div class="top">
-
-        <div class="avatar">R</div>
-
-        <div class="meta">
-          <h3>Ryan Cooper</h3>
-          <span>Tech Consultant</span>
-        </div>
-
-      </div>
-
-      <div class="stars">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-      </div>
-
-      <div class="msg">
-        One of the cleanest and most organized development teams we've worked with. Excellent execution throughout the project.
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="ft">
-    © 2026 Gorr Labs — Customer Experiences
   </div>
 
 </div>
 
+<script>
+async function submitFeedback(){
+
+  const name=document.getElementById('name').value.trim();
+  const role=document.getElementById('role').value.trim();
+  const rating=document.getElementById('rating').value;
+  const message=document.getElementById('message').value.trim();
+
+  const status=document.getElementById('status');
+
+  status.className='status';
+
+  if(!name || !message){
+    status.className='status err';
+    status.textContent='Please fill required fields.';
+    return;
+  }
+
+  try{
+
+    const r=await fetch('/submit-feedback',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        name,
+        role,
+        rating,
+        message
+      })
+    });
+
+    const d=await r.json();
+
+    if(d.success){
+
+      status.className='status ok';
+      status.textContent='Thank you for your feedback!';
+
+      ['name','role','message'].forEach(id=>{
+        document.getElementById(id).value='';
+      });
+
+    }else{
+      status.className='status err';
+      status.textContent='Something went wrong.';
+    }
+
+  }catch{
+    status.className='status err';
+    status.textContent='Network error.';
+  }
+}
+</script>
+
 </body>
 </html>
+```
+
+---
+
+# ADD THIS TO YOUR FLASK APP
+
+Paste these imports near the top:
+
+```python
+import json
+from datetime import datetime
+```
+
+---
+
+Add this route BELOW `/contact`:
+
+```python
+@app.route('/feedback')
+def feedback():
+    return render_template('feedback.html')
+```
+
+---
+
+Add this route BELOW `/send-message`:
+
+```python
+@app.route('/submit-feedback', methods=['POST'])
+def submit_feedback():
+
+    data = request.get_json() or {}
+
+    feedback = {
+        'name': data.get('name', '').strip(),
+        'role': data.get('role', '').strip(),
+        'rating': data.get('rating', '5'),
+        'message': data.get('message', '').strip(),
+        'time': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+
+    if not feedback['name'] or not feedback['message']:
+        return jsonify({'success': False}), 400
+
+    feedback_file = os.path.join(BASE_DIR, 'feedback.json')
+
+    try:
+        if os.path.exists(feedback_file):
+            with open(feedback_file, 'r') as f:
+                feedbacks = json.load(f)
+        else:
+            feedbacks = []
+
+        feedbacks.append(feedback)
+
+        with open(feedback_file, 'w') as f:
+            json.dump(feedbacks, f, indent=2)
+
+        return jsonify({'success': True})
+
+    except Exception as e:
+        print('Feedback Error:', e)
+        return jsonify({'success': False}), 500
+```
+
+---
+
+# WHAT THIS DOES
+
+* `/feedback` becomes your hidden customer review page
+* Customers can submit feedback
+* Feedback is automatically saved into:
+
+```plaintext
+feedback.json
+```
+
+* Later you can display those reviews dynamically on `index.html`
+* Nothing is connected publicly unless you share the URL
+
+Your hidden page URL will be:
+
+```plaintext
+https://www.gorrlabs.co.uk/feedback
+```
